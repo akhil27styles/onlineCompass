@@ -1,11 +1,557 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const tickMarks = Array.from({ length: 72 }, (_, index) => ({
+	angle: index * 5,
+	major: index % 6 === 0,
+}));
+
+const directionLabels = [
+	{ label: 'N', angle: 0 },
+	{ label: 'NE', angle: 45 },
+	{ label: 'E', angle: 90 },
+	{ label: 'SE', angle: 135 },
+	{ label: 'S', angle: 180 },
+	{ label: 'SW', angle: 225 },
+	{ label: 'W', angle: 270 },
+	{ label: 'NW', angle: 315 },
+];
+
+const improvements = [
+	['Device Fit', 'Detects viewport, DPR, orientation, and screen diagonal so the instrument feels native on small phones first.'],
+	['Permission Coach', 'Explains motion, compass, and location permissions with clear states instead of leaving users stuck.'],
+	['Bearing Target', 'Pin a target heading and see the turn direction needed to line up with it.'],
+	['Privacy Local', 'Compass readings stay in the browser. Location is optional and shown only after the user asks.'],
+	['Desktop Fallback', 'Provides a demo heading control when the current device has no magnetometer.'],
+	['Calibration Guide', 'Shows practical accuracy checks for cases, magnets, speakers, and the figure-eight motion.'],
+];
+
+const faqs = [
+	['Does Online Compass work on every device?', 'It works best on phones and tablets with a magnetometer and device-orientation support. Desktop browsers usually do not include the sensor, so this page includes a demo fallback.'],
+	['Is this true north or magnetic north?', 'Device sensors report magnetic heading. True north needs a location-based declination correction, so the site clearly separates live magnetic heading from optional location context.'],
+	['Why does the compass ask for permission?', 'Modern browsers, especially iOS Safari, require a tap before sharing orientation sensor readings. The permission only enables motion and heading data.'],
+	['How do I improve compass accuracy?', 'Hold the phone flat, move away from metal and speakers, remove magnetic cases, and calibrate by slowly moving the phone in a figure-eight pattern.'],
+];
 ---
 
 <Layout>
-	<Welcome />
+	<a class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-ink px-3 py-2 text-sm font-medium text-white transition-transform duration-200 focus-visible:translate-y-0" href="#main">
+		Skip to Content
+	</a>
+
+	<header class="sticky top-0 z-40 border-b border-hairline bg-white/92 backdrop-blur">
+		<nav class="content-grid flex h-16 items-center justify-between gap-4" aria-label="Primary">
+			<a class="focus-ring flex min-w-0 items-center gap-2 rounded-md" href="/" aria-label="Online Compass Home">
+				<span class="grid size-7 place-items-center rounded-md bg-ink text-[11px] font-semibold text-white" translate="no">OC</span>
+				<span class="truncate text-sm font-semibold" translate="no">Online Compass</span>
+			</a>
+			<div class="hidden items-center gap-1 text-sm text-body sm:flex">
+				<a class="focus-ring rounded-full px-3 py-2 hover:text-ink" href="#features">Features</a>
+				<a class="focus-ring rounded-full px-3 py-2 hover:text-ink" href="#calibrate">Calibrate</a>
+				<a class="focus-ring rounded-full px-3 py-2 hover:text-ink" href="#faq">FAQ</a>
+			</div>
+			<a class="focus-ring rounded-md border border-hairline px-3 py-1.5 text-sm font-medium hover:border-hairline-strong" href="#compass">
+				Open Tool
+			</a>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="border-b border-hairline bg-canvas-soft pt-8 pb-6 sm:pt-12 lg:pb-14">
+			<div class="content-grid grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+				<div class="min-w-0">
+					<p class="font-mono text-xs uppercase text-muted" translate="no">freeOnlinecompass.com</p>
+					<h1 class="mt-3 max-w-3xl text-balance text-4xl font-semibold leading-none text-ink sm:text-5xl lg:text-6xl">
+						Online Compass
+					</h1>
+					<p class="mt-4 max-w-2xl text-pretty text-base leading-7 text-body sm:text-lg">
+						A mobile-first browser compass with live heading, screen diagonal detection, calibration guidance, and a bearing target mode.
+					</p>
+					<p id="mobileDeviceSummary" class="mt-4 inline-flex rounded-full border border-hairline bg-white px-3 py-1.5 font-mono text-xs text-body lg:hidden" aria-live="polite">
+						Detecting device…
+					</p>
+				</div>
+
+				<aside class="hidden rounded-panel border border-hairline bg-white p-4 lg:block" aria-labelledby="device-check-title">
+					<div class="flex items-center justify-between gap-3">
+						<h2 id="device-check-title" class="text-sm font-semibold">Device Check</h2>
+						<span id="deviceBadge" class="rounded-full bg-canvas-soft-2 px-2.5 py-1 font-mono text-xs text-body">Detecting…</span>
+					</div>
+					<dl class="mt-4 grid gap-3 text-sm">
+						<div class="flex items-center justify-between gap-4 border-t border-hairline pt-3">
+							<dt class="text-body">Screen Diagonal</dt>
+							<dd id="screenDiagonal" class="font-mono text-ink">--</dd>
+						</div>
+						<div class="flex items-center justify-between gap-4 border-t border-hairline pt-3">
+							<dt class="text-body">Device Pixel Ratio</dt>
+							<dd id="pixelRatio" class="font-mono text-ink">--</dd>
+						</div>
+						<div class="flex items-center justify-between gap-4 border-t border-hairline pt-3">
+							<dt class="text-body">Sensor Status</dt>
+							<dd id="sensorSupport" class="font-mono text-ink">Checking…</dd>
+						</div>
+					</dl>
+				</aside>
+			</div>
+		</section>
+
+		<section id="compass" class="bg-white py-6 sm:py-12">
+			<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+				<section class="rounded-panel border border-hairline bg-white p-4 shadow-[0_16px_60px_rgba(0,0,0,0.06)] sm:p-6" aria-labelledby="compass-title">
+					<div class="flex flex-wrap items-start justify-between gap-4">
+						<div>
+							<p class="font-mono text-xs uppercase text-muted">Live Instrument</p>
+							<h2 id="compass-title" class="mt-1 text-2xl font-semibold">Find North Fast</h2>
+						</div>
+						<div class="rounded-full border border-hairline bg-canvas-soft px-3 py-1.5 font-mono text-xs text-body" aria-live="polite">
+							<span id="modeLabel">Magnetic Heading</span>
+						</div>
+					</div>
+
+					<div class="mt-6 grid place-items-center">
+						<div class="compass-shell" aria-label="Compass dial showing heading">
+							<div class="compass-rose" id="compassRose">
+								{tickMarks.map((tick) => (
+									<span
+										class:list={['tick', tick.major && 'tick-major']}
+										style={`--tick-angle:${tick.angle}deg`}
+										aria-hidden="true"
+									/>
+								))}
+								{directionLabels.map((direction) => (
+									<span
+										class:list={['direction-label', direction.label === 'N' && 'north-label']}
+										style={`--label-angle:${direction.angle}deg`}
+									>
+										{direction.label}
+									</span>
+								))}
+							</div>
+							<div class="fixed-needle" aria-hidden="true">
+								<span></span>
+							</div>
+							<div class="heading-readout">
+								<p id="cardinalDirection">--</p>
+								<strong><span id="headingDegrees">--</span><span aria-hidden="true">°</span></strong>
+							</div>
+						</div>
+					</div>
+
+					<div class="mt-6 grid gap-3 sm:grid-cols-2">
+						<button id="enableCompass" class="focus-ring rounded-md bg-ink px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-black" type="button">
+							Enable Compass
+						</button>
+						<button id="demoMode" class="focus-ring rounded-md border border-hairline bg-white px-4 py-3 text-sm font-semibold text-ink transition-colors duration-150 hover:border-hairline-strong hover:bg-canvas-soft" type="button">
+							Try Demo Heading
+						</button>
+					</div>
+
+					<div class="mt-5 border-t border-hairline pt-5">
+						<label class="flex items-center justify-between gap-4 text-sm font-medium" for="targetBearing">
+							<span>Target Bearing</span>
+							<span class="font-mono text-body"><span id="targetBearingValue">0</span>°</span>
+						</label>
+						<input id="targetBearing" class="mt-3 w-full accent-ink" type="range" min="0" max="359" value="0" name="target-bearing" aria-describedby="bearingHelp" />
+						<p id="bearingHelp" class="mt-2 text-sm text-body" aria-live="polite">
+							Set a destination bearing to see turn guidance.
+						</p>
+					</div>
+				</section>
+
+				<aside class="grid gap-6">
+					<section class="rounded-panel border border-hairline bg-canvas-soft p-4" aria-labelledby="status-title">
+						<h2 id="status-title" class="text-sm font-semibold">Live Status</h2>
+						<div class="mt-4 grid gap-3 text-sm">
+							<p id="statusMessage" class="rounded-md border border-hairline bg-white p-3 text-body" aria-live="polite">
+								Tap Enable Compass to request sensor access.
+							</p>
+							<button id="locationButton" class="focus-ring rounded-md border border-hairline bg-white px-4 py-3 text-left text-sm font-semibold transition-colors duration-150 hover:border-hairline-strong hover:bg-white" type="button">
+								Show Optional Location
+							</button>
+							<p id="locationResult" class="text-sm leading-6 text-body" aria-live="polite">
+								Location is optional and used only to show your coordinates.
+							</p>
+						</div>
+					</section>
+
+					<section id="calibrate" class="rounded-panel border border-hairline bg-white p-4" aria-labelledby="calibrate-title">
+						<h2 id="calibrate-title" class="text-sm font-semibold">Calibration Checklist</h2>
+						<ul class="mt-4 grid gap-3 text-sm leading-6 text-body">
+							<li class="border-t border-hairline pt-3">Hold your phone flat, parallel to the ground.</li>
+							<li class="border-t border-hairline pt-3">Move away from speakers, magnets, metal desks, and car dashboards.</li>
+							<li class="border-t border-hairline pt-3">Move the phone in a slow figure-eight if heading feels unstable.</li>
+						</ul>
+					</section>
+				</aside>
+			</div>
+		</section>
+
+		<section id="features" class="border-y border-hairline bg-canvas-soft py-10 sm:py-14">
+			<div class="content-grid">
+				<div class="max-w-2xl">
+					<p class="font-mono text-xs uppercase text-muted">Better Than a Basic Dial</p>
+					<h2 class="mt-2 text-balance text-3xl font-semibold">Built for the real reasons online compasses fail.</h2>
+					<p class="mt-3 text-pretty leading-7 text-body">
+						Most compass pages stop at a dial. Online Compass adds the missing guidance around device support, permissions, screen size, fallback behavior, and privacy.
+					</p>
+				</div>
+				<div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					{improvements.map(([title, body]) => (
+						<article class="rounded-panel border border-hairline bg-white p-5">
+							<h3 class="text-base font-semibold">{title}</h3>
+							<p class="mt-3 text-sm leading-6 text-body">{body}</p>
+						</article>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<section class="bg-white py-10 sm:py-14" aria-labelledby="how-title">
+			<div class="content-grid grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
+				<div>
+					<p class="font-mono text-xs uppercase text-muted">How It Works</p>
+					<h2 id="how-title" class="mt-2 text-3xl font-semibold">Sensors first, privacy always.</h2>
+				</div>
+				<div class="grid gap-4">
+					<p class="text-pretty leading-7 text-body">
+						The browser reads device orientation data from your phone’s motion and magnetometer sensors, then rotates the compass rose against a fixed top marker. The page keeps heading data on your device and does not need an account or app install.
+					</p>
+					<p class="text-pretty leading-7 text-body">
+						For desktop users, the demo mode makes the interface testable even when no physical compass sensor exists. For mobile users, the layout is sized from the screen diagonal and adapts before the page asks for permissions.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section id="faq" class="border-t border-hairline bg-canvas-soft py-10 sm:py-14">
+			<div class="content-grid">
+				<div class="max-w-2xl">
+					<p class="font-mono text-xs uppercase text-muted">Questions</p>
+					<h2 class="mt-2 text-3xl font-semibold">Online Compass FAQ</h2>
+				</div>
+				<div class="mt-8 grid gap-3">
+					{faqs.map(([question, answer]) => (
+						<details class="group rounded-panel border border-hairline bg-white p-5">
+							<summary class="focus-ring cursor-pointer list-none rounded-md text-base font-semibold">
+								{question}
+								<span class="float-right ml-4 text-muted transition-transform duration-150 group-open:rotate-45" aria-hidden="true">+</span>
+							</summary>
+							<p class="mt-3 text-sm leading-6 text-body">{answer}</p>
+						</details>
+					))}
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="border-t border-hairline bg-white py-8">
+		<div class="content-grid flex flex-col gap-3 text-sm text-body sm:flex-row sm:items-center sm:justify-between">
+			<p translate="no">© 2026 Online Compass</p>
+			<p>Free mobile compass for <span translate="no">freeOnlinecompass.com</span></p>
+		</div>
+	</footer>
 </Layout>
+
+<script>
+	const rose = document.querySelector('#compassRose');
+	const enableButton = document.querySelector('#enableCompass');
+	const demoButton = document.querySelector('#demoMode');
+	const headingOutput = document.querySelector('#headingDegrees');
+	const cardinalOutput = document.querySelector('#cardinalDirection');
+	const statusMessage = document.querySelector('#statusMessage');
+	const sensorSupport = document.querySelector('#sensorSupport');
+	const deviceBadge = document.querySelector('#deviceBadge');
+	const mobileDeviceSummary = document.querySelector('#mobileDeviceSummary');
+	const screenDiagonal = document.querySelector('#screenDiagonal');
+	const pixelRatio = document.querySelector('#pixelRatio');
+	const targetBearing = document.querySelector('#targetBearing');
+	const targetBearingValue = document.querySelector('#targetBearingValue');
+	const bearingHelp = document.querySelector('#bearingHelp');
+	const locationButton = document.querySelector('#locationButton');
+	const locationResult = document.querySelector('#locationResult');
+
+	let currentHeading = 0;
+	let demoTimer;
+	let sensorTimeout;
+	let hasLiveHeading = false;
+
+	const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+
+	function normalizeHeading(value) {
+		return ((value % 360) + 360) % 360;
+	}
+
+	function getCardinalDirection(heading) {
+		return directions[Math.round(heading / 45) % 8];
+	}
+
+	function setText(element, value) {
+		if (element) {
+			element.textContent = value;
+		}
+	}
+
+	function updateHeading(heading, source = 'Live') {
+		currentHeading = normalizeHeading(heading);
+		if (rose instanceof HTMLElement) {
+			rose.style.setProperty('--heading', currentHeading.toFixed(1));
+		}
+		setText(headingOutput, Math.round(currentHeading).toString());
+		setText(cardinalOutput, getCardinalDirection(currentHeading));
+		updateBearingHelp();
+		if (source === 'Demo') {
+			setText(statusMessage, 'Demo mode is running because this device may not expose compass sensors.');
+			setText(sensorSupport, 'Demo');
+		}
+	}
+
+	function updateBearingHelp() {
+		if (!(targetBearing instanceof HTMLInputElement)) return;
+		const target = Number(targetBearing.value);
+		const delta = ((target - currentHeading + 540) % 360) - 180;
+		const turn = Math.abs(delta) < 2 ? 'You are aligned with the target bearing.' : `Turn ${delta > 0 ? 'right' : 'left'} ${Math.round(Math.abs(delta))}° to align.`;
+		setText(targetBearingValue, target.toString());
+		setText(bearingHelp, turn);
+	}
+
+	function updateDeviceCheck() {
+		const width = window.screen?.width || window.innerWidth;
+		const height = window.screen?.height || window.innerHeight;
+		const diagonal = Math.round(Math.hypot(width, height));
+		const dpr = window.devicePixelRatio || 1;
+		const shortSide = Math.min(width, height);
+		const label = shortSide < 600 ? 'Mobile Fit' : shortSide < 960 ? 'Tablet Fit' : 'Desktop Fit';
+
+		setText(deviceBadge, label);
+		setText(mobileDeviceSummary, `${label} · ${diagonal}px diagonal · ${dpr.toFixed(2)}x DPR`);
+		setText(screenDiagonal, `${diagonal}px`);
+		setText(pixelRatio, `${dpr.toFixed(2)}x`);
+		const hasOrientationApi = 'DeviceOrientationEvent' in window;
+		const likelySensorDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || shortSide < 760;
+		setText(sensorSupport, hasOrientationApi ? (likelySensorDevice ? 'Ready' : 'Needs Mobile') : 'No Sensor');
+	}
+
+	function headingFromEvent(event) {
+		const compassEvent = event;
+		if (typeof compassEvent.webkitCompassHeading === 'number') {
+			return compassEvent.webkitCompassHeading;
+		}
+		if (typeof event.alpha === 'number') {
+			return 360 - event.alpha;
+		}
+		return null;
+	}
+
+	function handleOrientation(event) {
+		const heading = headingFromEvent(event);
+		if (heading === null) {
+			setText(statusMessage, 'Sensor is active, but heading data is not available on this device.');
+			return;
+		}
+		hasLiveHeading = true;
+		window.clearTimeout(sensorTimeout);
+		window.clearInterval(demoTimer);
+		updateHeading(heading);
+		setText(sensorSupport, 'Live');
+		setText(statusMessage, 'Compass is live. For best accuracy, keep the phone flat and away from metal.');
+	}
+
+	async function enableCompass() {
+		if (!('DeviceOrientationEvent' in window)) {
+			setText(statusMessage, 'This browser does not expose compass sensors. Demo mode is available.');
+			return;
+		}
+
+		const orientationEvent = window.DeviceOrientationEvent;
+		const permissionRequester = orientationEvent?.requestPermission;
+
+		try {
+			if (typeof permissionRequester === 'function') {
+				const permission = await permissionRequester.call(orientationEvent);
+				if (permission !== 'granted') {
+					setText(statusMessage, 'Sensor permission was not granted. Check browser settings and try again.');
+					return;
+				}
+			}
+			hasLiveHeading = false;
+			window.clearInterval(demoTimer);
+			window.clearTimeout(sensorTimeout);
+			window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+			window.addEventListener('deviceorientation', handleOrientation, true);
+			setText(sensorSupport, 'Listening');
+			setText(statusMessage, 'Listening for real compass data. On desktop, use demo mode because most computers do not have a magnetometer.');
+			sensorTimeout = window.setTimeout(() => {
+				if (!hasLiveHeading) {
+					setText(sensorSupport, 'No Reading');
+					setText(statusMessage, 'No live compass reading arrived. Open this page on a phone with motion permission enabled, or use Try Demo Heading on this device.');
+				}
+			}, 3000);
+		} catch (error) {
+			setText(statusMessage, 'Compass permission failed. Try reloading the page and enabling motion access.');
+		}
+	}
+
+	function startDemoMode() {
+		window.clearInterval(demoTimer);
+		window.clearTimeout(sensorTimeout);
+		let demoHeading = currentHeading;
+		demoTimer = window.setInterval(() => {
+			demoHeading = normalizeHeading(demoHeading + 1.4);
+			updateHeading(demoHeading, 'Demo');
+		}, 80);
+	}
+
+	function requestLocation() {
+		if (!('geolocation' in navigator)) {
+			setText(locationResult, 'Geolocation is not supported in this browser.');
+			return;
+		}
+		setText(locationResult, 'Requesting location…');
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				const latitude = position.coords.latitude.toFixed(5);
+				const longitude = position.coords.longitude.toFixed(5);
+				setText(locationResult, `Lat ${latitude}, Lon ${longitude}. Heading remains local to your browser.`);
+			},
+			() => {
+				setText(locationResult, 'Location was not shared. The compass still works with device sensors.');
+			},
+			{ enableHighAccuracy: false, maximumAge: 60000, timeout: 8000 },
+		);
+	}
+
+	enableButton?.addEventListener('click', enableCompass);
+	demoButton?.addEventListener('click', startDemoMode);
+	targetBearing?.addEventListener('input', updateBearingHelp);
+	locationButton?.addEventListener('click', requestLocation);
+	window.addEventListener('resize', updateDeviceCheck);
+	window.visualViewport?.addEventListener('resize', updateDeviceCheck);
+
+	updateDeviceCheck();
+	updateHeading(0);
+</script>
+
+<style>
+	.compass-shell {
+		--compass-size: min(78vw, 430px);
+		position: relative;
+		width: var(--compass-size);
+		aspect-ratio: 1;
+		border: 1px solid var(--color-hairline);
+		border-radius: 50%;
+		background:
+			radial-gradient(circle at center, #ffffff 0 18%, transparent 18.5%),
+			radial-gradient(circle at center, transparent 0 58%, color-mix(in srgb, var(--color-link) 10%, transparent) 58.4% 59.2%, transparent 59.8%),
+			linear-gradient(135deg, color-mix(in srgb, var(--color-cyan-accent) 14%, #ffffff), #ffffff 42%, color-mix(in srgb, var(--color-pink-accent) 10%, #ffffff));
+		box-shadow: inset 0 0 0 10px #ffffff, inset 0 0 0 11px var(--color-hairline), 0 24px 70px rgba(0, 0, 0, 0.08);
+		overflow: hidden;
+	}
+
+	.compass-rose {
+		--heading: 0;
+		position: absolute;
+		inset: 16px;
+		border-radius: 50%;
+		transform: rotate(calc(var(--heading) * -1deg));
+		transition: transform 120ms linear;
+		will-change: transform;
+	}
+
+	.tick {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 1px;
+		height: 8px;
+		background: var(--color-hairline-strong);
+		transform: rotate(var(--tick-angle)) translateY(calc(var(--compass-size) * -0.42));
+		transform-origin: center;
+	}
+
+	.tick-major {
+		width: 2px;
+		height: 18px;
+		background: var(--color-ink);
+	}
+
+	.direction-label {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		display: grid;
+		width: 38px;
+		height: 24px;
+		place-items: center;
+		margin: -12px 0 0 -19px;
+		color: var(--color-body);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 600;
+		transform: rotate(var(--label-angle)) translateY(calc(var(--compass-size) * -0.34)) rotate(calc(var(--label-angle) * -1));
+		transform-origin: center;
+	}
+
+	.north-label {
+		color: #ee0000;
+	}
+
+	.fixed-needle {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: start center;
+		pointer-events: none;
+	}
+
+	.fixed-needle span {
+		width: 0;
+		height: 0;
+		margin-top: 20px;
+		border-right: 12px solid transparent;
+		border-bottom: 34px solid #ee0000;
+		border-left: 12px solid transparent;
+		filter: drop-shadow(0 4px 10px rgba(238, 0, 0, 0.24));
+	}
+
+	.heading-readout {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		display: grid;
+		width: min(40vw, 156px);
+		aspect-ratio: 1;
+		place-items: center;
+		translate: -50% -50%;
+		border: 1px solid var(--color-hairline);
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.92);
+		text-align: center;
+	}
+
+	.heading-readout p {
+		margin: 0;
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.heading-readout strong {
+		display: block;
+		margin-top: -28px;
+		font-size: clamp(38px, 12vw, 56px);
+		font-weight: 650;
+		line-height: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+
+		.compass-rose,
+		.group-open\:rotate-45 {
+			transition-duration: 0.01ms;
+		}
+	}
+</style>
