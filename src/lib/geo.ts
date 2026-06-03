@@ -166,3 +166,27 @@ export function requestLocation(options?: { precise?: boolean }): Promise<GeoCoo
 		);
 	});
 }
+
+export async function getCityFromCoords(latitude: number, longitude: number): Promise<string> {
+	try {
+		const response = await fetch(
+			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+		);
+		if (!response.ok) return '';
+		const data = await response.json();
+		
+		const city = data.city || data.locality || '';
+		const region = data.principalSubdivision || '';
+		const country = data.countryName || '';
+		
+		if (city && country) {
+			if (region && region !== city) {
+				return `${city}, ${region}, ${country}`;
+			}
+			return `${city}, ${country}`;
+		}
+		return city || region || country || '';
+	} catch {
+		return '';
+	}
+}

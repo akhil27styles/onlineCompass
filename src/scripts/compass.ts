@@ -25,6 +25,7 @@ export function mountCompass() {
 	const targetBearing = document.querySelector('#targetBearing');
 	const targetBearingValue = document.querySelector('#targetBearingValue');
 	const bearingHelp = document.querySelector('#bearingHelp');
+	const targetMarker = document.querySelector('#targetMarker');
 
 	let currentHeading = 0;
 	let demoTimer: number | undefined;
@@ -55,6 +56,11 @@ export function mountCompass() {
 				: `Turn ${delta > 0 ? 'right' : 'left'} ${Math.round(Math.abs(delta))}° to align.`;
 		setText(targetBearingValue, target.toString());
 		setText(bearingHelp, turn);
+		
+		if (targetMarker instanceof HTMLElement) {
+			targetMarker.style.display = 'block';
+			targetMarker.style.setProperty('--target-angle', `${target}deg`);
+		}
 	}
 
 	function headingFromEvent(event: DeviceOrientationEvent) {

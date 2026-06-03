@@ -5,8 +5,8 @@ const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | '
 
 const links: NavItem[] = [
 	{ href: '/', label: 'Compass' },
-	{ href: '/sun-position/', label: 'Sun' },
-	{ href: '/moon-position/', label: 'Moon' },
+	{ href: '/sun-position/', label: 'Sun Position' },
+	{ href: '/moon-position/', label: 'Moon Position' },
 ];
 
 function isActive(href: string): boolean {
@@ -18,26 +18,28 @@ function isActive(href: string): boolean {
 ---
 
 <a
-	class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-ink px-3 py-2 text-sm font-medium text-white transition-transform duration-150 focus-visible:translate-y-0"
+	class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-ink px-3 py-2 text-sm font-medium text-canvas transition-transform duration-150 focus-visible:translate-y-0"
 	href="#main"
 >
 	Skip to Content
 </a>
 
-<header class="sticky top-0 z-40 border-b border-hairline bg-white/92 backdrop-blur">
+<header class="sticky top-0 z-40 border-b border-hairline bg-canvas-soft/80 backdrop-blur-md">
 	<nav class="content-grid flex h-16 items-center justify-between gap-3" aria-label="Primary">
 		<a class="focus-ring flex min-w-0 items-center gap-2 rounded-md" href="/" aria-label="Online Compass Home">
-			<span class="grid size-7 place-items-center rounded-md bg-ink text-[11px] font-semibold text-white" translate="no">OC</span>
-			<span class="truncate text-sm font-semibold tracking-tight" translate="no">Online Compass</span>
+			<span class="grid size-7 place-items-center rounded bg-white text-[11px] font-bold text-black" translate="no">OC</span>
+			<span class="truncate text-sm font-semibold tracking-tight text-ink" translate="no">Online Compass</span>
 		</a>
 
-		<div class="hidden items-center gap-0.5 text-sm text-body sm:flex">
+		<div class="hidden items-center gap-1.5 text-xs font-mono sm:flex">
 			{
 				links.map((link) => (
 					<a
 						class:list={[
-							'focus-ring rounded-full px-3 py-2 transition-colors duration-150',
-							isActive(link.href) ? 'bg-canvas-soft-2 font-medium text-ink' : 'hover:text-ink',
+							'focus-ring rounded-full px-3 py-1.5 transition-all duration-150',
+							isActive(link.href)
+								? 'bg-canvas-soft-2 font-semibold text-white border border-hairline'
+								: 'text-body hover:text-white',
 						]}
 						href={link.href}
 						aria-current={isActive(link.href) ? 'page' : undefined}
@@ -49,16 +51,16 @@ function isActive(href: string): boolean {
 		</div>
 
 		<details class="group relative sm:hidden">
-			<summary class="focus-ring list-none rounded-md border border-hairline px-3 py-1.5 text-sm font-medium marker:content-none">
+			<summary class="focus-ring list-none rounded border border-hairline px-3 py-1.5 text-xs font-mono text-body cursor-pointer hover:text-white marker:content-none">
 				Menu
 			</summary>
-			<div class="absolute top-[calc(100%+8px)] right-0 z-50 min-w-40 rounded-panel border border-hairline bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+			<div class="absolute top-[calc(100%+8px)] right-0 z-50 min-w-44 rounded border border-hairline bg-canvas p-2 shadow-xl">
 				{
 					links.map((link) => (
 						<a
 							class:list={[
-								'focus-ring block rounded-md px-3 py-2 text-sm',
-								isActive(link.href) ? 'bg-canvas-soft-2 font-medium text-ink' : 'text-body hover:text-ink',
+								'focus-ring block rounded px-3 py-2 text-xs font-mono',
+								isActive(link.href) ? 'bg-canvas-soft-2 font-semibold text-white' : 'text-body hover:text-white',
 							]}
 							href={link.href}
 						>
@@ -70,7 +72,7 @@ function isActive(href: string): boolean {
 		</details>
 
 		<a
-			class="focus-ring hidden rounded-md border border-hairline px-3 py-1.5 text-sm font-medium hover:border-hairline-strong sm:inline-flex"
+			class="focus-ring hidden rounded border border-hairline px-3 py-1.5 text-xs font-mono text-body hover:text-white hover:border-white sm:inline-flex"
 			href={current === 'compass' ? '#compass' : '/#compass'}
 		>
 			Open Tool

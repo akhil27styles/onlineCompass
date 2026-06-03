@@ -9,6 +9,8 @@ import {
 	readCachedCoords,
 	requestLocation,
 	watchPermissionChanges,
+	getCityFromCoords,
+	cacheCoords,
 } from '../lib/geo';
 
 export type LocationManagerOptions = {
@@ -44,6 +46,13 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		retryButtonEl = document.querySelector<HTMLButtonElement>('#retryLocation'),
 	} = options;
 
+	const toggleEditBtn = document.querySelector('#toggleEditLocation');
+	const editForm = document.querySelector<HTMLFormElement>('#editLocationForm');
+	const inputLat = document.querySelector<HTMLInputElement>('#inputLat');
+	const inputLng = document.querySelector<HTMLInputElement>('#inputLng');
+	const cancelEditBtn = document.querySelector('#cancelEditLocation');
+	const cityEl = document.querySelector('#locationCity');
+
 	let state: UiState = 'checking';
 	let inFlight = false;
 
@@ -64,15 +73,29 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		}
 	}
 
+	async function updateCity(coords: GeoCoords) {
+		if (cityEl) cityEl.textContent = 'Locating city…';
+		const city = await getCityFromCoords(coords.latitude, coords.longitude);
+		if (city) {
+			if (cityEl) cityEl.textContent = city;
+			setText(messageEl, `Location: ${city} (${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}°)`);
+			dispatch('oc:location-city-ready', { city, coords });
+		} else {
+			if (cityEl) cityEl.textContent = 'City unknown';
+			setText(messageEl, `Lat ${coords.latitude.toFixed(4)}°, Lon ${coords.longitude.toFixed(4)}°`);
+		}
+	}
+
 	function onSuccess(coords: GeoCoords, source: 'auto' | 'user') {
 		const label = formatCoords(coords);
 		applyUi(
 			'ready',
-			`${label}. Used for sun, moon, and context — never uploaded to a server.`,
+			`Lat ${coords.latitude.toFixed(4)}°, Lon ${coords.longitude.toFixed(4)}°`,
 			label,
 		);
 		onLocation?.(coords);
 		dispatch('oc:location-ready', { coords, source });
+		void updateCity(coords);
 	}
 
 	function onFailure(error: unknown, preferPrompt = false) {
@@ -158,7 +181,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 			onFailure(
 				new GeoError(
 					'insecure',
-					'Location needs a secure connection (HTTPS). Compass still works; sun and moon need HTTPS.',
+					'Location needs HTTPS. Compass still works; sun and moon need HTTPS.',
 				),
 			);
 			return;
@@ -166,7 +189,8 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 
 		const cached = readCachedCoords();
 		if (cached) {
-			setText(coordsEl, formatCoords(cached));
+			// Immediately dispatch cached location so astronomers get immediate rendering
+			onSuccess(cached, 'auto');
 		}
 
 		const permission = await queryGeolocationPermission();
@@ -177,30 +201,33 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		}
 
 		if (permission === 'denied') {
-			applyUi(
-				'denied',
-				'Location is blocked for this site. In browser settings, set Location to Allow for this site, then tap Try Allow Location Again.',
-				'Blocked',
-			);
-			dispatch('oc:location-denied', {
-				message: 'Location permission is blocked in browser settings.',
-				code: 'denied',
-			});
+			if (!cached) {
+				applyUi(
+					'denied',
+					'Location is blocked for this site. In browser settings, set Location to Allow, then tap Try Allow Location Again.',
+					'Blocked',
+				);
+				dispatch('oc:location-denied', {
+					message: 'Location permission is blocked in browser settings.',
+					code: 'denied',
+				});
+			}
 			setButtonVisible(allowButtonEl, true);
 			return;
 		}
 
-		// prompt or unknown: try silent read (works when permission was granted before or on some desktops)
-		const coords = await fetchLocation(false);
-		if (!coords) {
-			// fetchLocation already set needs-permission UI when appropriate
-			if (state === 'checking') {
-				applyUi(
-					'needs-permission',
-					'Tap Allow Location Access. Your browser will ask for permission — needed for sun and moon position.',
-					'Permission needed',
-				);
-				dispatch('oc:location-needs-permission', { message: 'User gesture required' });
+		// prompt or unknown: try silent read
+		if (!cached) {
+			const coords = await fetchLocation(false);
+			if (!coords) {
+				if (state === 'checking') {
+					applyUi(
+						'needs-permission',
+						'Tap Allow Location Access. Your browser will ask for permission — needed for sun and moon position.',
+						'Permission needed',
+					);
+					dispatch('oc:location-needs-permission', { message: 'User gesture required' });
+				}
 			}
 		}
 	}
@@ -217,11 +244,47 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		void fetchLocation(true);
 	});
 
+	// Collapsible Coordinate Editor Form Event Listeners
+	toggleEditBtn?.addEventListener('click', () => {
+		if (!editForm) return;
+		editForm.classList.toggle('hidden');
+		if (!editForm.classList.contains('hidden')) {
+			const current = readCachedCoords();
+			if (current) {
+				if (inputLat) inputLat.value = current.latitude.toString();
+				if (inputLng) inputLng.value = current.longitude.toString();
+			}
+		}
+	});
+
+	cancelEditBtn?.addEventListener('click', () => {
+		editForm?.classList.add('hidden');
+	});
+
+	editForm?.addEventListener('submit', (e) => {
+		e.preventDefault();
+		if (!inputLat || !inputLng) return;
+		const lat = parseFloat(inputLat.value);
+		const lng = parseFloat(inputLng.value);
+		if (Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+			alert('Please enter valid coordinates (Latitude -90 to 90, Longitude -180 to 180).');
+			return;
+		}
+		const newCoords: GeoCoords = {
+			latitude: lat,
+			longitude: lng,
+			accuracy: null,
+		};
+		cacheCoords(newCoords);
+		onSuccess(newCoords, 'user');
+		editForm.classList.add('hidden');
+	});
+
 	watchPermissionChanges((next: GeoPermission) => {
 		if (next === 'granted' && state !== 'ready') {
 			void fetchLocation(false);
 		}
-		if (next === 'denied' && state !== 'denied') {
+		if (next === 'denied' && state !== 'denied' && !readCachedCoords()) {
 			applyUi(
 				'denied',
 				'Location is blocked for this site. Enable it in browser settings, then tap Try Allow Location Again.',

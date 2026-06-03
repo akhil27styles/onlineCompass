@@ -7,14 +7,14 @@
 @theme {
 	--font-sans: Geist, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--font-mono: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-	--color-ink: #171717;
-	--color-body: #4d4d4d;
-	--color-muted: #888888;
-	--color-hairline: #ebebeb;
-	--color-hairline-strong: #a1a1a1;
-	--color-canvas: #ffffff;
-	--color-canvas-soft: #fafafa;
-	--color-canvas-soft-2: #f5f5f5;
+	--color-ink: #ffffff;
+	--color-body: #a1a1a1;
+	--color-muted: #666666;
+	--color-hairline: #1f1f1f;
+	--color-hairline-strong: #333333;
+	--color-canvas: #0a0a0a;
+	--color-canvas-soft: #000000;
+	--color-canvas-soft-2: #111111;
 	--color-link: #0070f3;
 	--color-cyan-accent: #50e3c2;
 	--color-violet-accent: #7928ca;
@@ -25,9 +25,9 @@
 
 @layer base {
 	:root {
-		color-scheme: light;
+		color-scheme: dark;
 		font-family: var(--font-sans);
-		background: var(--color-canvas);
+		background: var(--color-canvas-soft);
 		color: var(--color-ink);
 		-webkit-tap-highlight-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
 	}
@@ -92,7 +92,7 @@
 
 @utility card-elevated {
 	box-shadow:
-		inset 0 0 0 1px rgba(0, 0, 0, 0.08),
-		0 1px 1px rgba(0, 0, 0, 0.05),
-		0 8px 16px -4px rgba(0, 0, 0, 0.06);
+		inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+		0 1px 1px rgba(0, 0, 0, 0.4),
+		0 8px 16px -4px rgba(0, 0, 0, 0.4);
 }

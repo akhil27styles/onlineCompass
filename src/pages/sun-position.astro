@@ -2,115 +2,164 @@
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import DevicePanel from '../components/DevicePanel.astro';
 import LocationPrompt from '../components/LocationPrompt.astro';
 import SkyDial from '../components/SkyDial.astro';
 
 const facts = [
-	['Azimuth', 'Horizontal direction of the sun measured clockwise from north (0°).'],
-	['Altitude', 'Height of the sun above the horizon. Negative values mean the sun is below the horizon.'],
-	['Solar Noon', 'When the sun reaches its highest point for the day at your coordinates.'],
-	['Golden Hour', 'Soft light windows shortly after sunrise and before sunset.'],
+	['Solar Azimuth', 'The horizontal direction of the sun measured clockwise from North (0°). E.g., East is 90°, South is 180°, West is 270°.'],
+	['Solar Altitude', 'The vertical height of the sun above the horizon. Ranges from 0° on the horizon to 90° directly overhead (Zenith). Negative values represent the sun below the horizon (night).'],
+	['Solar Noon', 'The moment when the sun reaches its highest point in the sky for the day at your exact coordinates. This differs slightly from 12:00 PM clock time due to timezone boundaries and orbital offsets.'],
+	['Golden Hour', 'The periods shortly after sunrise and before sunset where light is warmer, softer, and shadows are elongated — highly valued by photographers.'],
 ];
 ---
 
 <Layout
-	title="Sun Position - Online Compass | freeOnlinecompass.com"
-	description="See live sun azimuth, altitude, sunrise, sunset, and solar noon for your location with a mobile-first sun position tool."
+	title="Sun Position Calculator - Online Compass"
+	description="Check live solar azimuth, solar altitude, sunrise, sunset, and solar noon based on your current geocoded location."
 	canonical="https://freeonlinecompass.com/sun-position/"
 >
-	<SiteHeader current="sun" />
+	<div class="relative overflow-hidden min-h-screen flex flex-col bg-canvas-soft">
+		<!-- Mesh gradient decorative backdrop -->
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
 
-	<main id="main">
-		<section class="border-b border-hairline bg-canvas-soft pt-8 pb-6 sm:pt-12 lg:pb-14">
-			<div class="content-grid grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-				<div class="min-w-0">
-					<p class="font-mono text-xs uppercase text-muted" translate="no">freeOnlinecompass.com</p>
-					<h1 class="mt-3 max-w-3xl text-balance text-4xl font-semibold leading-none tracking-tight text-ink sm:text-5xl">
-						Sun Position
-					</h1>
-					<p class="mt-4 max-w-2xl text-pretty text-base leading-7 text-body sm:text-lg">
-						Live sun direction, altitude, and today’s key solar times for your current location — calculated in the browser.
-					</p>
+		<SiteHeader current="sun" />
+
+		<main id="main" class="flex-grow z-10">
+			<!-- Header band -->
+			<section class="content-grid pt-12 pb-8 sm:pt-16 sm:pb-12 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">Astronomy Tools</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					Sun Position Calculator
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					Where the sun is — right now, from where you are. Calculated in real-time.
+				</p>
+			</section>
+
+			<!-- Tool Grid -->
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+					
+					<!-- Left: Dial and primary calculations -->
+					<div class="flex flex-col">
+						<SkyDial id="sunDial" title="Sun Direction Now" subtitle="Solar Tracking" />
+						
+						<!-- Sun Direction readout card -->
+						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-6">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider text-center">Sun Direction</p>
+							<h3 id="sunDirectionText" class="text-xl sm:text-2xl font-semibold tracking-tight text-white text-center mt-2">--</h3>
+							<p class="text-xs text-body text-center font-mono mt-1"><span id="sunAzimuthRaw">--</span>° azimuth <span class="cursor-help text-muted" title="Measured clockwise from North (0°)">ⓘ</span></p>
+						</div>
+
+						<!-- Core Metrics Row -->
+						<div class="grid grid-cols-3 gap-3 mt-4">
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Altitude</p>
+								<p id="sunAltitudeVal" class="text-sm sm:text-base font-semibold text-white mt-1 font-mono">--</p>
+								<p id="sunAltitudeHelp" class="text-[9px] text-body mt-0.5">--</p>
+							</div>
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Sunrise</p>
+								<p id="sunriseTimeVal" class="text-sm sm:text-base font-semibold text-white mt-1 font-mono">--</p>
+								<p class="text-[9px] text-body mt-0.5">local time</p>
+							</div>
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Sunset</p>
+								<p id="sunsetTimeVal" class="text-sm sm:text-base font-semibold text-white mt-1 font-mono">--</p>
+								<p class="text-[9px] text-body mt-0.5">local time</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right: Sidebar controls and secondary times -->
+					<aside class="grid gap-6">
+						<!-- Location settings panel -->
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="sun-location-title">
+							<h2 id="sun-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+							<div class="mt-4">
+								<LocationPrompt messageId="sunLocationNote" compact />
+							</div>
+						</section>
+
+						<!-- Solar timeline details -->
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="sun-times-title">
+							<h2 id="sun-times-title" class="text-xs font-mono uppercase text-muted tracking-wider">Solar Schedule</h2>
+							<dl class="mt-4 grid gap-3 text-xs">
+								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+									<dt class="text-body font-mono">Solar Noon</dt>
+									<dd id="solarNoonTime" class="font-mono text-white font-semibold">--</dd>
+								</div>
+								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+									<dt class="text-body font-mono">Dawn (Civil)</dt>
+									<dd id="dawnTime" class="font-mono text-white font-semibold">--</dd>
+								</div>
+								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+									<dt class="text-body font-mono">Dusk (Civil)</dt>
+									<dd id="duskTime" class="font-mono text-white font-semibold">--</dd>
+								</div>
+								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+									<dt class="text-body font-mono">Golden Hour Begins</dt>
+									<dd id="goldenHourStart" class="font-mono text-white font-semibold">--</dd>
+								</div>
+								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+									<dt class="text-body font-mono">Golden Hour Ends</dt>
+									<dd id="goldenHourEnd" class="font-mono text-white font-semibold">--</dd>
+								</div>
+								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+									<dt class="text-body font-mono">Day Length</dt>
+									<dd id="dayLength" class="font-mono text-white font-semibold">--</dd>
+								</div>
+							</dl>
+						</section>
+					</aside>
 				</div>
-				<DevicePanel />
-			</div>
-		</section>
+			</section>
 
-		<section class="bg-white py-6 sm:py-12">
-			<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-				<SkyDial id="sunDial" title="Sun Direction Now" subtitle="Live Sky" />
-
-				<aside class="grid gap-6">
-					<section class="rounded-panel border border-hairline bg-canvas-soft p-4" aria-labelledby="sun-times-title">
-						<h2 id="sun-times-title" class="text-sm font-semibold">Today’s Solar Times</h2>
-						<dl class="mt-4 grid gap-3 text-sm">
-							<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-								<dt class="text-body">Sunrise</dt>
-								<dd id="sunriseTime" class="font-mono text-ink">--</dd>
-							</div>
-							<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-								<dt class="text-body">Solar Noon</dt>
-								<dd id="solarNoonTime" class="font-mono text-ink">--</dd>
-							</div>
-							<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-								<dt class="text-body">Sunset</dt>
-								<dd id="sunsetTime" class="font-mono text-ink">--</dd>
-							</div>
-							<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-								<dt class="text-body">Day Length</dt>
-								<dd id="dayLength" class="font-mono text-ink">--</dd>
-							</div>
-							<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-								<dt class="text-body">Golden Hour Ends</dt>
-								<dd id="goldenHourEnd" class="font-mono text-ink">--</dd>
-							</div>
-							<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-								<dt class="text-body">Golden Hour Begins</dt>
-								<dd id="goldenHourStart" class="font-mono text-ink">--</dd>
-							</div>
-						</dl>
-					</section>
-
-					<section class="rounded-panel border border-hairline bg-white p-4" aria-labelledby="sun-location-title">
-						<h2 id="sun-location-title" class="text-sm font-semibold">Your Location</h2>
-						<LocationPrompt messageId="sunLocationNote" compact />
-					</section>
-				</aside>
-			</div>
-		</section>
-
-		<section class="border-t border-hairline bg-canvas-soft py-10 sm:py-14">
-			<div class="content-grid">
-				<div class="max-w-2xl">
-					<p class="font-mono text-xs uppercase text-muted">Reference</p>
-					<h2 class="mt-2 text-3xl font-semibold tracking-tight">How to read sun position</h2>
-				</div>
-				<div class="mt-8 grid gap-3 sm:grid-cols-2">
-					{
-						facts.map(([title, body]) => (
-							<article class="rounded-panel border border-hairline bg-white p-5">
-								<h3 class="text-base font-semibold">{title}</h3>
-								<p class="mt-3 text-sm leading-6 text-body">{body}</p>
+			<!-- Educational Info -->
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Physics Reference</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Understanding the solar path.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							The trajectory of the sun changes continuously based on latitude, longitude, and date. Use these core astronomical indices to track the sun:
+						</p>
+					</div>
+					<div class="mt-8 grid gap-4 sm:grid-cols-2">
+						{facts.map(([title, body]) => (
+							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
+								<h3 class="text-sm font-semibold text-white font-mono">{title}</h3>
+								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
 							</article>
-						))
-					}
+						))}
+					</div>
 				</div>
-			</div>
-		</section>
-	</main>
+			</section>
+		</main>
 
-	<SiteFooter />
+		<SiteFooter />
+	</div>
 </Layout>
 
 <script>
 	import { mountDeviceUi } from '../scripts/device-ui';
-	import { formatDegrees, formatDuration, formatTime, getSunSnapshot } from '../lib/astronomy';
+	import { formatDegrees, formatDuration, formatTime, getSunSnapshot, getDirectionText } from '../lib/astronomy';
 
 	const beacon = document.querySelector('#sunDialBeacon');
+	const bodyEl = document.querySelector('#sunDialBody');
 	const degrees = document.querySelector('#sunDialDegrees');
 	const altitudeEl = document.querySelector('#sunDialAltitude');
 	const status = document.querySelector('#sunDialStatus');
+	const dialLocationCity = document.querySelector('#dialLocationCity');
+
+	// Restructured core metrics
+	const directionText = document.querySelector('#sunDirectionText');
+	const rawAzimuth = document.querySelector('#sunAzimuthRaw');
+	const coreAltitude = document.querySelector('#sunAltitudeVal');
+	const coreAltitudeHelp = document.querySelector('#sunAltitudeHelp');
+	const coreSunrise = document.querySelector('#sunriseTimeVal');
+	const coreSunset = document.querySelector('#sunsetTimeVal');
+
 	let coords: { latitude: number; longitude: number } | null = null;
 	let timer: number | undefined;
 
@@ -122,9 +171,52 @@ const facts = [
 		if (!coords) return;
 		const snapshot = getSunSnapshot(new Date(), { lat: coords.latitude, lng: coords.longitude });
 
+		// Rotate beacon
 		if (beacon instanceof HTMLElement) {
 			beacon.style.setProperty('--azimuth', `${snapshot.azimuth}deg`);
 		}
+		
+		// Polar projection translate: 0.8 is horizon boundary.
+		if (bodyEl instanceof HTMLElement) {
+			const ratio = 0.8 * (1 - snapshot.altitude / 90);
+			bodyEl.style.setProperty('--distance-ratio', ratio.toFixed(4));
+			
+			if (!bodyEl.innerHTML) {
+				bodyEl.innerHTML = `
+					<svg viewBox="0 0 100 100" class="w-full h-full">
+						<circle cx="50" cy="50" r="30" fill="url(#sunGlow)" opacity="0.45" />
+						<circle cx="50" cy="50" r="18" fill="url(#sunCore)" stroke="#ffedd5" stroke-width="0.8" />
+						<g stroke="url(#rayGrad)" stroke-width="3" stroke-linecap="round">
+							<line x1="50" y1="12" x2="50" y2="4" />
+							<line x1="50" y1="88" x2="50" y2="96" />
+							<line x1="12" y1="50" x2="4" y2="50" />
+							<line x1="88" y1="50" x2="96" y2="50" />
+							<line x1="23.2" y1="23.2" x2="17.6" y2="17.6" />
+							<line x1="76.8" y1="76.8" x2="82.4" y2="82.4" />
+							<line x1="23.2" y1="76.8" x2="17.6" y2="82.4" />
+							<line x1="76.8" y1="23.2" x2="82.4" y2="17.6" />
+						</g>
+						<defs>
+							<radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+								<stop offset="0%" stop-color="#fbbf24" stop-opacity="1" />
+								<stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+							</radialGradient>
+							<linearGradient id="sunCore" x1="0%" y1="0%" x2="100%" y2="100%">
+								<stop offset="0%" stop-color="#fffbeb" />
+								<stop offset="30%" stop-color="#fef08a" />
+								<stop offset="70%" stop-color="#f59e0b" />
+								<stop offset="100%" stop-color="#d97706" />
+							</linearGradient>
+							<linearGradient id="rayGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+								<stop offset="0%" stop-color="#fef08a" />
+								<stop offset="100%" stop-color="#f59e0b" />
+							</linearGradient>
+						</defs>
+					</svg>
+				`;
+			}
+		}
+
 		setText(degrees, Math.round(snapshot.azimuth).toString());
 		setText(altitudeEl, `Altitude ${formatDegrees(snapshot.altitude)}`);
 		setText(
@@ -132,12 +224,21 @@ const facts = [
 			snapshot.isUp ? 'Sun is above the horizon' : 'Sun is below the horizon',
 		);
 
-		setText(document.querySelector('#sunriseTime'), formatTime(snapshot.times.sunrise));
+		// Core readouts
+		setText(directionText, getDirectionText(snapshot.azimuth));
+		setText(rawAzimuth, Math.round(snapshot.azimuth).toString());
+		setText(coreAltitude, formatDegrees(snapshot.altitude));
+		setText(coreAltitudeHelp, snapshot.isUp ? 'above horizon' : 'below horizon');
+		setText(coreSunrise, formatTime(snapshot.times.sunrise));
+		setText(coreSunset, formatTime(snapshot.times.sunset));
+
+		// Schedule list
 		setText(document.querySelector('#solarNoonTime'), formatTime(snapshot.times.solarNoon));
-		setText(document.querySelector('#sunsetTime'), formatTime(snapshot.times.sunset));
-		setText(document.querySelector('#dayLength'), formatDuration(snapshot.dayLength));
-		setText(document.querySelector('#goldenHourEnd'), formatTime(snapshot.times.goldenHourEnd));
+		setText(document.querySelector('#dawnTime'), formatTime(snapshot.times.dawn));
+		setText(document.querySelector('#duskTime'), formatTime(snapshot.times.dusk));
 		setText(document.querySelector('#goldenHourStart'), formatTime(snapshot.times.goldenHour));
+		setText(document.querySelector('#goldenHourEnd'), formatTime(snapshot.times.goldenHourEnd));
+		setText(document.querySelector('#dayLength'), formatDuration(snapshot.dayLength));
 	}
 
 	function onLocation(latitude: number, longitude: number) {
@@ -151,17 +252,52 @@ const facts = [
 		onLocation: (c) => onLocation(c.latitude, c.longitude),
 	});
 
+	// Location Event Listeners
 	document.addEventListener('oc:location-ready', (event) => {
 		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
 		onLocation(detail.coords.latitude, detail.coords.longitude);
 		setText(status, 'Location ready');
+		setText(dialLocationCity, `(${detail.coords.latitude.toFixed(4)}°, ${detail.coords.longitude.toFixed(4)}°)`);
+	});
+
+	document.addEventListener('oc:location-city-ready', (event) => {
+		const detail = (event as CustomEvent<{ city: string; coords: { latitude: number; longitude: number } }>).detail;
+		setText(dialLocationCity, `${detail.city} (${detail.coords.latitude.toFixed(4)}°, ${detail.coords.longitude.toFixed(4)}°)`);
 	});
 
 	document.addEventListener('oc:location-needs-permission', () => {
-		setText(status, 'Allow location to continue');
+		setText(status, 'Permission needed');
 	});
 
 	document.addEventListener('oc:location-denied', () => {
-		setText(status, 'Location needed');
+		setText(status, 'Location blocked');
 	});
 </script>
+
+<style>
+	/* Mesh background */
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background: 
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	#sunDialBody {
+		background: radial-gradient(circle, #f59e0b, #ef4444);
+		box-shadow: 0 0 14px #f59e0b, 0 0 4px #ffffff;
+	}
+</style>
