@@ -1,0 +1,177 @@
+---
+const { title, subtitle, id = 'skyDial' } = Astro.props as {
+	title: string;
+	subtitle: string;
+	id?: string;
+};
+---
+
+<section class="rounded-panel border border-hairline bg-white p-4 shadow-[0_16px_60px_rgba(0,0,0,0.06)] sm:p-6" aria-labelledby={`${id}-title`}>
+	<div class="flex flex-wrap items-start justify-between gap-4">
+		<div>
+			<p class="font-mono text-xs uppercase text-muted">{subtitle}</p>
+			<h2 id={`${id}-title`} class="mt-1 text-2xl font-semibold tracking-tight">{title}</h2>
+		</div>
+		<div class="rounded-full border border-hairline bg-canvas-soft px-3 py-1.5 font-mono text-xs text-body" aria-live="polite">
+			<span id={`${id}Status`}>Waiting for location…</span>
+		</div>
+	</div>
+
+	<div class="mt-6 grid place-items-center">
+		<div class="sky-dial" id={id} aria-label="Direction dial">
+			<div class="sky-rose" id={`${id}Rose`}>
+				<span class="sky-tick sky-tick-n" style="--tick-angle:0deg" aria-hidden="true"></span>
+				<span class="sky-tick" style="--tick-angle:90deg" aria-hidden="true"></span>
+				<span class="sky-tick sky-tick-s" style="--tick-angle:180deg" aria-hidden="true"></span>
+				<span class="sky-tick" style="--tick-angle:270deg" aria-hidden="true"></span>
+				<span class="sky-label" style="--label-angle:0deg; color:#ee0000">N</span>
+				<span class="sky-label" style="--label-angle:90deg">E</span>
+				<span class="sky-label" style="--label-angle:180deg">S</span>
+				<span class="sky-label" style="--label-angle:270deg">W</span>
+			</div>
+			<div class="sky-beacon" id={`${id}Beacon`} aria-hidden="true"></div>
+			<div class="sky-readout">
+				<p id={`${id}Label`}>Azimuth</p>
+				<strong><span id={`${id}Degrees`}>--</span><span aria-hidden="true">°</span></strong>
+				<p class="sky-altitude" id={`${id}Altitude`}>Altitude --°</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.sky-dial {
+		--sky-size: min(78vw, 380px);
+		position: relative;
+		width: var(--sky-size);
+		aspect-ratio: 1;
+		border: 1px solid var(--color-hairline);
+		border-radius: 50%;
+		background:
+			radial-gradient(circle at center, #ffffff 0 20%, transparent 20.5%),
+			conic-gradient(
+				from 0deg,
+				color-mix(in srgb, var(--color-link) 8%, #ffffff) 0deg,
+				#ffffff 90deg,
+				color-mix(in srgb, var(--color-violet-accent) 10%, #ffffff) 180deg,
+				#ffffff 270deg
+			);
+		box-shadow: inset 0 0 0 10px #ffffff, inset 0 0 0 11px var(--color-hairline), 0 24px 70px rgba(0, 0, 0, 0.08);
+		overflow: hidden;
+	}
+
+	.sky-rose {
+		position: absolute;
+		inset: 14px;
+		border-radius: 50%;
+	}
+
+	.sky-tick {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 2px;
+		height: 14px;
+		background: var(--color-hairline-strong);
+		transform: rotate(var(--tick-angle)) translateY(calc(var(--sky-size) * -0.4));
+		transform-origin: center;
+	}
+
+	.sky-tick-n,
+	.sky-tick-s {
+		height: 22px;
+		background: var(--color-ink);
+	}
+
+	.sky-tick-n {
+		background: #ee0000;
+	}
+
+	.sky-label {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 28px;
+		height: 20px;
+		margin: -10px 0 0 -14px;
+		display: grid;
+		place-items: center;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--color-body);
+		transform: rotate(var(--label-angle)) translateY(calc(var(--sky-size) * -0.32))
+			rotate(calc(var(--label-angle) * -1));
+		transform-origin: center;
+	}
+
+	.sky-beacon {
+		--azimuth: 0deg;
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		transform: rotate(var(--azimuth));
+		transition: transform 180ms ease-out;
+	}
+
+	.sky-beacon::before {
+		content: '';
+		position: absolute;
+		top: 18px;
+		left: 50%;
+		width: 14px;
+		height: 14px;
+		margin-left: -7px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #f9cb28, #ff4d4d);
+		box-shadow: 0 0 0 4px color-mix(in srgb, #f9cb28 35%, transparent);
+	}
+
+	.sky-beacon::after {
+		content: '';
+		position: absolute;
+		top: 30px;
+		left: 50%;
+		width: 3px;
+		height: calc(var(--sky-size) * 0.34);
+		margin-left: -1.5px;
+		border-radius: 999px;
+		background: linear-gradient(180deg, #f9cb28, transparent);
+	}
+
+	.sky-readout {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		display: grid;
+		width: min(42vw, 150px);
+		aspect-ratio: 1;
+		place-items: center;
+		translate: -50% -50%;
+		border: 1px solid var(--color-hairline);
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.94);
+		text-align: center;
+	}
+
+	.sky-readout p {
+		margin: 0;
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+	}
+
+	.sky-readout strong {
+		display: block;
+		margin-top: -22px;
+		font-size: clamp(32px, 10vw, 48px);
+		font-weight: 650;
+		line-height: 1;
+	}
+
+	.sky-altitude {
+		margin-top: 4px !important;
+		font-size: 10px !important;
+	}
+</style>

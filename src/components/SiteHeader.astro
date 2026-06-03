@@ -1,0 +1,79 @@
+---
+type NavItem = { href: string; label: string };
+
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' };
+
+const links: NavItem[] = [
+	{ href: '/', label: 'Compass' },
+	{ href: '/sun-position/', label: 'Sun' },
+	{ href: '/moon-position/', label: 'Moon' },
+];
+
+function isActive(href: string): boolean {
+	if (current === 'compass' && href === '/') return true;
+	if (current === 'sun' && href.startsWith('/sun')) return true;
+	if (current === 'moon' && href.startsWith('/moon')) return true;
+	return false;
+}
+---
+
+<a
+	class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-ink px-3 py-2 text-sm font-medium text-white transition-transform duration-150 focus-visible:translate-y-0"
+	href="#main"
+>
+	Skip to Content
+</a>
+
+<header class="sticky top-0 z-40 border-b border-hairline bg-white/92 backdrop-blur">
+	<nav class="content-grid flex h-16 items-center justify-between gap-3" aria-label="Primary">
+		<a class="focus-ring flex min-w-0 items-center gap-2 rounded-md" href="/" aria-label="Online Compass Home">
+			<span class="grid size-7 place-items-center rounded-md bg-ink text-[11px] font-semibold text-white" translate="no">OC</span>
+			<span class="truncate text-sm font-semibold tracking-tight" translate="no">Online Compass</span>
+		</a>
+
+		<div class="hidden items-center gap-0.5 text-sm text-body sm:flex">
+			{
+				links.map((link) => (
+					<a
+						class:list={[
+							'focus-ring rounded-full px-3 py-2 transition-colors duration-150',
+							isActive(link.href) ? 'bg-canvas-soft-2 font-medium text-ink' : 'hover:text-ink',
+						]}
+						href={link.href}
+						aria-current={isActive(link.href) ? 'page' : undefined}
+					>
+						{link.label}
+					</a>
+				))
+			}
+		</div>
+
+		<details class="group relative sm:hidden">
+			<summary class="focus-ring list-none rounded-md border border-hairline px-3 py-1.5 text-sm font-medium marker:content-none">
+				Menu
+			</summary>
+			<div class="absolute top-[calc(100%+8px)] right-0 z-50 min-w-40 rounded-panel border border-hairline bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+				{
+					links.map((link) => (
+						<a
+							class:list={[
+								'focus-ring block rounded-md px-3 py-2 text-sm',
+								isActive(link.href) ? 'bg-canvas-soft-2 font-medium text-ink' : 'text-body hover:text-ink',
+							]}
+							href={link.href}
+						>
+							{link.label}
+						</a>
+					))
+				}
+			</div>
+		</details>
+
+		<a
+			class="focus-ring hidden rounded-md border border-hairline px-3 py-1.5 text-sm font-medium hover:border-hairline-strong sm:inline-flex"
+			href={current === 'compass' ? '#compass' : '/#compass'}
+		>
+			Open Tool
+		</a>
+	</nav>
+</header>

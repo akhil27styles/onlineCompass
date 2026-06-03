@@ -3,7 +3,8 @@ import '../styles/global.css';
 
 const {
 	title = 'Online Compass - Free Mobile-Friendly Digital Compass',
-	description = 'Use Online Compass for a privacy-friendly browser compass with device detection, screen diagonal checks, calibration guidance, and bearing tools.',
+	description = 'Use Online Compass for a privacy-friendly browser compass with device detection, screen diagonal checks, sun and moon position, and calibration guidance.',
+	canonical = 'https://freeonlinecompass.com/',
 } = Astro.props;
 ---
 
@@ -17,11 +18,19 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#ffffff" />
-		<link rel="canonical" href="https://freeonlinecompass.com/" />
+		<link rel="canonical" href={canonical} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://freeonlinecompass.com/" />
+		<meta property="og:url" content={canonical} />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+		<link
+			href="https://fonts.bunny.net/css?family=geist:400,500,600|geist-mono:400"
+			rel="stylesheet"
+		/>
 		<title>{title}</title>
 	</head>
 	<body>
