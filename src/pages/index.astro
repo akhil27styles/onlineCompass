@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import DevicePanel from '../components/DevicePanel.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
 
 const tickMarks = Array.from({ length: 72 }, (_, index) => ({
 	angle: index * 5,
@@ -133,16 +134,7 @@ const faqs = [
 							<p id="statusMessage" class="rounded-md border border-hairline bg-white p-3 text-body" aria-live="polite">
 								Tap Enable Compass to request sensor access.
 							</p>
-							<p id="locationResult" class="text-sm leading-6 text-body" aria-live="polite">
-								Detecting your location automatically…
-							</p>
-							<button
-								id="retryLocation"
-								class="focus-ring rounded-md border border-hairline bg-white px-4 py-3 text-left text-sm font-semibold transition-colors duration-150 hover:border-hairline-strong"
-								type="button"
-							>
-								Retry Location
-							</button>
+							<LocationPrompt />
 						</div>
 					</section>
 
@@ -235,35 +227,10 @@ const faqs = [
 </Layout>
 
 <script>
-	import { formatCoords } from '../lib/geo';
 	import { mountDeviceUi } from '../scripts/device-ui';
 	import { mountCompass } from '../scripts/compass';
 
-	const locationResult = document.querySelector('#locationResult');
-
-	function setText(el: Element | null, value: string) {
-		if (el) el.textContent = value;
-	}
-
-	const { detectLocation } = mountDeviceUi({
-		onLocation: (coords) => {
-			setText(
-				locationResult,
-				`${formatCoords(coords)}. Used for sun, moon, and context — heading stays local.`,
-			);
-		},
-	});
-
-	document.addEventListener('oc:location-denied', (event) => {
-		const detail = (event as CustomEvent<{ message: string }>).detail;
-		setText(locationResult, `${detail.message} Compass still works with device sensors.`);
-	});
-
-	document.querySelector('#retryLocation')?.addEventListener('click', async () => {
-		setText(locationResult, 'Detecting location…');
-		await detectLocation();
-	});
-
+	mountDeviceUi();
 	mountCompass();
 </script>
 

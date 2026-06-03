@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import DevicePanel from '../components/DevicePanel.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
 import SkyDial from '../components/SkyDial.astro';
 
 const facts = [
@@ -78,16 +79,7 @@ const facts = [
 
 					<section class="rounded-panel border border-hairline bg-white p-4" aria-labelledby="moon-location-title">
 						<h2 id="moon-location-title" class="text-sm font-semibold">Your Location</h2>
-						<p id="moonLocationNote" class="mt-3 text-sm leading-6 text-body" aria-live="polite">
-							Detecting location automatically for moon calculations…
-						</p>
-						<button
-							id="retryLocation"
-							class="focus-ring mt-4 w-full rounded-md border border-hairline bg-white px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:border-hairline-strong hover:bg-canvas-soft"
-							type="button"
-						>
-							Retry Location
-						</button>
+						<LocationPrompt messageId="moonLocationNote" compact />
 					</section>
 				</aside>
 			</div>
@@ -124,9 +116,7 @@ const facts = [
 	const degrees = document.querySelector('#moonDialDegrees');
 	const altitudeEl = document.querySelector('#moonDialAltitude');
 	const status = document.querySelector('#moonDialStatus');
-	const locationNote = document.querySelector('#moonLocationNote');
 	const phaseDisc = document.querySelector('#moonPhaseDisc');
-	const retryButton = document.querySelector('#retryLocation');
 
 	let coords: { latitude: number; longitude: number } | null = null;
 	let timer: number | undefined;
@@ -177,26 +167,27 @@ const facts = [
 
 	function onLocation(latitude: number, longitude: number) {
 		coords = { latitude, longitude };
-		setText(locationNote, `Calculations use Lat ${latitude.toFixed(5)}, Lon ${longitude.toFixed(5)}.`);
 		renderMoon();
 		window.clearInterval(timer);
 		timer = window.setInterval(renderMoon, 30_000);
 	}
 
-	const { detectLocation } = mountDeviceUi({
+	mountDeviceUi({
 		onLocation: (c) => onLocation(c.latitude, c.longitude),
 	});
 
-	document.addEventListener('oc:location-denied', (event) => {
-		const detail = (event as CustomEvent<{ message: string }>).detail;
-		setText(locationNote, `${detail.message} Enable location in browser settings and tap Retry Location.`);
-		setText(status, 'Location needed');
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+		setText(status, 'Location ready');
 	});
 
-	retryButton?.addEventListener('click', async () => {
-		setText(locationNote, 'Retrying location…');
-		const result = await detectLocation();
-		if (result) onLocation(result.latitude, result.longitude);
+	document.addEventListener('oc:location-needs-permission', () => {
+		setText(status, 'Allow location to continue');
+	});
+
+	document.addEventListener('oc:location-denied', () => {
+		setText(status, 'Location needed');
 	});
 </script>
 

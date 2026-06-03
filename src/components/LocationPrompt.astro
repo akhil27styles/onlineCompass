@@ -1,0 +1,28 @@
+---
+const {
+	compact = false,
+	messageId = 'locationResult',
+} = Astro.props as { compact?: boolean; messageId?: string };
+---
+
+<div class:list={['grid gap-2', compact && 'mt-3']}>
+	<p id={messageId} class="text-sm leading-6 text-body" aria-live="polite">
+		Checking location permission…
+	</p>
+	<button
+		id="allowLocation"
+		class="focus-ring rounded-md bg-ink px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-black"
+		type="button"
+		hidden
+	>
+		Allow Location Access
+	</button>
+	<button
+		id="retryLocation"
+		class="focus-ring rounded-md border border-hairline bg-white px-4 py-3 text-sm font-semibold transition-colors duration-150 hover:border-hairline-strong hover:bg-canvas-soft"
+		type="button"
+		hidden
+	>
+		Retry Location
+	</button>
+</div>

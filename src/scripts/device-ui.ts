@@ -1,5 +1,5 @@
 import { formatDeviceSummary, formatDiagonal, getDeviceProfile } from '../lib/device';
-import { formatCoords, requestLocation } from '../lib/geo';
+import { mountLocationManager } from './location-manager';
 
 function setText(element: Element | null, value: string) {
 	if (element) element.textContent = value;
@@ -10,7 +10,6 @@ export function mountDeviceUi(options?: { onLocation?: (coords: { latitude: numb
 	const mobileDeviceSummary = document.querySelector('#mobileDeviceSummary');
 	const screenDiagonal = document.querySelector('#screenDiagonal');
 	const pixelRatio = document.querySelector('#pixelRatio');
-	const locationCoords = document.querySelector('#locationCoords');
 
 	function refreshDevice() {
 		const profile = getDeviceProfile();
@@ -21,29 +20,20 @@ export function mountDeviceUi(options?: { onLocation?: (coords: { latitude: numb
 		return profile;
 	}
 
-	async function detectLocation() {
-		setText(locationCoords, 'Detecting…');
-		try {
-			const coords = await requestLocation();
-			const label = formatCoords(coords);
-			setText(locationCoords, label);
-			options?.onLocation?.(coords);
-			return coords;
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Location unavailable';
-			setText(locationCoords, 'Not available');
-			document.dispatchEvent(
-				new CustomEvent('oc:location-denied', { detail: { message } }),
-			);
-			return null;
-		}
-	}
-
 	refreshDevice();
 	window.addEventListener('resize', refreshDevice);
 	window.visualViewport?.addEventListener('resize', refreshDevice);
 
-	void detectLocation();
+	const locationManager = mountLocationManager({
+		onLocation: options?.onLocation,
+		coordsEl: document.querySelector('#locationCoords'),
+		messageEl:
+			document.querySelector('#locationResult') ??
+			document.querySelector('#sunLocationNote') ??
+			document.querySelector('#moonLocationNote'),
+		allowButtonEl: document.querySelector<HTMLButtonElement>('#allowLocation'),
+		retryButtonEl: document.querySelector<HTMLButtonElement>('#retryLocation'),
+	});
 
-	return { refreshDevice, detectLocation };
+	return { refreshDevice, ...locationManager };
 }
