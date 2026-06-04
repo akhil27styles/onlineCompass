@@ -26,7 +26,7 @@ const facts = [
 		description="Live sun azimuth, altitude, sunrise, sunset, and solar noon for your location."
 		url="https://freeonlinecompass.com/sun-position/"
 	/>
-	<div class="relative overflow-hidden min-h-screen flex flex-col bg-canvas-soft">
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
 		<div class="mesh-gradient-bg" aria-hidden="true"></div>
 
 		<SiteShell current="sun" />
@@ -48,7 +48,7 @@ const facts = [
 					
 					<!-- Left: Dial and primary calculations -->
 					<div class="flex flex-col">
-						<SkyDial id="sunDial" title="Sun Direction Now" subtitle="Solar Tracking" />
+						<SkyDial id="sunDial" title="Sun Direction Now" subtitle="Solar Tracking" variant="sun" />
 						
 						<!-- Sun Direction readout card -->
 						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-6">
@@ -149,10 +149,10 @@ const facts = [
 
 <script>
 	import { mountDeviceUi } from '../scripts/device-ui';
+	import { bindSkyDialFromLocation, setSkyAzimuth } from '../scripts/sky-dial';
 	import { formatDegrees, formatDuration, formatTime, getSunSnapshot, getDirectionText } from '../lib/astronomy';
 
-	const beacon = document.querySelector('#sunDialBeacon');
-	const bodyEl = document.querySelector('#sunDialBody');
+	const beacon = bindSkyDialFromLocation('#sunDialBeacon', (c) => onLocation(c.latitude, c.longitude));
 	const degrees = document.querySelector('#sunDialDegrees');
 	const altitudeEl = document.querySelector('#sunDialAltitude');
 	const status = document.querySelector('#sunDialStatus');
@@ -177,51 +177,7 @@ const facts = [
 		if (!coords) return;
 		const snapshot = getSunSnapshot(new Date(), { lat: coords.latitude, lng: coords.longitude });
 
-		// Rotate beacon
-		if (beacon instanceof HTMLElement) {
-			beacon.style.setProperty('--azimuth', `${snapshot.azimuth}deg`);
-		}
-		
-		// Polar projection translate: 0.8 is horizon boundary.
-		if (bodyEl instanceof HTMLElement) {
-			const ratio = 0.8 * (1 - snapshot.altitude / 90);
-			bodyEl.style.setProperty('--distance-ratio', ratio.toFixed(4));
-			
-			if (!bodyEl.innerHTML) {
-				bodyEl.innerHTML = `
-					<svg viewBox="0 0 100 100" class="w-full h-full">
-						<circle cx="50" cy="50" r="30" fill="url(#sunGlow)" opacity="0.45" />
-						<circle cx="50" cy="50" r="18" fill="url(#sunCore)" stroke="#ffedd5" stroke-width="0.8" />
-						<g stroke="url(#rayGrad)" stroke-width="3" stroke-linecap="round">
-							<line x1="50" y1="12" x2="50" y2="4" />
-							<line x1="50" y1="88" x2="50" y2="96" />
-							<line x1="12" y1="50" x2="4" y2="50" />
-							<line x1="88" y1="50" x2="96" y2="50" />
-							<line x1="23.2" y1="23.2" x2="17.6" y2="17.6" />
-							<line x1="76.8" y1="76.8" x2="82.4" y2="82.4" />
-							<line x1="23.2" y1="76.8" x2="17.6" y2="82.4" />
-							<line x1="76.8" y1="23.2" x2="82.4" y2="17.6" />
-						</g>
-						<defs>
-							<radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-								<stop offset="0%" stop-color="#fbbf24" stop-opacity="1" />
-								<stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
-							</radialGradient>
-							<linearGradient id="sunCore" x1="0%" y1="0%" x2="100%" y2="100%">
-								<stop offset="0%" stop-color="#fffbeb" />
-								<stop offset="30%" stop-color="#fef08a" />
-								<stop offset="70%" stop-color="#f59e0b" />
-								<stop offset="100%" stop-color="#d97706" />
-							</linearGradient>
-							<linearGradient id="rayGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-								<stop offset="0%" stop-color="#fef08a" />
-								<stop offset="100%" stop-color="#f59e0b" />
-							</linearGradient>
-						</defs>
-					</svg>
-				`;
-			}
-		}
+		setSkyAzimuth(beacon, snapshot.azimuth, snapshot.isUp);
 
 		setText(degrees, Math.round(snapshot.azimuth).toString());
 		setText(altitudeEl, `Altitude ${formatDegrees(snapshot.altitude)}`);
@@ -258,7 +214,6 @@ const facts = [
 		onLocation: (c) => onLocation(c.latitude, c.longitude),
 	});
 
-	// Location Event Listeners
 	document.addEventListener('oc:location-ready', (event) => {
 		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
 		onLocation(detail.coords.latitude, detail.coords.longitude);
@@ -302,8 +257,4 @@ const facts = [
 		z-index: 0;
 	}
 
-	#sunDialBody {
-		background: radial-gradient(circle, #f59e0b, #ef4444);
-		box-shadow: 0 0 14px #f59e0b, 0 0 4px #ffffff;
-	}
 </style>

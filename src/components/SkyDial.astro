@@ -1,12 +1,16 @@
 ---
-const { title, subtitle, id = 'skyDial' } = Astro.props as {
+const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 	title: string;
 	subtitle: string;
 	id?: string;
+	variant?: 'sun' | 'moon';
 };
 ---
 
-<section class="rounded-panel border border-hairline bg-canvas p-6 card-elevated flex flex-col items-center justify-between min-h-[460px]" aria-labelledby={`${id}-title`}>
+<section
+	class="sky-dial-panel rounded-panel border border-hairline bg-canvas p-6 card-elevated flex flex-col items-center justify-between min-h-[460px] overflow-visible"
+	aria-labelledby={`${id}-title`}
+>
 	<div class="w-full flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-4">
 		<div>
 			<p class="font-mono text-[10px] uppercase text-muted tracking-wider">{subtitle}</p>
@@ -17,50 +21,93 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 		</div>
 	</div>
 
-	<div class="my-8 grid place-items-center">
-		<div class="sky-dial" id={id} aria-label="Direction dial">
-			<div class="sky-rose" id={`${id}Rose`}>
-				<span class="sky-tick sky-tick-n" style="--tick-angle:0deg" aria-hidden="true"></span>
-				<span class="sky-tick" style="--tick-angle:90deg" aria-hidden="true"></span>
-				<span class="sky-tick sky-tick-s" style="--tick-angle:180deg" aria-hidden="true"></span>
-				<span class="sky-tick" style="--tick-angle:270deg" aria-hidden="true"></span>
-				<span class="sky-label" style="--label-angle:0deg; color:#f43f5e">N</span>
-				<span class="sky-label" style="--label-angle:90deg">E</span>
-				<span class="sky-label" style="--label-angle:180deg">S</span>
-				<span class="sky-label" style="--label-angle:270deg">W</span>
-			</div>
-			
-			<!-- Orbit path line -->
-			<div class="sky-orbit" id={`${id}Orbit`} aria-hidden="true"></div>
+	<div class="my-8 flex w-full justify-center overflow-visible px-1 py-2">
+		<div class="sky-dial-wrap">
+			<div class="sky-dial" id={id} aria-label="Direction dial">
+				<div class="sky-rose" id={`${id}Rose`}>
+					<span class="sky-tick sky-tick-n" style="--tick-angle:0deg" aria-hidden="true"></span>
+					<span class="sky-tick" style="--tick-angle:90deg" aria-hidden="true"></span>
+					<span class="sky-tick sky-tick-s" style="--tick-angle:180deg" aria-hidden="true"></span>
+					<span class="sky-tick" style="--tick-angle:270deg" aria-hidden="true"></span>
+					<span class="sky-label" style="--label-angle:0deg; color:#f43f5e">N</span>
+					<span class="sky-label" style="--label-angle:90deg">E</span>
+					<span class="sky-label" style="--label-angle:180deg">S</span>
+					<span class="sky-label" style="--label-angle:270deg">W</span>
+				</div>
 
-			<!-- Dynamic physical projection beacon and body -->
-			<div class="sky-beacon" id={`${id}Beacon`} aria-hidden="true">
-				<div class="sky-body" id={`${id}Body`}></div>
-			</div>
-			
-			<div class="sky-readout">
-				<p id={`${id}Label`}>Azimuth</p>
-				<strong><span id={`${id}Degrees`}>--</span><span aria-hidden="true">°</span></strong>
-				<p class="sky-altitude" id={`${id}Altitude`}>Altitude --°</p>
+				<div class="sky-orbit" aria-hidden="true"></div>
+
+				<div class="sky-readout">
+					<p id={`${id}Label`}>Azimuth</p>
+					<strong><span id={`${id}Degrees`}>--</span><span aria-hidden="true">°</span></strong>
+					<p class="sky-altitude" id={`${id}Altitude`}>Altitude --°</p>
+				</div>
+
+				<div
+					class:list={['sky-beacon', variant === 'moon' && 'sky-beacon-moon']}
+					id={`${id}Beacon`}
+					aria-hidden="true"
+				>
+					<div class="sky-radial">
+						<div class="sky-pointer-line"></div>
+						<div
+							class:list={['sky-body', variant === 'sun' && 'sky-body-sun', variant === 'moon' && 'sky-body-moon']}
+							id={`${id}Body`}
+						>
+							{
+								variant === 'sun' ? (
+									<svg class="sky-icon" viewBox="0 0 100 100" aria-hidden="true">
+										<circle cx="50" cy="50" r="28" fill="#fbbf24" opacity="0.5" />
+										<circle cx="50" cy="50" r="16" fill="#f59e0b" stroke="#fff7ed" stroke-width="1" />
+										<g stroke="#fde047" stroke-width="2.5" stroke-linecap="round">
+											<line x1="50" y1="14" x2="50" y2="6" />
+											<line x1="50" y1="86" x2="50" y2="94" />
+											<line x1="14" y1="50" x2="6" y2="50" />
+											<line x1="86" y1="50" x2="94" y2="50" />
+											<line x1="24" y1="24" x2="18" y2="18" />
+											<line x1="76" y1="76" x2="82" y2="82" />
+											<line x1="24" y1="76" x2="18" y2="82" />
+											<line x1="76" y1="24" x2="82" y2="18" />
+										</g>
+									</svg>
+								) : (
+									<svg class="sky-icon" viewBox="0 0 100 100" aria-hidden="true">
+										<circle cx="50" cy="50" r="28" fill="#e2e8f0" opacity="0.45" />
+										<circle cx="50" cy="50" r="17" fill="#cbd5e1" stroke="#f8fafc" stroke-width="1" />
+										<circle cx="42" cy="44" r="3.5" fill="#64748b" opacity="0.35" />
+										<circle cx="58" cy="52" r="2.5" fill="#64748b" opacity="0.3" />
+										<circle cx="48" cy="60" r="3" fill="#64748b" opacity="0.28" />
+									</svg>
+								)
+							}
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Observer position signature line -->
 	<div class="w-full border-t border-hairline pt-4 flex items-center justify-between text-xs font-mono text-body">
 		<span>Your location:</span>
-		<div class="flex items-center gap-1.5">
-			<span id="dialLocationCity" class="text-white">Detecting coordinates…</span>
-		</div>
+		<span id="dialLocationCity" class="text-white">Detecting coordinates…</span>
 	</div>
 </section>
 
 <style>
+	.sky-dial-wrap {
+		--sky-size: min(72vw, 300px);
+		--rim-radius: calc(var(--sky-size) * 0.5);
+		--body-size: 36px;
+		--azimuth: 0deg;
+		position: relative;
+		padding: calc(var(--body-size) * 0.6);
+		overflow: visible;
+	}
+
 	.sky-dial {
-		--sky-size: min(72vw, 320px);
 		position: relative;
 		width: var(--sky-size);
-		aspect-ratio: 1;
+		height: var(--sky-size);
 		border: 1px solid var(--color-hairline-strong);
 		border-radius: 50%;
 		background:
@@ -72,11 +119,11 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 				color-mix(in srgb, var(--color-violet-accent) 6%, #ffffff) 180deg,
 				#ffffff 270deg
 			);
-		box-shadow: 
-			inset 0 0 0 10px #ffffff, 
+		box-shadow:
+			inset 0 0 0 10px #ffffff,
 			inset 0 0 0 11px var(--color-hairline-strong),
 			0 24px 60px rgba(0, 0, 0, 0.4);
-		overflow: visible; /* Let beacon render outside dial if altitude is negative */
+		overflow: visible;
 	}
 
 	.sky-rose {
@@ -84,6 +131,7 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 		inset: 14px;
 		border-radius: 50%;
 		z-index: 5;
+		pointer-events: none;
 	}
 
 	.sky-tick {
@@ -125,7 +173,6 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 		transform-origin: center;
 	}
 
-	/* Orbit line representing the horizon */
 	.sky-orbit {
 		position: absolute;
 		top: 50%;
@@ -140,38 +187,12 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 		z-index: 2;
 	}
 
-	/* Dynamic positioning beacon */
-	.sky-beacon {
-		--azimuth: 0deg;
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		transform: rotate(var(--azimuth));
-		transition: transform 180ms ease-out;
-		z-index: 10;
-	}
-
-	/* Astronomical body element */
-	.sky-body {
-		--distance-ratio: 0.8; /* 0 = center (zenith), 0.8 = edge (horizon), >0.8 = below horizon */
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: 44px;
-		height: 44px;
-		margin-top: -22px;
-		margin-left: -22px;
-		border-radius: 50%;
-		transform: translateY(calc(var(--sky-size) * -0.5 * var(--distance-ratio)));
-		transition: transform 180ms ease-out;
-	}
-
 	.sky-readout {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		display: grid;
-		width: min(38vw, 126px);
+		width: min(38vw, 120px);
 		aspect-ratio: 1;
 		place-items: center;
 		translate: -50% -50%;
@@ -180,7 +201,8 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 		background: rgba(10, 10, 12, 0.97);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 		text-align: center;
-		z-index: 6;
+		z-index: 12;
+		pointer-events: none;
 	}
 
 	.sky-readout p {
@@ -204,5 +226,81 @@ const { title, subtitle, id = 'skyDial' } = Astro.props as {
 	.sky-altitude {
 		margin-top: 2px !important;
 		font-size: 9px !important;
+	}
+
+	.sky-beacon {
+		--azimuth: 0deg;
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		transform: rotate(var(--azimuth));
+		transition: transform 220ms ease-out;
+		z-index: 11;
+	}
+
+	.sky-beacon.sky-beacon-below {
+		opacity: 0.55;
+	}
+
+	.sky-radial {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 0;
+		height: 0;
+	}
+
+	.sky-pointer-line {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 0;
+		height: calc(var(--rim-radius) - var(--body-size) * 0.5);
+		border-left: 2px dashed rgba(0, 0, 0, 0.35);
+		transform: translateX(-1px);
+	}
+
+	.sky-beacon-moon .sky-pointer-line {
+		border-left-color: rgba(71, 85, 105, 0.65);
+	}
+
+	.sky-body {
+		position: absolute;
+		left: 50%;
+		bottom: 0;
+		width: var(--body-size);
+		height: var(--body-size);
+		margin-left: calc(var(--body-size) * -0.5);
+		margin-bottom: calc(var(--rim-radius) - var(--body-size) * 0.5);
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		z-index: 2;
+	}
+
+	.sky-body-sun {
+		background: radial-gradient(circle, #fde047 0%, #f59e0b 70%, #ea580c 100%);
+		box-shadow:
+			0 0 0 2px #fff,
+			0 0 18px rgba(251, 191, 36, 0.9);
+	}
+
+	.sky-body-moon {
+		background: radial-gradient(circle, #f8fafc 0%, #cbd5e1 65%, #94a3b8 100%);
+		box-shadow:
+			0 0 0 2px #fff,
+			0 0 16px rgba(226, 232, 240, 0.85);
+	}
+
+	.sky-icon {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.sky-beacon {
+			transition-duration: 0.01ms;
+		}
 	}
 </style>

@@ -26,7 +26,7 @@ const facts = [
 		description="Live moon phase, azimuth, altitude, moonrise, and moonset for your location."
 		url="https://freeonlinecompass.com/moon-position/"
 	/>
-	<div class="relative overflow-hidden min-h-screen flex flex-col bg-canvas-soft">
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
 		<div class="mesh-gradient-bg" aria-hidden="true"></div>
 
 		<SiteShell current="moon" />
@@ -48,7 +48,7 @@ const facts = [
 					
 					<!-- Left: Dial and calculations -->
 					<div class="flex flex-col">
-						<SkyDial id="moonDial" title="Moon Direction Now" subtitle="Lunar Tracking" />
+						<SkyDial id="moonDial" title="Moon Direction Now" subtitle="Lunar Tracking" variant="moon" />
 						
 						<!-- Moon Direction readout card -->
 						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-6">
@@ -159,10 +159,10 @@ const facts = [
 
 <script>
 	import { mountDeviceUi } from '../scripts/device-ui';
+	import { bindSkyDialFromLocation, setSkyAzimuth } from '../scripts/sky-dial';
 	import { formatDegrees, formatTime, getMoonSnapshot, getDirectionText, getMoonPhaseSvg } from '../lib/astronomy';
 
-	const beacon = document.querySelector('#moonDialBeacon');
-	const bodyEl = document.querySelector('#moonDialBody');
+	const beacon = bindSkyDialFromLocation('#moonDialBeacon', (c) => onLocation(c.latitude, c.longitude));
 	const degrees = document.querySelector('#moonDialDegrees');
 	const altitudeEl = document.querySelector('#moonDialAltitude');
 	const status = document.querySelector('#moonDialStatus');
@@ -198,48 +198,7 @@ const facts = [
 		if (!coords) return;
 		const snapshot = getMoonSnapshot(new Date(), { lat: coords.latitude, lng: coords.longitude });
 
-		// Rotate beacon
-		if (beacon instanceof HTMLElement) {
-			beacon.style.setProperty('--azimuth', `${snapshot.azimuth}deg`);
-		}
-		
-		// Polar projection translate: 0.8 is horizon boundary.
-		if (bodyEl instanceof HTMLElement) {
-			const ratio = 0.8 * (1 - snapshot.altitude / 90);
-			bodyEl.style.setProperty('--distance-ratio', ratio.toFixed(4));
-			
-			if (!bodyEl.innerHTML) {
-				bodyEl.innerHTML = `
-					<svg viewBox="0 0 100 100" class="w-full h-full">
-						<circle cx="50" cy="50" r="32" fill="url(#moonGlow)" opacity="0.35" />
-						<circle cx="50" cy="50" r="22" fill="url(#moonCore)" stroke="#cbd5e1" stroke-width="0.6" />
-						<!-- Craters -->
-						<circle cx="42" cy="40" r="4" fill="#475569" opacity="0.16" />
-						<circle cx="42" cy="40" r="3" fill="#334155" opacity="0.1" />
-						
-						<circle cx="62" cy="46" r="3" fill="#475569" opacity="0.16" />
-						<circle cx="62" cy="46" r="2" fill="#334155" opacity="0.1" />
-						
-						<circle cx="48" cy="62" r="4.5" fill="#475569" opacity="0.16" />
-						<circle cx="48" cy="62" r="3.5" fill="#334155" opacity="0.1" />
-						
-						<circle cx="58" cy="64" r="2" fill="#475569" opacity="0.12" />
-						<circle cx="34" cy="52" r="1.5" fill="#475569" opacity="0.12" />
-						<defs>
-							<radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
-								<stop offset="0%" stop-color="#f1f5f9" stop-opacity="1" />
-								<stop offset="100%" stop-color="#cbd5e1" stop-opacity="0" />
-							</radialGradient>
-							<linearGradient id="moonCore" x1="0%" y1="0%" x2="100%" y2="100%">
-								<stop offset="0%" stop-color="#f8fafc" />
-								<stop offset="50%" stop-color="#e2e8f0" />
-								<stop offset="100%" stop-color="#94a3b8" />
-							</linearGradient>
-						</defs>
-					</svg>
-				`;
-			}
-		}
+		setSkyAzimuth(beacon, snapshot.azimuth, snapshot.isUp);
 
 		setText(degrees, Math.round(snapshot.azimuth).toString());
 		setText(altitudeEl, `Altitude ${formatDegrees(snapshot.altitude)}`);
