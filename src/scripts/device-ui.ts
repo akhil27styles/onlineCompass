@@ -31,7 +31,9 @@ export function mountDeviceUi(options?: { onLocation?: (coords: { latitude: numb
 			document.querySelector('#locationResult') ??
 			document.querySelector('#sunLocationNote') ??
 			document.querySelector('#moonLocationNote'),
-		allowButtonEl: document.querySelector<HTMLButtonElement>('#allowLocation'),
+		allowButtonEl:
+			document.querySelector<HTMLButtonElement>('#allowLocation') ??
+			document.querySelector<HTMLButtonElement>('#allowLocationGlobal'),
 		retryButtonEl: document.querySelector<HTMLButtonElement>('#retryLocation'),
 	});
 

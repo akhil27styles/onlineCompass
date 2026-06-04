@@ -1,7 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SiteHeader from '../components/SiteHeader.astro';
+import SiteShell from '../components/SiteShell.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
 import LocationPrompt from '../components/LocationPrompt.astro';
 import SkyDial from '../components/SkyDial.astro';
 
@@ -14,25 +15,30 @@ const facts = [
 ---
 
 <Layout
-	title="Moon Position Calculator - Online Compass"
-	description="Check live moon phase details, custom SVG moon phase visualizations, lunar azimuth, altitude, moonrise, and moonset."
+	title="Current Moon Position — Moon Phase, Moonrise, Moonset & Azimuth"
+	description="See where the moon is right now from your location. Live moon phase, azimuth, altitude, moonrise and moonset times. Free mobile-friendly moon position tool."
+	keywords="moon position, current moon position, moon phase today, moonrise moonset, moon azimuth, moon position now"
 	canonical="https://freeonlinecompass.com/moon-position/"
 >
+	<SeoJsonLd
+		slot="head"
+		name="Moon Position — Online Compass"
+		description="Live moon phase, azimuth, altitude, moonrise, and moonset for your location."
+		url="https://freeonlinecompass.com/moon-position/"
+	/>
 	<div class="relative overflow-hidden min-h-screen flex flex-col bg-canvas-soft">
-		<!-- Mesh gradient decorative background -->
 		<div class="mesh-gradient-bg" aria-hidden="true"></div>
 
-		<SiteHeader current="moon" />
+		<SiteShell current="moon" />
 
 		<main id="main" class="flex-grow z-10">
-			<!-- Header band -->
-			<section class="content-grid pt-12 pb-8 sm:pt-16 sm:pb-12 text-center relative z-20">
-				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">Astronomy Tools</p>
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
 				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
-					Where is the Moon
+					Current Moon Position
 				</h1>
 				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
-					Where the moon is — right now, from where you are. Calculated in real-time.
+					Live moon phase, direction, and moonrise or moonset for your location — auto-detected in your browser.
 				</p>
 			</section>
 

@@ -1,81 +1,27 @@
 ---
-type NavItem = { href: string; label: string };
-
 const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' };
 
-const links: NavItem[] = [
-	{ href: '/', label: 'Compass' },
-	{ href: '/sun-position/', label: 'Sun Position' },
-	{ href: '/moon-position/', label: 'Moon Position' },
-];
-
-function isActive(href: string): boolean {
-	if (current === 'compass' && href === '/') return true;
-	if (current === 'sun' && href.startsWith('/sun')) return true;
-	if (current === 'moon' && href.startsWith('/moon')) return true;
-	return false;
-}
+const toolHash = current === 'compass' ? '#compass' : current === 'sun' ? '#main' : '#main';
 ---
 
 <a
-	class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-ink px-3 py-2 text-sm font-medium text-canvas transition-transform duration-150 focus-visible:translate-y-0"
+	class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-white px-3 py-2 text-sm font-medium text-black transition-transform duration-150 focus-visible:translate-y-0"
 	href="#main"
 >
 	Skip to Content
 </a>
 
-<header class="sticky top-0 z-40 border-b border-hairline bg-canvas-soft/80 backdrop-blur-md">
-	<nav class="content-grid flex h-16 items-center justify-between gap-3" aria-label="Primary">
+<header class="sticky top-0 z-40 border-b border-hairline bg-canvas-soft/90 backdrop-blur-md">
+	<div class="content-grid flex h-14 items-center justify-between gap-3 sm:h-16">
 		<a class="focus-ring flex min-w-0 items-center gap-2 rounded-md" href="/" aria-label="Online Compass Home">
 			<span class="grid size-7 place-items-center rounded bg-white text-[11px] font-bold text-black" translate="no">OC</span>
 			<span class="truncate text-sm font-semibold tracking-tight text-ink" translate="no">Online Compass</span>
 		</a>
-
-		<div class="hidden items-center gap-1.5 text-xs font-mono sm:flex">
-			{
-				links.map((link) => (
-					<a
-						class:list={[
-							'focus-ring rounded-full px-3 py-1.5 transition-all duration-150',
-							isActive(link.href)
-								? 'bg-canvas-soft-2 font-semibold text-white border border-hairline'
-								: 'text-body hover:text-white',
-						]}
-						href={link.href}
-						aria-current={isActive(link.href) ? 'page' : undefined}
-					>
-						{link.label}
-					</a>
-				))
-			}
-		</div>
-
-		<details class="group relative sm:hidden">
-			<summary class="focus-ring list-none rounded border border-hairline px-3 py-1.5 text-xs font-mono text-body cursor-pointer hover:text-white marker:content-none">
-				Menu
-			</summary>
-			<div class="absolute top-[calc(100%+8px)] right-0 z-50 min-w-44 rounded border border-hairline bg-canvas p-2 shadow-xl">
-				{
-					links.map((link) => (
-						<a
-							class:list={[
-								'focus-ring block rounded px-3 py-2 text-xs font-mono',
-								isActive(link.href) ? 'bg-canvas-soft-2 font-semibold text-white' : 'text-body hover:text-white',
-							]}
-							href={link.href}
-						>
-							{link.label}
-						</a>
-					))
-				}
-			</div>
-		</details>
-
 		<a
-			class="focus-ring hidden rounded border border-hairline px-3 py-1.5 text-xs font-mono text-body hover:text-white hover:border-white sm:inline-flex"
-			href={current === 'compass' ? '#compass' : '/#compass'}
+			class="focus-ring shrink-0 rounded-full border border-hairline bg-canvas px-3 py-1.5 font-mono text-[11px] text-body hover:border-hairline-strong hover:text-ink sm:text-xs"
+			href={current === 'compass' ? '#compass' : current === 'sun' ? '/sun-position/' : '/moon-position/'}
 		>
-			Open Tool
+			{current === 'compass' ? 'Open Compass' : current === 'sun' ? 'Sun Tool' : 'Moon Tool'}
 		</a>
-	</nav>
+	</div>
 </header>

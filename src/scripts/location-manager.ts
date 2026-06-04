@@ -46,6 +46,8 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		retryButtonEl = document.querySelector<HTMLButtonElement>('#retryLocation'),
 	} = options;
 
+	const globalLocationText = document.querySelector('#globalLocationText');
+	const allowLocationGlobal = document.querySelector<HTMLButtonElement>('#allowLocationGlobal');
 	const toggleEditBtn = document.querySelector('#toggleEditLocation');
 	const editForm = document.querySelector<HTMLFormElement>('#editLocationForm');
 	const inputLat = document.querySelector<HTMLInputElement>('#inputLat');
@@ -55,6 +57,16 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 
 	let state: UiState = 'checking';
 	let inFlight = false;
+
+	function syncGlobalBar(next: UiState, shortText: string) {
+		setText(globalLocationText, shortText);
+		const showGlobalAllow = next === 'needs-permission' || next === 'denied';
+		setButtonVisible(allowLocationGlobal, showGlobalAllow);
+		if (allowLocationGlobal) {
+			allowLocationGlobal.textContent =
+				next === 'denied' ? 'Allow in Settings' : 'Allow Location';
+		}
+	}
 
 	function applyUi(next: UiState, message: string, coordsLabel?: string) {
 		state = next;
@@ -71,18 +83,40 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 			allowButtonEl.textContent =
 				next === 'denied' ? 'Try Allow Location Again' : 'Allow Location Access';
 		}
+
+		const globalShort =
+			next === 'checking'
+				? 'Auto-detecting your location…'
+				: next === 'ready'
+					? coordsLabel ?? 'Location detected'
+					: next === 'needs-permission'
+						? 'Location needed — tap Allow'
+						: next === 'denied'
+							? 'Location blocked — tap Allow'
+							: next === 'insecure'
+								? 'HTTPS required for location'
+								: next === 'unsupported'
+									? 'Location not supported'
+									: 'Could not detect location';
+		syncGlobalBar(next, globalShort);
 	}
 
 	async function updateCity(coords: GeoCoords) {
 		if (cityEl) cityEl.textContent = 'Locating city…';
+		setText(globalLocationText, 'Auto-detecting your location…');
 		const city = await getCityFromCoords(coords.latitude, coords.longitude);
 		if (city) {
 			if (cityEl) cityEl.textContent = city;
 			setText(messageEl, `Location: ${city} (${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}°)`);
+			setText(globalLocationText, `📍 ${city}`);
+			syncGlobalBar('ready', `📍 ${city}`);
 			dispatch('oc:location-city-ready', { city, coords });
 		} else {
 			if (cityEl) cityEl.textContent = 'City unknown';
-			setText(messageEl, `Lat ${coords.latitude.toFixed(4)}°, Lon ${coords.longitude.toFixed(4)}°`);
+			const coordsLine = formatCoords(coords);
+			setText(messageEl, coordsLine);
+			setText(globalLocationText, `📍 ${coordsLine}`);
+			syncGlobalBar('ready', `📍 ${coordsLine}`);
 		}
 	}
 
@@ -146,6 +180,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		inFlight = true;
 
 		if (allowButtonEl) allowButtonEl.disabled = true;
+		if (allowLocationGlobal) allowLocationGlobal.disabled = true;
 		if (retryButtonEl) retryButtonEl.disabled = true;
 
 		applyUi('checking', userInitiated ? 'Waiting for location permission…' : 'Detecting your location…', 'Detecting…');
@@ -167,6 +202,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		} finally {
 			inFlight = false;
 			if (allowButtonEl) allowButtonEl.disabled = false;
+			if (allowLocationGlobal) allowLocationGlobal.disabled = false;
 			if (retryButtonEl) retryButtonEl.disabled = false;
 		}
 	}
@@ -236,13 +272,13 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		button?.addEventListener('click', handler);
 	}
 
-	bindButton(allowButtonEl, () => {
+	const requestFromUser = () => {
 		void fetchLocation(true);
-	});
+	};
 
-	bindButton(retryButtonEl, () => {
-		void fetchLocation(true);
-	});
+	bindButton(allowButtonEl, requestFromUser);
+	bindButton(allowLocationGlobal, requestFromUser);
+	bindButton(retryButtonEl, requestFromUser);
 
 	// Collapsible Coordinate Editor Form Event Listeners
 	toggleEditBtn?.addEventListener('click', () => {

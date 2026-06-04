@@ -1,0 +1,30 @@
+---
+const {
+	type = 'WebApplication',
+	name,
+	description,
+	url,
+} = Astro.props as {
+	type?: string;
+	name: string;
+	description: string;
+	url: string;
+};
+
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': type,
+	name,
+	description,
+	url,
+	applicationCategory: 'UtilitiesApplication',
+	operatingSystem: 'Web Browser',
+	offers: {
+		'@type': 'Offer',
+		price: '0',
+		priceCurrency: 'USD',
+	},
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
