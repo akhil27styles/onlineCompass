@@ -152,6 +152,10 @@ const facts = [
 	import { bindSkyDialFromLocation, setSkyAzimuth } from '../scripts/sky-dial';
 	import { formatDegrees, formatDuration, formatTime, getSunSnapshot, getDirectionText } from '../lib/astronomy';
 
+	// Declare state variables first, before any callbacks are registered
+	let coords: { latitude: number; longitude: number } | null = null;
+	let timer: number | undefined;
+
 	const beacon = bindSkyDialFromLocation('#sunDialBeacon', (c) => onLocation(c.latitude, c.longitude));
 	const degrees = document.querySelector('#sunDialDegrees');
 	const altitudeEl = document.querySelector('#sunDialAltitude');
@@ -165,9 +169,6 @@ const facts = [
 	const coreAltitudeHelp = document.querySelector('#sunAltitudeHelp');
 	const coreSunrise = document.querySelector('#sunriseTimeVal');
 	const coreSunset = document.querySelector('#sunsetTimeVal');
-
-	let coords: { latitude: number; longitude: number } | null = null;
-	let timer: number | undefined;
 
 	function setText(el: Element | null, value: string) {
 		if (el) el.textContent = value;

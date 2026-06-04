@@ -24,7 +24,7 @@ const CITY_CACHE_KEY = 'oc:city-cache';
 const geoOptionsFast: PositionOptions = {
 	enableHighAccuracy: false,
 	maximumAge: 120_000,
-	timeout: 15_000,
+	timeout: 8_000, // Faster timeout for better UX
 };
 
 const geoOptionsPrecise: PositionOptions = {
@@ -186,6 +186,60 @@ function setCityCache(cache: Record<string, string>): void {
 	}
 }
 
+/**
+ * Multiple free geocoding API endpoints with fallback.
+ * Provides better reliability and higher combined rate limits (2000+ requests/day).
+ */
+const GEOCODING_APIS = [
+	{
+		name: 'bigdatacloud',
+		url: (lat: number, lng: number) =>
+			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
+		parser: (data: any) => {
+			const city = data.city || data.locality || '';
+			const region = data.principalSubdivision || '';
+			const country = data.countryName || '';
+			
+			if (city && country) {
+				return region && region !== city ? `${city}, ${region}, ${country}` : `${city}, ${country}`;
+			}
+			return city || region || country || '';
+		}
+	},
+	{
+		name: 'nominatim',
+		url: (lat: number, lng: number) =>
+			`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&accept-language=en`,
+		parser: (data: any) => {
+			const addr = data.address || {};
+			const city = addr.city || addr.town || addr.village || addr.municipality || '';
+			const region = addr.state || addr.province || '';
+			const country = addr.country || '';
+			
+			if (city && country) {
+				return region && region !== city ? `${city}, ${region}, ${country}` : `${city}, ${country}`;
+			}
+			return city || region || country || '';
+		}
+	},
+	{
+		name: 'geocode-maps',
+		url: (lat: number, lng: number) =>
+			`https://geocode.maps.co/reverse?lat=${lat}&lon=${lng}`,
+		parser: (data: any) => {
+			const addr = data.address || {};
+			const city = addr.city || addr.town || addr.village || '';
+			const region = addr.state || '';
+			const country = addr.country || '';
+			
+			if (city && country) {
+				return region && region !== city ? `${city}, ${region}, ${country}` : `${city}, ${country}`;
+			}
+			return city || region || country || '';
+		}
+	}
+];
+
 export async function getCityFromCoords(latitude: number, longitude: number): Promise<string> {
 	const cacheKey = `${latitude.toFixed(2)},${longitude.toFixed(2)}`;
 	const cache = getCityCache();
@@ -194,40 +248,40 @@ export async function getCityFromCoords(latitude: number, longitude: number): Pr
 		return cache[cacheKey];
 	}
 
-	try {
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 5000);
+	// Try each API endpoint in parallel for faster response, use first successful result
+	const requests = GEOCODING_APIS.map(async (api) => {
+		try {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-		const response = await fetch(
-			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
-			{ signal: controller.signal }
-		);
-		clearTimeout(timeoutId);
+			const response = await fetch(api.url(latitude, longitude), {
+				signal: controller.signal,
+				headers: api.name === 'nominatim' ? { 'User-Agent': 'freeOnlinecompass.com' } : {}
+			});
+			clearTimeout(timeoutId);
 
-		if (!response.ok) return '';
-		const data = await response.json();
-		
-		const city = data.city || data.locality || '';
-		const region = data.principalSubdivision || '';
-		const country = data.countryName || '';
-		
-		let result = '';
-		if (city && country) {
-			if (region && region !== city) {
-				result = `${city}, ${region}, ${country}`;
-			} else {
-				result = `${city}, ${country}`;
+			if (!response.ok) throw new Error(`API ${api.name} responded with ${response.status}`);
+			const data = await response.json();
+			const result = api.parser(data);
+			
+			if (result) {
+				cache[cacheKey] = result;
+				setCityCache(cache);
+				return result;
 			}
-		} else {
-			result = city || region || country || '';
+			throw new Error('No location data');
+		} catch (error) {
+			console.debug(`Geocoding API ${api.name} failed:`, error);
+			throw error;
 		}
+	});
 
-		if (result) {
-			cache[cacheKey] = result;
-			setCityCache(cache);
-		}
+	// Use Promise.any to return the first successful result
+	try {
+		const result = await Promise.any(requests);
 		return result;
 	} catch {
+		// All APIs failed
 		return '';
 	}
 }

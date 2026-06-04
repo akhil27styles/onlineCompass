@@ -162,6 +162,10 @@ const facts = [
 	import { bindSkyDialFromLocation, setSkyAzimuth } from '../scripts/sky-dial';
 	import { formatDegrees, formatTime, getMoonSnapshot, getDirectionText, getMoonPhaseSvg } from '../lib/astronomy';
 
+	// Declare state variables first, before any callbacks are registered
+	let coords: { latitude: number; longitude: number } | null = null;
+	let timer: number | undefined;
+
 	const beacon = bindSkyDialFromLocation('#moonDialBeacon', (c) => onLocation(c.latitude, c.longitude));
 	const degrees = document.querySelector('#moonDialDegrees');
 	const altitudeEl = document.querySelector('#moonDialAltitude');
@@ -180,9 +184,6 @@ const facts = [
 	const phaseSvgContainer = document.querySelector('#moonPhaseSvgContainer');
 	const phaseNameVal = document.querySelector('#moonPhaseNameVal');
 	const illuminationVal = document.querySelector('#moonIlluminationVal');
-
-	let coords: { latitude: number; longitude: number } | null = null;
-	let timer: number | undefined;
 
 	function setText(el: Element | null, value: string) {
 		if (el) el.textContent = value;

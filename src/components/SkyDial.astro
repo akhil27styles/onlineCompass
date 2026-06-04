@@ -14,7 +14,7 @@ const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 	<div class="w-full flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-4">
 		<div>
 			<p class="font-mono text-[10px] uppercase text-muted tracking-wider">{subtitle}</p>
-			<h2 id={`${id}-title`} class="text-lg font-semibold tracking-tight text-white mt-0.5">{title}</h2>
+			<h2 id={`${id}-title`} class="text-lg font-semibold tracking-tight text-ink mt-0.5">{title}</h2>
 		</div>
 		<div class="rounded-full border border-hairline bg-canvas-soft-2 px-3 py-1 font-mono text-[11px] text-body" aria-live="polite">
 			<span id={`${id}Status`}>Locating…</span>
@@ -89,7 +89,7 @@ const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 
 	<div class="w-full border-t border-hairline pt-4 flex items-center justify-between text-xs font-mono text-body">
 		<span>Your location:</span>
-		<span id="dialLocationCity" class="text-white">Detecting coordinates…</span>
+		<span id="dialLocationCity" class="text-ink">Detecting coordinates…</span>
 	</div>
 </section>
 
@@ -124,6 +124,22 @@ const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 			inset 0 0 0 11px var(--color-hairline-strong),
 			0 24px 60px rgba(0, 0, 0, 0.4);
 		overflow: visible;
+	}
+
+	[data-theme="dark"] .sky-dial {
+		background:
+			radial-gradient(circle at center, #0a0a0a 0 20%, transparent 20.5%),
+			conic-gradient(
+				from 0deg,
+				color-mix(in srgb, var(--color-link) 8%, #0a0a0a) 0deg,
+				#0a0a0a 90deg,
+				color-mix(in srgb, var(--color-violet-accent) 10%, #0a0a0a) 180deg,
+				#0a0a0a 270deg
+			);
+		box-shadow:
+			inset 0 0 0 10px #0a0a0a,
+			inset 0 0 0 11px var(--color-hairline-strong),
+			0 24px 60px rgba(0, 0, 0, 0.4);
 	}
 
 	.sky-rose {
@@ -205,6 +221,11 @@ const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 		pointer-events: none;
 	}
 
+	[data-theme="light"] .sky-readout {
+		background: rgba(255, 255, 255, 0.97);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
 	.sky-readout p {
 		margin: 0;
 		color: var(--color-muted);
@@ -219,7 +240,7 @@ const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 		font-size: clamp(28px, 8vw, 38px);
 		font-weight: 600;
 		letter-spacing: -1px;
-		color: #ffffff;
+		color: var(--color-ink);
 		line-height: 1;
 	}
 
