@@ -246,6 +246,10 @@ const faqs = [
 <script>
 	import { mountDeviceUi } from '../scripts/device-ui';
 	import { mountCompass } from '../scripts/compass';
+	import { prefetchLocationSilently } from '../lib/geo';
+
+	// Prefetch location early so it's cached for sun/moon pages
+	prefetchLocationSilently();
 
 	mountDeviceUi();
 	mountCompass();

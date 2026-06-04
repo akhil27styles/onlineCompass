@@ -231,3 +231,36 @@ export async function getCityFromCoords(latitude: number, longitude: number): Pr
 		return '';
 	}
 }
+
+/**
+ * Silently prefetch location in the background (cache if not already cached).
+ * Useful for fetching on compass page so sun/moon pages have instant data.
+ * Does not show UI or throw errors - just caches coordinates quietly.
+ */
+export function prefetchLocationSilently(): void {
+	if (typeof window === 'undefined') return;
+	
+	// Already cached? Don't fetch again.
+	const cached = readCachedCoords();
+	if (cached) return;
+
+	// Not secure or not supported? Skip silently.
+	if (!isSecureContextForGeo() || !isGeolocationSupported()) return;
+
+	// Check permission first to avoid unnecessary prompts
+	queryGeolocationPermission()
+		.then((permission) => {
+			// Only fetch if permission is already granted
+			if (permission === 'granted') {
+				requestLocation({ precise: false })
+					.then(() => {
+						// Success - coordinates are cached, city will prefetch automatically
+						getCityFromCoords(readCachedCoords()!.latitude, readCachedCoords()!.longitude).catch(() => {});
+					})
+					.catch(() => {
+						// Silent fail - no UI needed
+					});
+			}
+		})
+		.catch(() => {});
+}
