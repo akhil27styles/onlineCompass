@@ -102,21 +102,20 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	}
 
 	async function updateCity(coords: GeoCoords) {
-		if (cityEl) cityEl.textContent = 'Locating city…';
-		setText(globalLocationText, 'Auto-detecting your location…');
-		const city = await getCityFromCoords(coords.latitude, coords.longitude);
-		if (city) {
-			if (cityEl) cityEl.textContent = city;
-			setText(messageEl, `Location: ${city} (${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}°)`);
-			setText(globalLocationText, `📍 ${city}`);
-			syncGlobalBar('ready', `📍 ${city}`);
-			dispatch('oc:location-city-ready', { city, coords });
-		} else {
+		if (cityEl) cityEl.textContent = 'Looking up city…';
+		// Fetch city asynchronously without blocking UI
+		try {
+			const city = await getCityFromCoords(coords.latitude, coords.longitude);
+			if (city) {
+				if (cityEl) cityEl.textContent = city;
+				setText(messageEl, `Location: ${city} (${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}°)`);
+				setText(globalLocationText, `📍 ${city}`);
+				dispatch('oc:location-city-ready', { city, coords });
+			} else {
+				if (cityEl) cityEl.textContent = 'City unknown';
+			}
+		} catch {
 			if (cityEl) cityEl.textContent = 'City unknown';
-			const coordsLine = formatCoords(coords);
-			setText(messageEl, coordsLine);
-			setText(globalLocationText, `📍 ${coordsLine}`);
-			syncGlobalBar('ready', `📍 ${coordsLine}`);
 		}
 	}
 

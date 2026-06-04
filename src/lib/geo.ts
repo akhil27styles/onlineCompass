@@ -19,6 +19,7 @@ export class GeoError extends Error {
 }
 
 const STORAGE_KEY = 'oc:last-coords';
+const CITY_CACHE_KEY = 'oc:city-cache';
 
 const geoOptionsFast: PositionOptions = {
 	enableHighAccuracy: false,
@@ -167,11 +168,42 @@ export function requestLocation(options?: { precise?: boolean }): Promise<GeoCoo
 	});
 }
 
-export async function getCityFromCoords(latitude: number, longitude: number): Promise<string> {
+function getCityCache(): Record<string, string> {
 	try {
+		const raw = localStorage.getItem(CITY_CACHE_KEY);
+		if (!raw) return {};
+		return JSON.parse(raw) as Record<string, string>;
+	} catch {
+		return {};
+	}
+}
+
+function setCityCache(cache: Record<string, string>): void {
+	try {
+		localStorage.setItem(CITY_CACHE_KEY, JSON.stringify(cache));
+	} catch {
+		// ignore quota / private mode
+	}
+}
+
+export async function getCityFromCoords(latitude: number, longitude: number): Promise<string> {
+	const cacheKey = `${latitude.toFixed(2)},${longitude.toFixed(2)}`;
+	const cache = getCityCache();
+
+	if (cache[cacheKey]) {
+		return cache[cacheKey];
+	}
+
+	try {
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 5000);
+
 		const response = await fetch(
-			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+			`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+			{ signal: controller.signal }
 		);
+		clearTimeout(timeoutId);
+
 		if (!response.ok) return '';
 		const data = await response.json();
 		
@@ -179,13 +211,22 @@ export async function getCityFromCoords(latitude: number, longitude: number): Pr
 		const region = data.principalSubdivision || '';
 		const country = data.countryName || '';
 		
+		let result = '';
 		if (city && country) {
 			if (region && region !== city) {
-				return `${city}, ${region}, ${country}`;
+				result = `${city}, ${region}, ${country}`;
+			} else {
+				result = `${city}, ${country}`;
 			}
-			return `${city}, ${country}`;
+		} else {
+			result = city || region || country || '';
 		}
-		return city || region || country || '';
+
+		if (result) {
+			cache[cacheKey] = result;
+			setCityCache(cache);
+		}
+		return result;
 	} catch {
 		return '';
 	}
