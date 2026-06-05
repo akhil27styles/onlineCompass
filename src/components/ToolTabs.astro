@@ -1,12 +1,11 @@
 ---
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' };
 
 const tabs = [
-	{ id: 'compass', href: '/', label: 'Compass', short: 'Compass', aria: 'Online compass tool' },
-	{ id: 'sun', href: '/sun-position/', label: 'Sun Position', short: 'Sun', aria: 'Current sun position' },
-	{ id: 'moon', href: '/moon-position/', label: 'Moon Position', short: 'Moon', aria: 'Current moon position' },
-	{ id: 'gps', href: '/gps-coordinates/', label: 'GPS Coordinates', short: 'GPS', aria: 'My GPS coordinates' },
-	{ id: 'bearings', href: '/compass-bearings/', label: 'Bearings', short: 'Bearings', aria: 'Compass bearings reference' },
+	{ id: 'compass', href: '/', label: 'Compass', short: 'Compass', icon: '◎', aria: 'Online compass tool' },
+	{ id: 'sun', href: '/sun-position/', label: 'Sun Position', short: 'Sun', icon: '☀', aria: 'Current sun position' },
+	{ id: 'moon', href: '/moon-position/', label: 'Moon Position', short: 'Moon', icon: '☽', aria: 'Current moon position' },
+	{ id: 'solar-system', href: '/solar-system/', label: '3D Solar System', short: 'Solar', icon: '🪐', aria: '3D solar system explorer' },
 ] as const;
 ---
 
@@ -15,7 +14,7 @@ const tabs = [
 	aria-label="Main tools"
 >
 	<div class="content-grid py-2">
-		<ul class="grid grid-cols-3 gap-1.5 sm:gap-2">
+		<ul class="grid grid-cols-4 gap-1.5 sm:gap-2">
 			{
 				tabs.map((tab) => (
 					<li>
@@ -23,7 +22,7 @@ const tabs = [
 							class:list={[
 								'focus-ring flex min-h-11 flex-col items-center justify-center rounded-md border px-2 py-2 text-center transition-colors duration-150 sm:min-h-12 sm:flex-row sm:gap-2 sm:px-4',
 								current === tab.id
-									? 'border-hairline-strong bg-white font-semibold text-black'
+									? 'border-hairline-strong bg-ink font-semibold text-canvas'
 									: 'border-hairline bg-canvas-soft-2 text-body hover:border-hairline-strong hover:text-ink',
 							]}
 							href={tab.href}
@@ -31,7 +30,7 @@ const tabs = [
 							aria-label={tab.aria}
 						>
 							<span class="text-base leading-none sm:text-lg" aria-hidden="true">
-								{tab.id === 'compass' ? '◎' : tab.id === 'sun' ? '☀' : '☽'}
+								{tab.icon}
 							</span>
 							<span class="mt-0.5 text-[10px] font-mono uppercase tracking-wide sm:mt-0 sm:text-xs sm:normal-case sm:tracking-normal">
 								<span class="sm:hidden">{tab.short}</span>

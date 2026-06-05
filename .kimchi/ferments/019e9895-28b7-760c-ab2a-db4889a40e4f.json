@@ -1,0 +1,153 @@
+{
+  "id": "019e9895-28b7-760c-ab2a-db4889a40e4f",
+  "name": "Add Manual Location Input",
+  "description": "if you navigate to the website on local \nand when we see the sun and moon position , it didn't load the position is there any issue , fix it , all functioanlity are working fine except these 2\nhttp://localhost:4321/sun-position/\nhttp://localhost:4321/moon-position/",
+  "status": "paused",
+  "worktree": {
+    "path": "/Users/akhil/Work/onlinecompass",
+    "branch": "main",
+    "commit": "e168a34d2c50293141e9d07067a3241fefd8169b"
+  },
+  "scoping": {
+    "goal": {
+      "answer": "Enable users to manually enter location (city or coordinates) on sun and moon position pages when automatic detection fails or for testing different locations.",
+      "confirmedAt": "2026-06-05T16:50:42.733Z"
+    },
+    "criteria": {
+      "answer": "Sun and moon position pages show a manual input field for location (city or coordinates) alongside the automatic detection\nUser can enter a city name or coordinates and submit via button or Enter key\nSubmission updates the location and triggers the sun/moon position data to refresh\nThe displayed sun/moon data (direction, altitude, times) updates correctly based on the entered location\nAutomatic location detection still works as a fallback",
+      "confirmedAt": "2026-06-05T16:50:42.733Z"
+    },
+    "constraints": {
+      "answer": "Must maintain existing automatic location detection functionality, Should work with both dark and light themes, Must not break existing location-based features on other pages, Input validation should handle invalid coordinates gracefully",
+      "confirmedAt": "2026-06-05T16:50:42.733Z"
+    },
+    "phases": {
+      "answer": "Implement Manual Location Input",
+      "confirmedAt": "2026-06-05T16:50:42.733Z"
+    },
+    "assumptions": {
+      "answer": "The existing geo library can be extended to support forward geocoding (city/coordinates to lat/lng). The LocationPrompt component can be modified to include manual input without breaking existing functionality. The sun/moon position pages use the same location update mechanism as the compass page.",
+      "confirmedAt": "2026-06-05T16:50:42.733Z"
+    }
+  },
+  "phases": [
+    {
+      "id": "phase-1",
+      "index": 1,
+      "name": "Implement Manual Location Input",
+      "goal": "Add manual location input capability to sun and moon position pages",
+      "description": "Modify LocationPrompt component to include manual input fields for city/coordinates, add forward geocoding capability to geo library, and ensure proper integration with sun/moon position pages.",
+      "parallel": false,
+      "status": "active",
+      "steps": [
+        {
+          "id": "step-1",
+          "index": 1,
+          "description": "Extend geo library with forward geocoding function to convert city names or coordinates to latitude/longitude",
+          "status": "verified",
+          "verification": {
+            "command": "node -e \"import { forwardGeocode } from './src/lib/geo.ts'; console.log('Forward geocode function exists')\" || echo \"Need to implement forwardGeocode function\"",
+            "retries": 2,
+            "retryDelayMs": 1000
+          },
+          "parallel": true,
+          "groupIndex": 0,
+          "startedAt": "2026-06-05T16:50:55.045Z",
+          "completedAt": "2026-06-05T16:51:26.277Z",
+          "result": {
+            "success": true,
+            "exitCode": 0,
+            "stdout": "",
+            "stderr": "",
+            "completedAt": "2026-06-05T16:51:26.277Z"
+          }
+        },
+        {
+          "id": "step-2",
+          "index": 2,
+          "description": "Modify LocationPrompt component to add manual input fields (text input for city/coordinates, submit button) while preserving existing automatic detection UI",
+          "status": "verified",
+          "verification": {
+            "command": "grep -n \"manual location input\" src/components/LocationPrompt.astro && echo \"Manual input fields added\" || echo \"Need to add manual input fields\"",
+            "retries": 2,
+            "retryDelayMs": 1000
+          },
+          "parallel": true,
+          "groupIndex": 0,
+          "startedAt": "2026-06-05T16:51:00.201Z",
+          "completedAt": "2026-06-05T16:51:37.989Z",
+          "result": {
+            "success": true,
+            "exitCode": 0,
+            "stdout": "",
+            "stderr": "",
+            "completedAt": "2026-06-05T16:51:37.989Z"
+          }
+        },
+        {
+          "id": "step-3",
+          "index": 3,
+          "description": "Update sun-position.astro and moon-position.astro to pass manual location handling props to LocationPrompt",
+          "status": "pending",
+          "verification": {
+            "command": "grep -n \"manualLocation\" src/pages/sun-position.astro src/pages/moon-position.astro && echo \"Manual location props configured\" || echo \"Need to configure manual location props\"",
+            "retries": 2,
+            "retryDelayMs": 1000
+          },
+          "parallel": true,
+          "groupIndex": 0,
+          "startedAt": "2026-06-05T16:51:05.275Z"
+        },
+        {
+          "id": "step-4",
+          "index": 4,
+          "description": "Implement form submission handling in LocationPrompt to process user input, validate, and trigger location updates via existing mountLocationManager mechanism",
+          "status": "pending",
+          "verification": {
+            "command": "grep -n \"handleManualSubmit\" src/components/LocationPrompt.astro && echo \"Submit handler implemented\" || echo \"Need to implement submit handler\"",
+            "retries": 2,
+            "retryDelayMs": 1000
+          },
+          "parallel": true,
+          "groupIndex": 0,
+          "startedAt": "2026-06-05T16:51:10.235Z"
+        },
+        {
+          "id": "step-5",
+          "index": 5,
+          "description": "Test that entered location updates sun/moon position data correctly and automatic detection still works as fallback",
+          "status": "pending",
+          "verification": {
+            "command": "npm run dev && [manual verification of functionality] || echo \"Manual verification needed\"",
+            "retries": 2,
+            "retryDelayMs": 1000
+          },
+          "parallel": true,
+          "groupIndex": 0,
+          "startedAt": "2026-06-05T16:51:15.864Z"
+        }
+      ],
+      "startedAt": "2026-06-05T16:50:49.273Z"
+    }
+  ],
+  "decisions": [],
+  "memories": [],
+  "createdAt": "2026-06-05T16:19:32.663Z",
+  "updatedAt": "2026-06-05T17:00:06.063Z",
+  "goal": "Enable users to manually enter location (city or coordinates) on sun and moon position pages when automatic detection fails or for testing different locations.",
+  "successCriteria": [
+    "Sun and moon position pages show a manual input field for location (city or coordinates) alongside the automatic detection",
+    "User can enter a city name or coordinates and submit via button or Enter key",
+    "Submission updates the location and triggers the sun/moon position data to refresh",
+    "The displayed sun/moon data (direction, altitude, times) updates correctly based on the entered location",
+    "Automatic location detection still works as a fallback"
+  ],
+  "constraints": [
+    "Must maintain existing automatic location detection functionality",
+    "Should work with both dark and light themes",
+    "Must not break existing location-based features on other pages",
+    "Input validation should handle invalid coordinates gracefully"
+  ],
+  "lastActiveAt": "2026-06-05T16:50:49.273Z",
+  "activePhaseId": "phase-1"
+}

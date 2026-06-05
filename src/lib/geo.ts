@@ -1,8 +1,13 @@
+// @ts-expect-error suncalc ships without bundled types
+import SunCalc from 'suncalc';
+
+const RAD = 180 / Math.PI;
+
 export type GeoCoords = {
 	latitude: number;
 	longitude: number;
 	accuracy: number | null;
-	source?: 'browser' | 'ip';
+	source?: 'browser' | 'ip' | 'manual';
 };
 
 export type GeoPermission = 'granted' | 'denied' | 'prompt' | 'unknown';
@@ -474,4 +479,138 @@ export function prefetchLocationSilently(): void {
 			}
 		})
 		.catch(() => {});
+}
+
+/**
+ * Forward geocode: convert city name or coordinates to latitude/longitude
+ * Supports formats:
+ * - City name: "New York", "London, UK"
+ * - Coordinates: "40.7128,-74.0060", "40.7128, -74.0060"
+ * 
+ * @param input City name or coordinate string
+ * @returns Promise resolving to GeoCoords or throwing GeoError
+ */
+export async function forwardGeocode(input: string): Promise<GeoCoords> {
+	if (!input || typeof input !== 'string') {
+		throw new GeoError('unknown', 'Invalid input: expected a non-empty string');
+	}
+
+	const trimmed = input.trim();
+	if (!trimmed) {
+		throw new GeoError('unknown', 'Invalid input: empty string after trimming');
+	}
+
+	// Check if input looks like coordinates (contains comma and numbers)
+	const coordMatch = trimmed.match(/^([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)$/);
+	if (coordMatch) {
+		const lat = parseFloat(coordMatch[1]);
+		const lng = parseFloat(coordMatch[2]);
+		
+		if (isNaN(lat) || isNaN(lat) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+			throw new GeoError('unknown', 'Invalid coordinates: latitude must be between -90 and 90, longitude between -180 and 180');
+		}
+		
+		return {
+			latitude: lat,
+			longitude: lng,
+			accuracy: null,
+			source: 'manual'
+		};
+	}
+
+	// Treat as city name - use geocoding APIs
+	try {
+		// Use the same geocoding APIs as reverse geocoding but in forward direction
+		const geocodingApis = [
+			{
+				name: 'bigdatacloud',
+				url: (city: string) => 
+					`https://api.bigdatacloud.net/data/forward-geocode-client?locality=${encodeURIComponent(city)}&localityLanguage=en`,
+				parser: (data: any) => {
+					if (data.latitude && data.longitude) {
+						return {
+							latitude: data.latitude,
+							longitude: data.longitude,
+							accuracy: null,
+							source: 'manual'
+						};
+					}
+					return null;
+				}
+			},
+			{
+				name: 'nominatim',
+				url: (city: string) => 
+					`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`,
+				parser: (data: any) => {
+					if (Array.isArray(data) && data.length > 0 && data[0].lat && data[0].lon) {
+						return {
+							latitude: parseFloat(data[0].lat),
+							longitude: parseFloat(data[0].lon),
+							accuracy: null,
+							source: 'manual'
+						};
+					}
+					return null;
+				}
+			},
+			{
+				name: 'geocode-maps',
+				url: (city: string) => 
+					`https://geocode.maps.co/search?q=${encodeURIComponent(city)}`,
+				parser: (data: any) => {
+					if (Array.isArray(data) && data.length > 0 && data[0].lat && data[0].lon) {
+						return {
+							latitude: parseFloat(data[0].lat),
+							longitude: parseFloat(data[0].lon),
+							accuracy: null,
+							source: 'manual'
+						};
+					}
+					return null;
+				}
+			}
+		];
+
+		// Try each API endpoint in parallel for faster response
+		const requests = geocodingApis.map(async (api) => {
+			try {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+				const response = await fetch(api.url(trimmed), {
+					signal: controller.signal,
+					headers: api.name === 'nominatim' ? { 'User-Agent': 'freeOnlinecompass.com' } : {}
+				});
+				clearTimeout(timeoutId);
+
+				if (!response.ok) {
+					throw new Error(`API ${api.name} responded with ${response.status}`);
+				}
+				const jsonData = await response.json();
+				const result = api.parser(jsonData);
+				
+				if (result) {
+					return result;
+				}
+				throw new Error('No location data found');
+			} catch (error) {
+				console.debug(`Forward geocoding API ${api.name} failed:`, error);
+				throw error;
+			}
+		});
+
+		// Use Promise.any to return the first successful result
+		try {
+			const result = await Promise.any(requests);
+			return result;
+		} catch (error) {
+			throw new GeoError('unavailable', `Could not geocode location "${trimmed}". Please check the spelling or try coordinates format.`);
+		}
+	} catch (error) {
+		if (error instanceof GeoError) {
+			throw error;
+		}
+		throw new GeoError('unknown', `Failed to geocode location "${trimmed}": ${error.message}`);
+	}
 }
