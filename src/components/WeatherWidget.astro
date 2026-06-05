@@ -1,0 +1,124 @@
+---
+import { fetchWeather, type WeatherData } from '../lib/weather';
+---
+
+<div
+	id="weatherWidget"
+	class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm"
+	aria-labelledby="weather-title"
+>
+	<h2 id="weather-title" class="text-xs font-mono uppercase text-muted tracking-wider">Current Weather</h2>
+	<div id="weatherLoading" class="mt-4 text-xs text-body">Loading weather…</div>
+	<div id="weatherContent" hidden class="mt-4">
+		<div class="flex items-center gap-3">
+			<span id="weatherIcon" class="text-3xl" aria-hidden="true"></span>
+			<div>
+				<p id="weatherTemp" class="text-2xl font-semibold text-ink font-mono"></p>
+				<p id="weatherCondition" class="text-xs text-body"></p>
+			</div>
+		</div>
+		<dl class="mt-4 grid grid-cols-2 gap-2 text-xs border-t border-hairline pt-3">
+			<div class="flex justify-between gap-2">
+				<dt class="text-body">Humidity</dt>
+				<dd id="weatherHumidity" class="font-mono text-ink font-semibold"></dd>
+			</div>
+			<div class="flex justify-between gap-2">
+				<dt class="text-body">Wind</dt>
+				<dd id="weatherWind" class="font-mono text-ink font-semibold"></dd>
+			</div>
+		</dl>
+	</div>
+	<p id="weatherNoLocation" hidden class="mt-4 text-xs text-body">
+		Weather will appear once location is detected.
+	</p>
+	<p id="weatherError" hidden class="mt-4 text-xs text-muted">
+		Weather unavailable.
+	</p>
+</div>
+
+<script>
+	import { fetchWeather } from '../lib/weather';
+
+	let weatherLoaded = false;
+
+	function showWeatherLoading() {
+		document.getElementById('weatherLoading')?.removeAttribute('hidden');
+		document.getElementById('weatherContent')?.setAttribute('hidden', '');
+		document.getElementById('weatherNoLocation')?.setAttribute('hidden', '');
+		document.getElementById('weatherError')?.setAttribute('hidden', '');
+	}
+
+	function showWeatherData(data: { temperature: number; humidity: number; windSpeed: number; condition: string; icon: string }) {
+		const loading = document.getElementById('weatherLoading');
+		const content = document.getElementById('weatherContent');
+		const noLocation = document.getElementById('weatherNoLocation');
+		const error = document.getElementById('weatherError');
+
+		if (loading) loading.setAttribute('hidden', '');
+		if (noLocation) noLocation.setAttribute('hidden', '');
+		if (error) error.setAttribute('hidden', '');
+		if (content) content.removeAttribute('hidden');
+
+		const iconEl = document.getElementById('weatherIcon');
+		const tempEl = document.getElementById('weatherTemp');
+		const conditionEl = document.getElementById('weatherCondition');
+		const humidityEl = document.getElementById('weatherHumidity');
+		const windEl = document.getElementById('weatherWind');
+
+		if (iconEl) iconEl.textContent = data.icon;
+		if (tempEl) tempEl.textContent = `${data.temperature}°C`;
+		if (conditionEl) conditionEl.textContent = data.condition;
+		if (humidityEl) humidityEl.textContent = `${data.humidity}%`;
+		if (windEl) windEl.textContent = `${data.windSpeed} km/h`;
+	}
+
+	function showNoLocation() {
+		const loading = document.getElementById('weatherLoading');
+		const content = document.getElementById('weatherContent');
+		const noLocation = document.getElementById('weatherNoLocation');
+		const error = document.getElementById('weatherError');
+
+		if (loading) loading.setAttribute('hidden', '');
+		if (content) content.setAttribute('hidden', '');
+		if (error) error.setAttribute('hidden', '');
+		if (noLocation) noLocation.removeAttribute('hidden');
+	}
+
+	function showError() {
+		const loading = document.getElementById('weatherLoading');
+		const content = document.getElementById('weatherContent');
+		const noLocation = document.getElementById('weatherNoLocation');
+		const error = document.getElementById('weatherError');
+
+		if (loading) loading.setAttribute('hidden', '');
+		if (content) content.setAttribute('hidden', '');
+		if (noLocation) noLocation.setAttribute('hidden', '');
+		if (error) error.removeAttribute('hidden');
+	}
+
+	async function loadWeather(lat: number, lon: number) {
+		if (weatherLoaded) return;
+		weatherLoaded = true;
+
+		const data = await fetchWeather(lat, lon);
+		if (data) {
+			showWeatherData(data);
+		} else {
+			showError();
+		}
+	}
+
+	function handleLocationReady(event: Event) {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		loadWeather(detail.coords.latitude, detail.coords.longitude);
+	}
+
+	function handleLocationCityReady(event: Event) {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		loadWeather(detail.coords.latitude, detail.coords.longitude);
+	}
+
+	// Listen for location events
+	document.addEventListener('oc:location-ready', handleLocationReady);
+	document.addEventListener('oc:location-city-ready', handleLocationCityReady);
+</script>

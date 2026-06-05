@@ -8,6 +8,7 @@ import {
 	queryGeolocationPermission,
 	readCachedCoords,
 	requestLocation,
+	requestLocationWithFallback,
 	watchPermissionChanges,
 	getCityFromCoords,
 	cacheCoords,
@@ -48,11 +49,6 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 
 	const globalLocationText = document.querySelector('#globalLocationText');
 	const allowLocationGlobal = document.querySelector<HTMLButtonElement>('#allowLocationGlobal');
-	const toggleEditBtn = document.querySelector('#toggleEditLocation');
-	const editForm = document.querySelector<HTMLFormElement>('#editLocationForm');
-	const inputLat = document.querySelector<HTMLInputElement>('#inputLat');
-	const inputLng = document.querySelector<HTMLInputElement>('#inputLng');
-	const cancelEditBtn = document.querySelector('#cancelEditLocation');
 	const cityEl = document.querySelector('#locationCity');
 
 	let state: UiState = 'checking';
@@ -251,10 +247,32 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 			return;
 		}
 
-		// prompt or unknown: try silent read
+		// prompt or unknown: use fallback (IP + browser in parallel)
 		if (!cached) {
-			const coords = await fetchLocation(false);
-			if (!coords) {
+			try {
+				const coords = await requestLocationWithFallback(
+					(ipCoords, source) => {
+						// IP resolved first — show approximate location
+						applyUi(
+							'ready',
+							`Approximate location (IP) — refining with GPS…`,
+							`~ ${formatCoords(ipCoords)}`,
+						);
+						onLocation?.(ipCoords);
+						void updateCity(ipCoords);
+					},
+					(preciseCoords) => {
+						// Browser geo resolved after IP — silently upgrade
+						const label = formatCoords(preciseCoords);
+						applyUi('ready', `Lat ${preciseCoords.latitude.toFixed(4)}°, Lon ${preciseCoords.longitude.toFixed(4)}°`, label);
+						onLocation?.(preciseCoords);
+						void updateCity(preciseCoords);
+					},
+				);
+				// Coords obtained — callbacks above handled UI
+				void coords;
+			} catch {
+				// Both IP and browser geolocation failed
 				if (state === 'checking') {
 					applyUi(
 						'needs-permission',
@@ -278,42 +296,6 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	bindButton(allowButtonEl, requestFromUser);
 	bindButton(allowLocationGlobal, requestFromUser);
 	bindButton(retryButtonEl, requestFromUser);
-
-	// Collapsible Coordinate Editor Form Event Listeners
-	toggleEditBtn?.addEventListener('click', () => {
-		if (!editForm) return;
-		editForm.classList.toggle('hidden');
-		if (!editForm.classList.contains('hidden')) {
-			const current = readCachedCoords();
-			if (current) {
-				if (inputLat) inputLat.value = current.latitude.toString();
-				if (inputLng) inputLng.value = current.longitude.toString();
-			}
-		}
-	});
-
-	cancelEditBtn?.addEventListener('click', () => {
-		editForm?.classList.add('hidden');
-	});
-
-	editForm?.addEventListener('submit', (e) => {
-		e.preventDefault();
-		if (!inputLat || !inputLng) return;
-		const lat = parseFloat(inputLat.value);
-		const lng = parseFloat(inputLng.value);
-		if (Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-			alert('Please enter valid coordinates (Latitude -90 to 90, Longitude -180 to 180).');
-			return;
-		}
-		const newCoords: GeoCoords = {
-			latitude: lat,
-			longitude: lng,
-			accuracy: null,
-		};
-		cacheCoords(newCoords);
-		onSuccess(newCoords, 'user');
-		editForm.classList.add('hidden');
-	});
 
 	watchPermissionChanges((next: GeoPermission) => {
 		if (next === 'granted' && state !== 'ready') {

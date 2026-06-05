@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import SiteShell from '../components/SiteShell.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import AdSlot from '../components/AdSlot.astro';
 import SeoJsonLd from '../components/SeoJsonLd.astro';
 import LocationPrompt from '../components/LocationPrompt.astro';
 
@@ -199,6 +200,11 @@ const faqs = [
 				</div>
 			</section>
 
+			<!-- Ad Slot: Horizontal -->
+			<section class="content-grid py-6">
+				<AdSlot id="ad-home-mid" format="horizontal" />
+			</section>
+
 			<!-- Technical Overview -->
 			<section class="border-t border-hairline bg-canvas-soft py-12 sm:py-16" aria-labelledby="how-title">
 				<div class="content-grid grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
@@ -236,6 +242,10 @@ const faqs = [
 						))}
 					</div>
 				</div>
+			</section>
+			<!-- Ad Slot: Horizontal -->
+			<section class="content-grid py-6">
+				<AdSlot id="ad-home-bottom" format="horizontal" />
 			</section>
 		</main>
 

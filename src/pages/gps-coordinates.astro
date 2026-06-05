@@ -1,0 +1,482 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
+
+const facts = [
+	[
+		'Latitude',
+		'Measures how far north or south you are from the Equator (0°). Ranges from 0° at the Equator to +90° at the North Pole and -90° at the South Pole.',
+	],
+	[
+		'Longitude',
+		'Measures how far east or west you are from the Prime Meridian (0°), which runs through Greenwich, London. Ranges from -180° to +180°.',
+	],
+	[
+		'Decimal Degrees',
+		'The simplest format: just degrees as decimal numbers. E.g., 40.7128° N, -74.0060° W. Used by most GPS devices and mapping APIs.',
+	],
+	[
+		'DMS Format',
+		'Degrees, Minutes, Seconds. E.g., 40° 42\' 46" N, 74° 0\' 22" W. More human-readable but harder to compute with.',
+	],
+];
+---
+
+<Layout
+	title="My GPS Coordinates — Live Geo Location | freeOnlinecompass.com"
+	description="Find your exact GPS coordinates right now. Live latitude and longitude display with copy-to-clipboard and Decimal ↔ DMS converter. Free, mobile-friendly."
+	keywords="my gps coordinates, find my location, latitude longitude, current location, gps coordinates finder"
+	canonical="https://freeonlinecompass.com/gps-coordinates/"
+>
+	<SeoJsonLd
+		slot="head"
+		name="My GPS Coordinates — Online Compass"
+		description="Live latitude and longitude with copy-to-clipboard and coordinate converter."
+		url="https://freeonlinecompass.com/gps-coordinates/"
+	/>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
+
+		<SiteShell current="gps" />
+
+		<main id="main" class="flex-grow z-10">
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					My GPS Coordinates
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					Your live latitude and longitude, detected in your browser. Copy individual values or open your location on Google Maps.
+				</p>
+			</section>
+
+			<!-- Coordinates Display -->
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+
+					<!-- Main coordinate card -->
+					<div class="flex flex-col gap-4">
+						<!-- Live coordinates card -->
+						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider text-center">Your Location</p>
+							<p id="gpsLocationCity" class="text-sm text-body text-center mt-1 font-mono">Detecting city…</p>
+
+							<div class="mt-6 grid grid-cols-2 gap-4">
+								<!-- Latitude -->
+								<div class="flex flex-col items-center rounded-lg border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Latitude</p>
+									<p id="latValue" class="mt-2 text-xl font-semibold text-ink font-mono tracking-tight">--°</p>
+									<p id="latCardinal" class="text-xs text-body font-mono">--</p>
+									<button
+										id="copyLat"
+										class="focus-ring mt-3 rounded-md border border-hairline bg-canvas px-3 py-1.5 text-xs font-mono text-body transition-colors duration-150 hover:border-hairline-strong hover:text-ink"
+										type="button"
+									>
+										Copy
+									</button>
+								</div>
+								<!-- Longitude -->
+								<div class="flex flex-col items-center rounded-lg border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Longitude</p>
+									<p id="lonValue" class="mt-2 text-xl font-semibold text-ink font-mono tracking-tight">--°</p>
+									<p id="lonCardinal" class="text-xs text-body font-mono">--</p>
+									<button
+										id="copyLon"
+										class="focus-ring mt-3 rounded-md border border-hairline bg-canvas px-3 py-1.5 text-xs font-mono text-body transition-colors duration-150 hover:border-hairline-strong hover:text-ink"
+										type="button"
+									>
+										Copy
+									</button>
+								</div>
+							</div>
+
+							<!-- Combined full string -->
+							<div class="mt-4 flex flex-col items-center rounded-lg border border-hairline bg-canvas-soft-2 p-4">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Full Coordinates</p>
+								<p id="fullCoords" class="mt-2 text-sm font-semibold text-ink font-mono tracking-tight">--</p>
+								<button
+									id="copyFull"
+									class="focus-ring mt-3 rounded-md border border-hairline bg-canvas px-3 py-1.5 text-xs font-mono text-body transition-colors duration-150 hover:border-hairline-strong hover:text-ink"
+									type="button"
+								>
+									Copy All
+								</button>
+							</div>
+
+							<div class="mt-4 flex justify-center">
+								<a
+									id="mapsLink"
+									href="#"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="focus-ring inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-canvas transition-opacity duration-150 hover:opacity-90"
+								>
+									<span aria-hidden="true">⊕</span>
+									Open in Google Maps
+								</a>
+							</div>
+						</div>
+
+						<!-- Coordinate Converter -->
+						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider text-center">Coordinate Converter</p>
+							<p class="mt-2 text-xs text-body text-center">Convert between Decimal Degrees and DMS (Degrees, Minutes, Seconds).</p>
+
+							<div class="mt-5 grid gap-5">
+								<!-- Decimal → DMS -->
+								<div class="flex flex-col gap-2">
+									<p class="text-xs font-mono uppercase text-muted">Decimal Degrees → DMS</p>
+									<div class="flex flex-col gap-2 sm:flex-row sm:items-end">
+										<div class="flex-1 flex flex-col gap-1">
+											<label for="decLatInput" class="text-[10px] font-mono text-muted uppercase tracking-wider">Latitude (decimal)</label>
+											<input
+												id="decLatInput"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-3 py-2 text-sm font-mono text-ink placeholder:text-muted"
+												type="number"
+												step="any"
+												min="-90"
+												max="90"
+												placeholder="e.g. 40.7128"
+											/>
+										</div>
+										<div class="flex-1 flex flex-col gap-1">
+											<label for="decLonInput" class="text-[10px] font-mono text-muted uppercase tracking-wider">Longitude (decimal)</label>
+											<input
+												id="decLonInput"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-3 py-2 text-sm font-mono text-ink placeholder:text-muted"
+												type="number"
+												step="any"
+												min="-180"
+												max="180"
+												placeholder="e.g. -74.0060"
+											/>
+										</div>
+										<button
+											id="convertToDms"
+											class="focus-ring shrink-0 rounded-md border border-hairline bg-canvas px-4 py-2 text-xs font-mono text-body transition-colors duration-150 hover:border-hairline-strong hover:text-ink"
+											type="button"
+										>
+											Convert
+										</button>
+									</div>
+									<p id="dmsOutput" class="rounded border border-hairline bg-canvas-soft-2 p-2 text-xs font-mono text-ink">--</p>
+								</div>
+
+								<div class="border-t border-hairline pt-5">
+									<!-- DMS → Decimal -->
+									<div class="flex flex-col gap-2">
+										<p class="text-xs font-mono uppercase text-muted">DMS → Decimal Degrees</p>
+										<div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+											<div class="flex flex-col gap-1">
+												<label for="dmsLatDeg" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lat Deg</label>
+												<input
+													id="dmsLatDeg"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+													type="number"
+													min="0"
+													max="90"
+													placeholder="40"
+												/>
+											</div>
+											<div class="flex flex-col gap-1">
+												<label for="dmsLatMin" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lat Min</label>
+												<input
+													id="dmsLatMin"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+													type="number"
+													min="0"
+													max="59"
+													placeholder="42"
+												/>
+											</div>
+											<div class="flex flex-col gap-1">
+												<label for="dmsLatSec" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lat Sec</label>
+												<input
+													id="dmsLatSec"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+													type="number"
+													step="any"
+													min="0"
+													max="59.999"
+													placeholder="46.1"
+												/>
+											</div>
+											<div class="flex flex-col gap-1">
+												<label for="dmsLatDir" class="text-[10px] font-mono text-muted uppercase tracking-wider">N/S</label>
+												<select
+													id="dmsLatDir"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink"
+												>
+													<option value="N">N</option>
+													<option value="S">S</option>
+												</select>
+											</div>
+										</div>
+										<div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+											<div class="flex flex-col gap-1">
+												<label for="dmsLonDeg" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lon Deg</label>
+												<input
+													id="dmsLonDeg"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+													type="number"
+													min="0"
+													max="180"
+													placeholder="74"
+												/>
+											</div>
+											<div class="flex flex-col gap-1">
+												<label for="dmsLonMin" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lon Min</label>
+												<input
+													id="dmsLonMin"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+													type="number"
+													min="0"
+													max="59"
+													placeholder="0"
+												/>
+											</div>
+											<div class="flex flex-col gap-1">
+												<label for="dmsLonSec" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lon Sec</label>
+												<input
+													id="dmsLonSec"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+													type="number"
+													step="any"
+													min="0"
+													max="59.999"
+													placeholder="22.0"
+												/>
+											</div>
+											<div class="flex flex-col gap-1">
+												<label for="dmsLonDir" class="text-[10px] font-mono text-muted uppercase tracking-wider">E/W</label>
+												<select
+													id="dmsLonDir"
+													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink"
+												>
+													<option value="E">E</option>
+													<option value="W">W</option>
+												</select>
+											</div>
+										</div>
+										<button
+											id="convertToDec"
+											class="focus-ring w-full rounded-md border border-hairline bg-canvas px-4 py-2 text-xs font-mono text-body transition-colors duration-150 hover:border-hairline-strong hover:text-ink sm:w-auto"
+											type="button"
+										>
+											Convert to Decimal
+										</button>
+										<p id="decOutput" class="rounded border border-hairline bg-canvas-soft-2 p-2 text-xs font-mono text-ink">--</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Sidebar -->
+					<aside class="grid gap-6">
+						<!-- Location panel -->
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="gps-location-title">
+							<h2 id="gps-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Your Location</h2>
+							<div class="mt-4">
+								<LocationPrompt messageId="gpsLocationNote" compact />
+							</div>
+						</section>
+
+						<!-- Accuracy info -->
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="accuracy-title">
+							<h2 id="accuracy-title" class="text-xs font-mono uppercase text-muted tracking-wider">Accuracy</h2>
+							<p id="accuracyValue" class="mt-3 text-sm font-mono text-ink">—</p>
+							<p class="mt-1 text-xs text-body">Estimated accuracy of the detected coordinates.</p>
+						</section>
+					</aside>
+				</div>
+			</section>
+
+			<!-- Educational Info -->
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">GPS Reference</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Understanding GPS coordinates.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							Every point on Earth can be described by two numbers: latitude and longitude. Your device uses these to pinpoint your location on the planet.
+						</p>
+					</div>
+					<div class="mt-8 grid gap-4 sm:grid-cols-2">
+						{facts.map(([title, body]) => (
+							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
+								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
+								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
+							</article>
+						))}
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<script>
+	import { prefetchLocationSilently } from '../lib/geo';
+	import { mountDeviceUi } from '../scripts/device-ui';
+
+	prefetchLocationSilently();
+
+	let currentLat: number | null = null;
+	let currentLon: number | null = null;
+
+	function setText(el: Element | null, value: string) {
+		if (el) el.textContent = value;
+	}
+
+	function formatDMS(decimal: number, isLat: boolean): string {
+		const dir = isLat ? (decimal >= 0 ? 'N' : 'S') : (decimal >= 0 ? 'E' : 'W');
+		const abs = Math.abs(decimal);
+		const deg = Math.floor(abs);
+		const minFloat = (abs - deg) * 60;
+		const min = Math.floor(minFloat);
+		const sec = ((minFloat - min) * 60).toFixed(2);
+		return `${deg}° ${min}' ${sec}" ${dir}`;
+	}
+
+	function formatDecimal(lat: number, lon: number): string {
+		return `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`;
+	}
+
+	function updateDisplay(lat: number, lon: number, accuracy: number | null) {
+		currentLat = lat;
+		currentLon = lon;
+
+		setText(document.querySelector('#latValue'), `${lat.toFixed(6)}°`);
+		setText(document.querySelector('#latCardinal'), lat >= 0 ? 'North' : 'South');
+		setText(document.querySelector('#lonValue'), `${lon.toFixed(6)}°`);
+		setText(document.querySelector('#lonCardinal'), lon >= 0 ? 'East' : 'West');
+		setText(document.querySelector('#fullCoords'), `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`);
+		setText(document.querySelector('#accuracyValue'), accuracy !== null ? `± ${Math.round(accuracy)} m` : 'IP-based (approximate)');
+
+		const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+		const mapsLink = document.querySelector('#mapsLink') as HTMLAnchorElement | null;
+		if (mapsLink) mapsLink.href = mapsUrl;
+
+		// Pre-fill converter fields
+		const decLatInput = document.querySelector('#decLatInput') as HTMLInputElement | null;
+		const decLonInput = document.querySelector('#decLonInput') as HTMLInputElement | null;
+		if (decLatInput) decLatInput.value = lat.toFixed(6);
+		if (decLonInput) decLonInput.value = lon.toFixed(6);
+
+		// Update DMS output
+		const dmsOutput = document.querySelector('#dmsOutput');
+		if (dmsOutput) {
+			dmsOutput.textContent = `${formatDMS(lat, true)}  ${formatDMS(lon, false)}`;
+		}
+	}
+
+	// Copy buttons
+	document.querySelector('#copyLat')?.addEventListener('click', () => {
+		if (currentLat !== null) {
+			navigator.clipboard.writeText(currentLat.toFixed(6)).catch(() => {});
+		}
+	});
+	document.querySelector('#copyLon')?.addEventListener('click', () => {
+		if (currentLon !== null) {
+			navigator.clipboard.writeText(currentLon.toFixed(6)).catch(() => {});
+		}
+	});
+	document.querySelector('#copyFull')?.addEventListener('click', () => {
+		if (currentLat !== null && currentLon !== null) {
+			navigator.clipboard.writeText(`${currentLat.toFixed(6)}, ${currentLon.toFixed(6)}`).catch(() => {});
+		}
+	});
+
+	// Decimal → DMS converter
+	document.querySelector('#convertToDms')?.addEventListener('click', () => {
+		const lat = parseFloat((document.querySelector('#decLatInput') as HTMLInputElement)?.value);
+		const lon = parseFloat((document.querySelector('#decLonInput') as HTMLInputElement)?.value);
+		const output = document.querySelector('#dmsOutput');
+		if (isNaN(lat) || isNaN(lon)) {
+			if (output) output.textContent = 'Please enter valid decimal coordinates.';
+			return;
+		}
+		if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+			if (output) output.textContent = 'Latitude must be -90 to 90, longitude -180 to 180.';
+			return;
+		}
+		if (output) output.textContent = `${formatDMS(lat, true)}  ${formatDMS(lon, false)}`;
+	});
+
+	// DMS → Decimal converter
+	document.querySelector('#convertToDec')?.addEventListener('click', () => {
+		const latDeg = parseFloat((document.querySelector('#dmsLatDeg') as HTMLInputElement)?.value);
+		const latMin = parseFloat((document.querySelector('#dmsLatMin') as HTMLInputElement)?.value);
+		const latSec = parseFloat((document.querySelector('#dmsLatSec') as HTMLInputElement)?.value);
+		const latDir = (document.querySelector('#dmsLatDir') as HTMLSelectElement)?.value;
+		const lonDeg = parseFloat((document.querySelector('#dmsLonDeg') as HTMLInputElement)?.value);
+		const lonMin = parseFloat((document.querySelector('#dmsLonMin') as HTMLInputElement)?.value);
+		const lonSec = parseFloat((document.querySelector('#dmsLonSec') as HTMLInputElement)?.value);
+		const lonDir = (document.querySelector('#dmsLonDir') as HTMLSelectElement)?.value;
+		const output = document.querySelector('#decOutput');
+
+		if (isNaN(latDeg) || isNaN(latMin) || isNaN(latSec) || isNaN(lonDeg) || isNaN(lonMin) || isNaN(lonSec)) {
+			if (output) output.textContent = 'Please fill in all DMS fields.';
+			return;
+		}
+
+		let lat = latDeg + latMin / 60 + latSec / 3600;
+		let lon = lonDeg + lonMin / 60 + lonSec / 3600;
+		if (latDir === 'S') lat = -lat;
+		if (lonDir === 'W') lon = -lon;
+
+		if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+			if (output) output.textContent = 'Invalid DMS values — check ranges.';
+			return;
+		}
+
+		if (output) output.textContent = `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`;
+	});
+
+	mountDeviceUi({
+		onLocation: (c) => {
+			updateDisplay(c.latitude, c.longitude, null);
+		},
+	});
+
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number }; accuracy?: number }>).detail;
+		updateDisplay(detail.coords.latitude, detail.coords.longitude, detail.accuracy ?? null);
+	});
+
+	document.addEventListener('oc:location-city-ready', (event) => {
+		const detail = (event as CustomEvent<{ city: string }>).detail;
+		setText(document.querySelector('#gpsLocationCity'), detail.city);
+	});
+</script>
+
+<style>
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background: 
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+	[data-theme="light"] .mesh-gradient-bg {
+		opacity: 0.06;
+	}
+</style>

@@ -5,6 +5,8 @@ import SiteFooter from '../components/SiteFooter.astro';
 import SeoJsonLd from '../components/SeoJsonLd.astro';
 import LocationPrompt from '../components/LocationPrompt.astro';
 import SkyDial from '../components/SkyDial.astro';
+import WeatherWidget from '../components/WeatherWidget.astro';
+import AdSlot from '../components/AdSlot.astro';
 
 const facts = [
 	['Solar Azimuth', 'The horizontal direction of the sun measured clockwise from North (0°). E.g., East is 90°, South is 180°, West is 270°.'],
@@ -53,7 +55,7 @@ const facts = [
 						<!-- Sun Direction readout card -->
 						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-6">
 							<p class="font-mono text-[10px] uppercase text-muted tracking-wider text-center">Sun Direction</p>
-							<h3 id="sunDirectionText" class="text-xl sm:text-2xl font-semibold tracking-tight text-white text-center mt-2">--</h3>
+							<h3 id="sunDirectionText" class="text-xl sm:text-2xl font-semibold tracking-tight text-ink text-center mt-2">--</h3>
 							<p class="text-xs text-body text-center font-mono mt-1"><span id="sunAzimuthRaw">--</span>° azimuth <span class="cursor-help text-muted" title="Measured clockwise from North (0°)">ⓘ</span></p>
 						</div>
 
@@ -61,17 +63,17 @@ const facts = [
 						<div class="grid grid-cols-3 gap-3 mt-4">
 							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
 								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Altitude</p>
-								<p id="sunAltitudeVal" class="text-sm sm:text-base font-semibold text-white mt-1 font-mono">--</p>
+								<p id="sunAltitudeVal" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
 								<p id="sunAltitudeHelp" class="text-[9px] text-body mt-0.5">--</p>
 							</div>
 							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
 								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Sunrise</p>
-								<p id="sunriseTimeVal" class="text-sm sm:text-base font-semibold text-white mt-1 font-mono">--</p>
+								<p id="sunriseTimeVal" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
 								<p class="text-[9px] text-body mt-0.5">local time</p>
 							</div>
 							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
 								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Sunset</p>
-								<p id="sunsetTimeVal" class="text-sm sm:text-base font-semibold text-white mt-1 font-mono">--</p>
+								<p id="sunsetTimeVal" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
 								<p class="text-[9px] text-body mt-0.5">local time</p>
 							</div>
 						</div>
@@ -87,36 +89,41 @@ const facts = [
 							</div>
 						</section>
 
-						<!-- Solar timeline details -->
+						<!-- Weather widget -->
+					<WeatherWidget />
+
+					<!-- Solar timeline details -->
 						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="sun-times-title">
 							<h2 id="sun-times-title" class="text-xs font-mono uppercase text-muted tracking-wider">Solar Schedule</h2>
 							<dl class="mt-4 grid gap-3 text-xs">
 								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
 									<dt class="text-body font-mono">Solar Noon</dt>
-									<dd id="solarNoonTime" class="font-mono text-white font-semibold">--</dd>
+									<dd id="solarNoonTime" class="font-mono text-ink font-semibold">--</dd>
 								</div>
 								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
 									<dt class="text-body font-mono">Dawn (Civil)</dt>
-									<dd id="dawnTime" class="font-mono text-white font-semibold">--</dd>
+									<dd id="dawnTime" class="font-mono text-ink font-semibold">--</dd>
 								</div>
 								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
 									<dt class="text-body font-mono">Dusk (Civil)</dt>
-									<dd id="duskTime" class="font-mono text-white font-semibold">--</dd>
+									<dd id="duskTime" class="font-mono text-ink font-semibold">--</dd>
 								</div>
 								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
 									<dt class="text-body font-mono">Golden Hour Begins</dt>
-									<dd id="goldenHourStart" class="font-mono text-white font-semibold">--</dd>
+									<dd id="goldenHourStart" class="font-mono text-ink font-semibold">--</dd>
 								</div>
 								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
 									<dt class="text-body font-mono">Golden Hour Ends</dt>
-									<dd id="goldenHourEnd" class="font-mono text-white font-semibold">--</dd>
+									<dd id="goldenHourEnd" class="font-mono text-ink font-semibold">--</dd>
 								</div>
 								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
 									<dt class="text-body font-mono">Day Length</dt>
-									<dd id="dayLength" class="font-mono text-white font-semibold">--</dd>
+									<dd id="dayLength" class="font-mono text-ink font-semibold">--</dd>
 								</div>
 							</dl>
 						</section>
+
+						<AdSlot id="ad-sun-sidebar" format="vertical" />
 					</aside>
 				</div>
 			</section>
@@ -126,7 +133,7 @@ const facts = [
 				<div class="content-grid">
 					<div class="max-w-2xl">
 						<p class="font-mono text-xs uppercase text-muted tracking-widest">Physics Reference</p>
-						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Understanding the solar path.</h2>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Understanding the solar path.</h2>
 						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
 							The trajectory of the sun changes continuously based on latitude, longitude, and date. Use these core astronomical indices to track the sun:
 						</p>
@@ -134,7 +141,7 @@ const facts = [
 					<div class="mt-8 grid gap-4 sm:grid-cols-2">
 						{facts.map(([title, body]) => (
 							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
-								<h3 class="text-sm font-semibold text-white font-mono">{title}</h3>
+								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
 								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
 							</article>
 						))}
@@ -148,9 +155,13 @@ const facts = [
 </Layout>
 
 <script>
+	import { prefetchLocationSilently } from '../lib/geo';
 	import { mountDeviceUi } from '../scripts/device-ui';
 	import { bindSkyDialFromLocation, setSkyAzimuth } from '../scripts/sky-dial';
 	import { formatDegrees, formatDuration, formatTime, getSunSnapshot, getDirectionText } from '../lib/astronomy';
+
+	// Prefetch location silently for faster initial data
+	prefetchLocationSilently();
 
 	// Declare state variables first, before any callbacks are registered
 	let coords: { latitude: number; longitude: number } | null = null;
@@ -228,7 +239,12 @@ const facts = [
 	});
 
 	document.addEventListener('oc:location-needs-permission', () => {
-		setText(status, 'Permission needed');
+		setText(status, 'Tap Allow to enable location');
+	});
+
+	document.addEventListener('oc:location-updated', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
 	});
 
 	document.addEventListener('oc:location-denied', () => {
@@ -258,4 +274,6 @@ const facts = [
 		z-index: 0;
 	}
 
-</style>
+	[data-theme="light"] .mesh-gradient-bg {
+		opacity: 0.06;
+	}</style>

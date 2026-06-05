@@ -2,6 +2,7 @@ export type GeoCoords = {
 	latitude: number;
 	longitude: number;
 	accuracy: number | null;
+	source?: 'browser' | 'ip';
 };
 
 export type GeoPermission = 'granted' | 'denied' | 'prompt' | 'unknown';
@@ -19,12 +20,14 @@ export class GeoError extends Error {
 }
 
 const STORAGE_KEY = 'oc:last-coords';
+const IP_COORDS_KEY = 'oc:ip-coords';
+const IP_COORDS_TTL = 5 * 60 * 1000; // 5 minutes
 const CITY_CACHE_KEY = 'oc:city-cache';
 
 const geoOptionsFast: PositionOptions = {
 	enableHighAccuracy: false,
 	maximumAge: 120_000,
-	timeout: 8_000, // Faster timeout for better UX
+	timeout: 4_000, // Reduced from 8000 for faster fallback
 };
 
 const geoOptionsPrecise: PositionOptions = {
@@ -166,6 +169,160 @@ export function requestLocation(options?: { precise?: boolean }): Promise<GeoCoo
 			positionOptions,
 		);
 	});
+}
+
+/**
+ * Returns cached IP-based coordinates if they were fetched within the last 5 minutes.
+ */
+function getCachedIPCoords(): GeoCoords | null {
+	try {
+		const raw = sessionStorage.getItem(IP_COORDS_KEY);
+		if (!raw) return null;
+		const { coords, timestamp } = JSON.parse(raw) as { coords: GeoCoords; timestamp: number };
+		if (Date.now() - timestamp > IP_COORDS_TTL) {
+			sessionStorage.removeItem(IP_COORDS_KEY);
+			return null;
+		}
+		return coords;
+	} catch {
+		return null;
+	}
+}
+
+function setCachedIPCoords(coords: GeoCoords): void {
+	try {
+		sessionStorage.setItem(IP_COORDS_KEY, JSON.stringify({ coords, timestamp: Date.now() }));
+	} catch {
+		// ignore quota / private mode
+	}
+}
+
+/**
+ * Fetches approximate location from IP geolocation APIs.
+ * Tries ipapi.co first, then falls back to ipgeolocation.io.
+ * Throws on failure. Result is cached for 5 minutes.
+ */
+export async function fetchLocationFromIP(): Promise<GeoCoords> {
+	const cached = getCachedIPCoords();
+	if (cached) return { ...cached, source: 'ip' };
+
+	const controllers: AbortController[] = [];
+
+	const tryFetch = async (url: string, timeoutMs = 4000): Promise<GeoCoords> => {
+		const controller = new AbortController();
+		controllers.push(controller);
+		const timer = setTimeout(() => controller.abort(), timeoutMs);
+		try {
+			const res = await fetch(url, { signal: controller.signal });
+			clearTimeout(timer);
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			const data = await res.json();
+
+			// ipapi.co response
+			if (typeof data.latitude === 'number' && typeof data.longitude === 'number') {
+				const coords: GeoCoords = {
+					latitude: data.latitude,
+					longitude: data.longitude,
+					accuracy: null,
+					source: 'ip',
+				};
+				setCachedIPCoords(coords);
+				return coords;
+			}
+			throw new Error('No latitude/longitude in response');
+		} catch (err) {
+			clearTimeout(timer);
+			throw err;
+		}
+	};
+
+	try {
+		return await tryFetch('https://ipapi.co/json/');
+	} catch {
+		try {
+			return await tryFetch('https://ipgeolocation.io/api/v1/ipgeo?apiKey=demo');
+		} catch {
+			throw new GeoError('unavailable', 'IP location unavailable. Check your connection.');
+		}
+	} finally {
+		for (const c of controllers) {
+			c.abort();
+		}
+	}
+}
+
+/**
+ * Race between browser geolocation and IP geolocation.
+ * Returns the first result; if IP wins and browser geo is still pending,
+ * the browser result will dispatch an `oc:location-updated` event when ready.
+ */
+export async function requestLocationWithFallback(
+	onFirstResult?: (coords: GeoCoords, source: 'browser' | 'ip') => void,
+	onPreciseResult?: (coords: GeoCoords) => void,
+): Promise<GeoCoords> {
+	let browserResolve: ((coords: GeoCoords) => void) | null = null;
+	let browserReject: ((err: unknown) => void) | null = null;
+	let ipResolve: ((coords: GeoCoords) => void) | null = null;
+	let ipReject: ((err: unknown) => void) | null = null;
+	let browserDone = false;
+	let ipDone = false;
+
+	const browserPromise = new Promise<GeoCoords>((resolve, reject) => {
+		browserResolve = resolve;
+		browserReject = reject;
+	});
+
+	const ipPromise = new Promise<GeoCoords>((resolve, reject) => {
+		ipResolve = resolve;
+		ipReject = reject;
+	});
+
+	// Kick off both in parallel
+	requestLocation({ precise: false })
+		.then((coords) => {
+			if (ipDone) return; // IP already won, ignore
+			browserDone = true;
+			const withSource: GeoCoords = { ...coords, source: 'browser' };
+			if (browserResolve) browserResolve(withSource);
+		})
+		.catch((err) => {
+			if (ipDone) return;
+			browserDone = true;
+			if (browserReject) browserReject(err);
+		});
+
+	fetchLocationFromIP()
+		.then((coords) => {
+			if (browserDone) return; // Browser already won, ignore
+			ipDone = true;
+			if (ipResolve) ipResolve(coords);
+		})
+		.catch((err) => {
+			if (browserDone) return;
+			ipDone = true;
+			if (ipReject) ipReject(err);
+		});
+
+	// Promise.race returns whichever settles first
+	const winner = await Promise.race([browserPromise, ipPromise]);
+
+	onFirstResult?.(winner, winner.source ?? 'browser');
+
+	// If IP won, wait for browser geo to complete and dispatch upgrade event
+	if (winner.source !== 'browser') {
+		browserPromise
+			.then((preciseCoords) => {
+				onPreciseResult?.(preciseCoords);
+				document.dispatchEvent(
+					new CustomEvent('oc:location-updated', { detail: { coords: preciseCoords } }),
+				);
+			})
+			.catch(() => {
+				// Browser failed — nothing to upgrade to
+			});
+	}
+
+	return winner;
 }
 
 function getCityCache(): Record<string, string> {
