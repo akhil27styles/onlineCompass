@@ -34,130 +34,161 @@ const facts = [
 		<SiteShell current="moon" />
 
 		<main id="main" class="flex-grow z-10">
-			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
-				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
-				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
-					Current Moon Position
-				</h1>
-				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
-					Live moon phase, direction, and moonrise or moonset for your location — auto-detected in your browser.
-				</p>
-			</section>
+			<!-- GPS Request Modal (shown initially) -->
+			<div id="gpsRequestModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+				<div class="mx-4 max-w-md rounded-lg border border-hairline bg-canvas p-6 sm:p-8 shadow-2xl">
+					<div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-amber-100 dark:bg-amber-950/30">
+						<svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+							<path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+						</svg>
+					</div>
+					<h2 class="text-lg sm:text-xl font-semibold text-center text-ink mb-2">Enable Location Access</h2>
+					<p class="text-sm text-center text-body mb-6">
+						We need your GPS coordinates to calculate the moon's current position, phase, altitude, and moonrise/moonset times for your exact location.
+					</p>
+					<p class="text-xs text-center text-muted mb-6 font-mono">
+						Your location data stays private in your browser and is never stored on our servers.
+					</p>
+					<button
+						id="enableGpsBtn"
+						class="w-full rounded-md bg-ink hover:bg-ink/90 px-4 py-3 text-sm font-semibold text-canvas transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2 dark:focus:ring-offset-canvas-soft"
+					>
+						Allow GPS Access
+					</button>
+					<p class="text-xs text-center text-muted mt-4">
+						If prompted, click "Allow" to share your location.
+					</p>
+				</div>
+			</div>
 
-			<!-- Tool Grid -->
-			<section class="py-6 sm:py-8">
-				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-					
-					<!-- Left: Dial and calculations -->
-					<div class="flex flex-col">
-						<SkyDial id="moonDial" title="Moon Direction Now" subtitle="Lunar Tracking" variant="moon" />
+			<!-- Main Content (hidden until GPS is ready) -->
+			<div id="mainContent" class="hidden">
+				<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+					<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+					<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+						Current Moon Position
+					</h1>
+					<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+						Live moon phase, direction, and moonrise/moonset times for your location.
+					</p>
+				</section>
+
+				<!-- Tool Grid -->
+				<section class="py-6 sm:py-8">
+					<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
 						
-						<!-- Moon Direction readout card -->
-						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-6">
-							<p class="font-mono text-[10px] uppercase text-muted tracking-wider text-center">Moon Direction</p>
-							<h3 id="moonDirectionText" class="text-xl sm:text-2xl font-semibold tracking-tight text-ink text-center mt-2">--</h3>
-							<p class="text-xs text-body text-center font-mono mt-1"><span id="moonAzimuthRaw">--</span>° azimuth <span class="cursor-help text-muted" title="Measured clockwise from North (0°)">ⓘ</span></p>
+						<!-- Left: Dial and calculations -->
+						<div class="flex flex-col">
+							<SkyDial id="moonDial" title="Moon Direction Now" subtitle="Lunar Tracking" variant="moon" />
+							
+							<!-- Moon Direction readout card -->
+							<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-6">
+								<p class="font-mono text-[10px] uppercase text-muted tracking-wider text-center">Moon Direction</p>
+								<h3 id="moonDirectionText" class="text-xl sm:text-2xl font-semibold tracking-tight text-ink text-center mt-2">--</h3>
+								<p class="text-xs text-body text-center font-mono mt-1"><span id="moonAzimuthRaw">--</span>° azimuth <span class="cursor-help text-muted" title="Measured clockwise from North (0°)">ⓘ</span></p>
+							</div>
+
+							<!-- Core Metrics Grid Header -->
+							<h3 class="text-xs font-mono uppercase text-muted tracking-wider mt-6 mb-2 pl-1">Right Now</h3>
+
+							<!-- Core Metrics Row (4-column) -->
+							<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+								<!-- 1. Phase Card with Custom SVG -->
+								<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
+									<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Phase</p>
+									<div id="moonPhaseSvgContainer" class="size-11 mx-auto mt-2" aria-hidden="true">
+										<!-- Dynamically injected math-accurate SVG -->
+									</div>
+									<div>
+										<p id="moonPhaseNameVal" class="text-[11px] font-semibold text-ink mt-2 truncate">--</p>
+										<p id="moonIlluminationVal" class="text-[9px] text-body mt-0.5 font-mono">--% lit</p>
+									</div>
+								</div>
+
+								<!-- 2. Altitude -->
+								<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
+									<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Altitude</p>
+									<div class="my-auto">
+										<p id="moonAltitudeVal" class="text-sm font-semibold text-ink font-mono">--</p>
+									</div>
+									<p id="moonAltitudeHelp" class="text-[9px] text-body">--</p>
+								</div>
+
+								<!-- 3. Moonrise -->
+								<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
+									<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Moonrise</p>
+									<div class="my-auto font-mono">
+										<p id="moonriseTimeVal" class="text-sm font-semibold text-ink">--</p>
+									</div>
+									<p class="text-[9px] text-body">local time</p>
+								</div>
+
+								<!-- 4. Moonset -->
+								<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
+									<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Moonset</p>
+									<div class="my-auto font-mono">
+										<p id="moonsetTimeVal" class="text-sm font-semibold text-ink">--</p>
+									</div>
+									<p class="text-[9px] text-body">local time</p>
+								</div>
+							</div>
 						</div>
 
-						<!-- Core Metrics Grid Header -->
-						<h3 class="text-xs font-mono uppercase text-muted tracking-wider mt-6 mb-2 pl-1">Right Now</h3>
+						<!-- Right: Sidebar controls and secondary metrics -->
+						<aside class="grid gap-6">
+							<!-- Location settings panel -->
+							<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="moon-location-title">
+								<h2 id="moon-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+								<div class="mt-4">
+									<LocationPrompt messageId="moonLocationNote" compact showAlert={false}/>
+								</div>
+							</section>
 
-						<!-- Core Metrics Row (4-column) -->
-						<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-							<!-- 1. Phase Card with Custom SVG -->
-							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
-								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Phase</p>
-								<div id="moonPhaseSvgContainer" class="size-11 mx-auto mt-2" aria-hidden="true">
-									<!-- Dynamically injected math-accurate SVG -->
-								</div>
-								<div>
-									<p id="moonPhaseNameVal" class="text-[11px] font-semibold text-ink mt-2 truncate">--</p>
-									<p id="moonIlluminationVal" class="text-[9px] text-body mt-0.5 font-mono">--% lit</p>
-								</div>
-							</div>
+							<!-- Weather widget -->
+						<WeatherWidget />
 
-							<!-- 2. Altitude -->
-							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
-								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Altitude</p>
-								<div class="my-auto">
-									<p id="moonAltitudeVal" class="text-sm font-semibold text-ink font-mono">--</p>
-								</div>
-								<p id="moonAltitudeHelp" class="text-[9px] text-body">--</p>
-							</div>
+						<!-- Lunar metrics details -->
+							<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="moon-times-title">
+								<h2 id="moon-times-title" class="text-xs font-mono uppercase text-muted tracking-wider">Lunar Stats</h2>
+								<dl class="mt-4 grid gap-3 text-xs">
+									<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+										<dt class="text-body font-mono">Distance</dt>
+										<dd id="moonDistance" class="font-mono text-ink font-semibold">--</dd>
+									</div>
+									<div class="flex justify-between gap-4 border-t border-hairline pt-3">
+										<dt class="text-body font-mono">Visibility</dt>
+										<dd id="moonVisibility" class="font-mono text-ink font-semibold">--</dd>
+									</div>
+								</dl>
+							</section>
 
-							<!-- 3. Moonrise -->
-							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
-								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Moonrise</p>
-								<div class="my-auto font-mono">
-									<p id="moonriseTimeVal" class="text-sm font-semibold text-ink">--</p>
-								</div>
-								<p class="text-[9px] text-body">local time</p>
-							</div>
+							<AdSlot id="ad-moon-sidebar" format="vertical" />
+						</aside>
+					</div>
+				</section>
 
-							<!-- 4. Moonset -->
-							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated flex flex-col justify-between min-h-[140px]">
-								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Moonset</p>
-								<div class="my-auto font-mono">
-									<p id="moonsetTimeVal" class="text-sm font-semibold text-ink">--</p>
-								</div>
-								<p class="text-[9px] text-body">local time</p>
-							</div>
+				<!-- Educational Info -->
+				<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+					<div class="content-grid">
+						<div class="max-w-2xl">
+							<p class="font-mono text-xs uppercase text-muted tracking-widest">Physics Reference</p>
+							<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Understanding the lunar path.</h2>
+							<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+								The Moon orbiting Earth moves along an elliptical path inclined relative to Earth\'s equator, generating distinct phases and rise/set times that shift dynamically:
+							</p>
+						</div>
+						<div class="mt-8 grid gap-4 sm:grid-cols-2">
+							{facts.map(([title, body]) => (
+								<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
+									<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
+									<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
+								</article>
+							))}
 						</div>
 					</div>
-
-					<!-- Right: Sidebar controls and secondary metrics -->
-					<aside class="grid gap-6">
-						<!-- Location settings panel -->
-						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="moon-location-title">
-							<h2 id="moon-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
-							<div class="mt-4">
-								<LocationPrompt messageId="moonLocationNote" compact showAlert={true}/>
-							</div>
-						</section>
-
-						<!-- Weather widget -->
-					<WeatherWidget />
-
-					<!-- Lunar metrics details -->
-						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="moon-times-title">
-							<h2 id="moon-times-title" class="text-xs font-mono uppercase text-muted tracking-wider">Lunar Stats</h2>
-							<dl class="mt-4 grid gap-3 text-xs">
-								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-									<dt class="text-body font-mono">Distance</dt>
-									<dd id="moonDistance" class="font-mono text-ink font-semibold">--</dd>
-								</div>
-								<div class="flex justify-between gap-4 border-t border-hairline pt-3">
-									<dt class="text-body font-mono">Visibility</dt>
-									<dd id="moonVisibility" class="font-mono text-ink font-semibold">--</dd>
-								</div>
-							</dl>
-						</section>
-
-						<AdSlot id="ad-moon-sidebar" format="vertical" />
-					</aside>
-				</div>
-			</section>
-
-			<!-- Educational Info -->
-			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
-				<div class="content-grid">
-					<div class="max-w-2xl">
-						<p class="font-mono text-xs uppercase text-muted tracking-widest">Physics Reference</p>
-						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Understanding the lunar path.</h2>
-						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
-							The Moon orbiting Earth moves along an elliptical path inclined relative to Earth\'s equator, generating distinct phases and rise/set times that shift dynamically:
-						</p>
-					</div>
-					<div class="mt-8 grid gap-4 sm:grid-cols-2">
-						{facts.map(([title, body]) => (
-							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
-								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
-								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
-							</article>
-						))}
-					</div>
-				</div>
-			</section>
+				</section>
+			</div>
 		</main>
 
 		<SiteFooter />
@@ -252,6 +283,22 @@ const facts = [
 		renderMoon();
 		window.clearInterval(timer);
 		timer = window.setInterval(renderMoon, 30_000);
+
+		// Show main content and hide GPS modal when location is ready
+		const modal = document.getElementById('gpsRequestModal');
+		const mainContent = document.getElementById('mainContent');
+		if (modal) modal.classList.add('hidden');
+		if (mainContent) mainContent.classList.remove('hidden');
+	}
+
+	// Handle GPS modal button
+	const enableGpsBtn = document.getElementById('enableGpsBtn') as HTMLButtonElement;
+	if (enableGpsBtn) {
+		enableGpsBtn.addEventListener('click', () => {
+			mountDeviceUi({
+				onLocation: (c) => onLocation(c.latitude, c.longitude),
+			});
+		});
 	}
 
 	mountDeviceUi({

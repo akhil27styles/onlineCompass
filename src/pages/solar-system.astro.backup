@@ -100,34 +100,34 @@ import SeoJsonLd from '../components/SeoJsonLd.astro';
 					</div>
 				</div>
 
-				<!-- Quick Planet Navigation - Mobile Optimized with Real Images & 3D Effects -->
-				<div class="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 bg-canvas/90 backdrop-blur-md rounded-full border border-hairline px-2 sm:px-4 py-1.5 sm:py-2 pointer-events-auto overflow-x-auto max-w-[95vw] shadow-2xl" style="perspective: 1000px;">
+				<!-- Quick Planet Navigation - Mobile Optimized with Real Images -->
+				<div class="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 bg-canvas/90 backdrop-blur-md rounded-full border border-hairline px-2 sm:px-4 py-1.5 sm:py-2 pointer-events-auto overflow-x-auto max-w-[95vw]">
 					<div class="flex items-center gap-1.5 sm:gap-2">
-						<button class="planet-quick-nav planet-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-yellow-400 shadow-lg hover:shadow-yellow-400/50" data-planet="sun" title="Sun" style="box-shadow: 0 0 12px rgba(253, 184, 19, 0.4), inset 0 0 8px rgba(253, 184, 19, 0.2); transform-style: preserve-3d;">
+						<button class="planet-quick-nav planet-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-yellow-400" data-planet="sun" title="Sun">
 							<img src="/images/sun.jpeg" alt="Sun" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-5 h-5 sm:w-6 sm:h-6 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-gray-400 shadow-lg hover:shadow-gray-400/50" data-planet="mercury" title="Mercury" style="box-shadow: 0 0 8px rgba(156, 120, 83, 0.3), inset 0 0 6px rgba(156, 120, 83, 0.1);">
+						<button class="planet-quick-nav planet-icon w-5 h-5 sm:w-6 sm:h-6 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-gray-400" data-planet="mercury" title="Mercury">
 							<img src="/images/mercury.jpeg" alt="Mercury" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-orange-300 shadow-lg hover:shadow-orange-300/50" data-planet="venus" title="Venus" style="box-shadow: 0 0 10px rgba(255, 198, 73, 0.4), inset 0 0 6px rgba(255, 198, 73, 0.15);">
+						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-orange-300" data-planet="venus" title="Venus">
 							<img src="/images/venus.jpeg" alt="Venus" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-blue-400 shadow-lg hover:shadow-blue-400/50" data-planet="earth" title="Earth" style="box-shadow: 0 0 10px rgba(34, 51, 255, 0.4), inset 0 0 6px rgba(34, 51, 255, 0.15);">
+						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-blue-400" data-planet="earth" title="Earth">
 							<img src="/images/earth.jpeg" alt="Earth" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-5 h-5 sm:w-6 sm:h-6 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-red-400 shadow-lg hover:shadow-red-400/50" data-planet="mars" title="Mars" style="box-shadow: 0 0 8px rgba(220, 20, 60, 0.3), inset 0 0 6px rgba(220, 20, 60, 0.1);">
+						<button class="planet-quick-nav planet-icon w-5 h-5 sm:w-6 sm:h-6 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-red-400" data-planet="mars" title="Mars">
 							<img src="/images/mars.jpeg" alt="Mars" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-7 h-7 sm:w-9 sm:h-9 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-orange-200 shadow-lg hover:shadow-orange-200/50" data-planet="jupiter" title="Jupiter" style="box-shadow: 0 0 12px rgba(255, 165, 0, 0.4), inset 0 0 8px rgba(255, 165, 0, 0.15);">
+						<button class="planet-quick-nav planet-icon w-7 h-7 sm:w-9 sm:h-9 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-orange-200" data-planet="jupiter" title="Jupiter">
 							<img src="/images/jupiter.jpeg" alt="Jupiter" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-yellow-300 shadow-lg hover:shadow-yellow-300/50" data-planet="saturn" title="Saturn" style="box-shadow: 0 0 12px rgba(255, 215, 0, 0.4), inset 0 0 8px rgba(255, 215, 0, 0.15);">
+						<button class="planet-quick-nav planet-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-yellow-300" data-planet="saturn" title="Saturn">
 							<img src="/images/saturn.jpeg" alt="Saturn" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-cyan-300 shadow-lg hover:shadow-cyan-300/50" data-planet="uranus" title="Uranus" style="box-shadow: 0 0 10px rgba(79, 208, 224, 0.3), inset 0 0 6px rgba(79, 208, 224, 0.1);">
-							<img src="/images/uranus.png" alt="Uranus" class="w-full h-full object-cover" />
+						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-cyan-300" data-planet="uranus" title="Uranus">
+							<img src="/images/uranus.jpeg" alt="Uranus" class="w-full h-full object-cover" />
 						</button>
-						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-all duration-200 shrink-0 overflow-hidden border-2 border-blue-500 shadow-lg hover:shadow-blue-500/50" data-planet="neptune" title="Neptune" style="box-shadow: 0 0 10px rgba(30, 144, 255, 0.4), inset 0 0 6px rgba(30, 144, 255, 0.15);">
+						<button class="planet-quick-nav planet-icon w-6 h-6 sm:w-7 sm:h-7 rounded-full hover:scale-110 transition-transform shrink-0 overflow-hidden border border-blue-400" data-planet="neptune" title="Neptune">
 							<img src="/images/neptune.jpeg" alt="Neptune" class="w-full h-full object-cover" />
 						</button>
 					</div>
@@ -429,13 +429,7 @@ import SeoJsonLd from '../components/SeoJsonLd.astro';
 				loadedTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 				loadedTexture.colorSpace = THREE.SRGBColorSpace;
 				console.log(`✓ Loaded texture for ${key}`);
-				// Texture loaded successfully - enable anisotropic filtering for better quality
-				loadedTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-				loadedTexture.colorSpace = THREE.SRGBColorSpace;
-				// Configure texture wrapping to clamp edges (avoid repeating)
-				loadedTexture.wrapS = THREE.ClampToEdgeWrapping;
-				loadedTexture.wrapT = THREE.ClampToEdgeWrapping;
-				console.log(`✓ Loaded texture for ${key}`);
+				updateLoadingProgress();
 			},
 			undefined,
 			(error) => {
@@ -562,10 +556,8 @@ import SeoJsonLd from '../components/SeoJsonLd.astro';
 			const moonGeometry = new THREE.SphereGeometry(0.8, 32, 32);
 			const moonTexture = textureLoader.load(textureUrls.moon, (loadedTexture) => {
 				loadedTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-                loadedTexture.colorSpace = THREE.SRGBColorSpace;
-                // Configure texture wrapping to clamp edges (avoid repeating)
-                loadedTexture.wrapS = THREE.ClampToEdgeWrapping;
-                loadedTexture.wrapT = THREE.ClampToEdgeWrapping;});
+				loadedTexture.colorSpace = THREE.SRGBColorSpace;
+			});
 			const moonMaterial = new THREE.MeshStandardMaterial({
 				map: moonTexture,
 				roughness: 1.0,
@@ -586,9 +578,7 @@ import SeoJsonLd from '../components/SeoJsonLd.astro';
 			const ringGeometry = new THREE.RingGeometry(data.size * 1.5, data.size * 2.5, 128);
 			const ringTexture = textureLoader.load(textureUrls.saturnRing, (loadedTexture) => {
 				loadedTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-                // Configure texture wrapping to clamp edges (avoid repeating)
-                loadedTexture.wrapS = THREE.ClampToEdgeWrapping;
-                loadedTexture.wrapT = THREE.ClampToEdgeWrapping;});
+			});
 			const ringMaterial = new THREE.MeshStandardMaterial({
 				map: ringTexture,
 				side: THREE.DoubleSide,
