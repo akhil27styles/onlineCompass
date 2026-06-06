@@ -51,6 +51,11 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	const allowLocationGlobal = document.querySelector<HTMLButtonElement>('#allowLocationGlobal');
 	const cityEl = document.querySelector('#locationCity');
 
+	// Alert banner elements
+	const alertBanner = document.querySelector('#locationAlertBanner');
+	const allowLocationAlert = document.querySelector<HTMLButtonElement>('#allowLocationAlert');
+	const dismissLocationAlert = document.querySelector<HTMLButtonElement>('#dismissLocationAlert');
+
 	let state: UiState = 'checking';
 	let inFlight = false;
 
@@ -61,6 +66,15 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		if (allowLocationGlobal) {
 			allowLocationGlobal.textContent =
 				next === 'denied' ? 'Allow in Settings' : 'Allow Location';
+		}
+
+		// Show/hide alert banner based on state
+		if (alertBanner) {
+			if (next === 'needs-permission' || next === 'denied' || next === 'checking') {
+				alertBanner.classList.remove('hidden');
+			} else if (next === 'ready') {
+				alertBanner.classList.add('hidden');
+			}
 		}
 	}
 
@@ -296,6 +310,14 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	bindButton(allowButtonEl, requestFromUser);
 	bindButton(allowLocationGlobal, requestFromUser);
 	bindButton(retryButtonEl, requestFromUser);
+	bindButton(allowLocationAlert, requestFromUser);
+
+	// Dismiss alert banner
+	dismissLocationAlert?.addEventListener('click', () => {
+		if (alertBanner) {
+			alertBanner.classList.add('hidden');
+		}
+	});
 
 	watchPermissionChanges((next: GeoPermission) => {
 		if (next === 'granted' && state !== 'ready') {
