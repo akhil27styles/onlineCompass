@@ -198,22 +198,21 @@ const facts = [
 	let coords: { latitude: number; longitude: number } | null = null;
 	let timer: number | undefined;
 
-	const beacon = bindSkyDialFromLocation('#sunDialBeacon', (c) => onLocation(c.latitude, c.longitude));
-	const degrees = document.querySelector('#sunDialDegrees');
-	const altitudeEl = document.querySelector('#sunDialAltitude');
-	const status = document.querySelector('#sunDialStatus');
-	const dialLocationCity = document.querySelector('#dialLocationCity');
-
-	// Restructured core metrics
-	const directionText = document.querySelector('#sunDirectionText');
-	const rawAzimuth = document.querySelector('#sunAzimuthRaw');
-	const coreAltitude = document.querySelector('#sunAltitudeVal');
-	const coreAltitudeHelp = document.querySelector('#sunAltitudeHelp');
-	const coreSunrise = document.querySelector('#sunriseTimeVal');
-	const coreSunset = document.querySelector('#sunsetTimeVal');
-
 	function setText(el: Element | null, value: string) {
 		if (el) el.textContent = value;
+	}
+
+	function onLocation(latitude: number, longitude: number) {
+		coords = { latitude, longitude };
+		renderSun();
+		window.clearInterval(timer);
+		timer = window.setInterval(renderSun, 30_000);
+
+		// Show main content and hide GPS modal when location is ready
+		const modal = document.getElementById('gpsRequestModal');
+		const mainContent = document.getElementById('mainContent');
+		if (modal) modal.classList.add('hidden');
+		if (mainContent) mainContent.classList.remove('hidden');
 	}
 
 	function renderSun() {
@@ -246,18 +245,19 @@ const facts = [
 		setText(document.querySelector('#dayLength'), formatDuration(snapshot.dayLength));
 	}
 
-	function onLocation(latitude: number, longitude: number) {
-		coords = { latitude, longitude };
-		renderSun();
-		window.clearInterval(timer);
-		timer = window.setInterval(renderSun, 30_000);
+	const beacon = bindSkyDialFromLocation('#sunDialBeacon', (c) => onLocation(c.latitude, c.longitude));
+	const degrees = document.querySelector('#sunDialDegrees');
+	const altitudeEl = document.querySelector('#sunDialAltitude');
+	const status = document.querySelector('#sunDialStatus');
+	const dialLocationCity = document.querySelector('#dialLocationCity');
 
-		// Show main content and hide GPS modal when location is ready
-		const modal = document.getElementById('gpsRequestModal');
-		const mainContent = document.getElementById('mainContent');
-		if (modal) modal.classList.add('hidden');
-		if (mainContent) mainContent.classList.remove('hidden');
-	}
+	// Restructured core metrics
+	const directionText = document.querySelector('#sunDirectionText');
+	const rawAzimuth = document.querySelector('#sunAzimuthRaw');
+	const coreAltitude = document.querySelector('#sunAltitudeVal');
+	const coreAltitudeHelp = document.querySelector('#sunAltitudeHelp');
+	const coreSunrise = document.querySelector('#sunriseTimeVal');
+	const coreSunset = document.querySelector('#sunsetTimeVal');
 
 	// Handle GPS modal button
 	const enableGpsBtn = document.getElementById('enableGpsBtn') as HTMLButtonElement;
@@ -269,9 +269,15 @@ const facts = [
 		});
 	}
 
+	// Mount device UI and start location fetching immediately so the browser
+	// can prompt for geolocation and we can use IP fallback — hide the
+	// decorative modal so users don't need to click the page to proceed.
 	mountDeviceUi({
 		onLocation: (c) => onLocation(c.latitude, c.longitude),
 	});
+
+	const gpsModal = document.getElementById('gpsRequestModal');
+	if (gpsModal) gpsModal.classList.add('hidden');
 
 	document.addEventListener('oc:location-ready', (event) => {
 		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;

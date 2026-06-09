@@ -208,33 +208,21 @@ const facts = [
 	let coords: { latitude: number; longitude: number } | null = null;
 	let timer: number | undefined;
 
-	const beacon = bindSkyDialFromLocation('#moonDialBeacon', (c) => onLocation(c.latitude, c.longitude));
-	const degrees = document.querySelector('#moonDialDegrees');
-	const altitudeEl = document.querySelector('#moonDialAltitude');
-	const status = document.querySelector('#moonDialStatus');
-	const dialLocationCity = document.querySelector('#dialLocationCity');
-
-	// Restructured core metrics
-	const directionText = document.querySelector('#moonDirectionText');
-	const rawAzimuth = document.querySelector('#moonAzimuthRaw');
-	const coreAltitude = document.querySelector('#moonAltitudeVal');
-	const coreAltitudeHelp = document.querySelector('#moonAltitudeHelp');
-	const coreMoonrise = document.querySelector('#moonriseTimeVal');
-	const coreMoonset = document.querySelector('#moonsetTimeVal');
-
-	// Phase readouts
-	const phaseSvgContainer = document.querySelector('#moonPhaseSvgContainer');
-	const phaseNameVal = document.querySelector('#moonPhaseNameVal');
-	const illuminationVal = document.querySelector('#moonIlluminationVal');
-
 	function setText(el: Element | null, value: string) {
 		if (el) el.textContent = value;
 	}
 
-	function formatMoonTime(date: Date | undefined, alwaysUp: boolean, alwaysDown: boolean, kind: 'rise' | 'set'): string {
-		if (alwaysUp) return kind === 'rise' ? 'Always up' : '—';
-		if (alwaysDown) return kind === 'set' ? 'Always down' : '—';
-		return formatTime(date);
+	function onLocation(latitude: number, longitude: number) {
+		coords = { latitude, longitude };
+		renderMoon();
+		window.clearInterval(timer);
+		timer = window.setInterval(renderMoon, 30_000);
+
+		// Show main content and hide GPS modal when location is ready
+		const modal = document.getElementById('gpsRequestModal');
+		const mainContent = document.getElementById('mainContent');
+		if (modal) modal.classList.add('hidden');
+		if (mainContent) mainContent.classList.remove('hidden');
 	}
 
 	function renderMoon() {
@@ -278,18 +266,30 @@ const facts = [
 		setText(document.querySelector('#moonVisibility'), snapshot.isUp ? 'Visible now' : 'Below horizon');
 	}
 
-	function onLocation(latitude: number, longitude: number) {
-		coords = { latitude, longitude };
-		renderMoon();
-		window.clearInterval(timer);
-		timer = window.setInterval(renderMoon, 30_000);
-
-		// Show main content and hide GPS modal when location is ready
-		const modal = document.getElementById('gpsRequestModal');
-		const mainContent = document.getElementById('mainContent');
-		if (modal) modal.classList.add('hidden');
-		if (mainContent) mainContent.classList.remove('hidden');
+	function formatMoonTime(date: Date | undefined, alwaysUp: boolean, alwaysDown: boolean, kind: 'rise' | 'set'): string {
+		if (alwaysUp) return kind === 'rise' ? 'Always up' : '—';
+		if (alwaysDown) return kind === 'set' ? 'Always down' : '—';
+		return formatTime(date);
 	}
+
+	const beacon = bindSkyDialFromLocation('#moonDialBeacon', (c) => onLocation(c.latitude, c.longitude));
+	const degrees = document.querySelector('#moonDialDegrees');
+	const altitudeEl = document.querySelector('#moonDialAltitude');
+	const status = document.querySelector('#moonDialStatus');
+	const dialLocationCity = document.querySelector('#dialLocationCity');
+
+	// Restructured core metrics
+	const directionText = document.querySelector('#moonDirectionText');
+	const rawAzimuth = document.querySelector('#moonAzimuthRaw');
+	const coreAltitude = document.querySelector('#moonAltitudeVal');
+	const coreAltitudeHelp = document.querySelector('#moonAltitudeHelp');
+	const coreMoonrise = document.querySelector('#moonriseTimeVal');
+	const coreMoonset = document.querySelector('#moonsetTimeVal');
+
+	// Phase readouts
+	const phaseSvgContainer = document.querySelector('#moonPhaseSvgContainer');
+	const phaseNameVal = document.querySelector('#moonPhaseNameVal');
+	const illuminationVal = document.querySelector('#moonIlluminationVal');
 
 	// Handle GPS modal button
 	const enableGpsBtn = document.getElementById('enableGpsBtn') as HTMLButtonElement;
@@ -301,9 +301,15 @@ const facts = [
 		});
 	}
 
+	// Mount device UI and start location fetching immediately so the browser
+	// can prompt for geolocation and we can use IP fallback — hide the
+	// decorative modal so users don't need to click the page to proceed.
 	mountDeviceUi({
 		onLocation: (c) => onLocation(c.latitude, c.longitude),
 	});
+
+	const gpsModal = document.getElementById('gpsRequestModal');
+	if (gpsModal) gpsModal.classList.add('hidden');
 
 	// Location Event Listeners
 	document.addEventListener('oc:location-ready', (event) => {
