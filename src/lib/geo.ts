@@ -28,6 +28,7 @@ const STORAGE_KEY = 'oc:last-coords';
 const IP_COORDS_KEY = 'oc:ip-coords';
 const IP_COORDS_TTL = 5 * 60 * 1000; // 5 minutes
 const CITY_CACHE_KEY = 'oc:city-cache';
+const IP_CITY_KEY = 'oc:ip-city';
 
 const geoOptionsFast: PositionOptions = {
 	enableHighAccuracy: false,
@@ -202,6 +203,22 @@ function setCachedIPCoords(coords: GeoCoords): void {
 	}
 }
 
+export function getCachedIPCity(): string | null {
+	try {
+		return sessionStorage.getItem(IP_CITY_KEY);
+	} catch {
+		return null;
+	}
+}
+
+function setCachedIPCity(city: string): void {
+	try {
+		sessionStorage.setItem(IP_CITY_KEY, city);
+	} catch {
+		// ignore quota / private mode
+	}
+}
+
 /**
  * Fetches approximate location from IP geolocation APIs.
  * Tries ipapi.co first, then falls back to ipgeolocation.io.
@@ -213,7 +230,7 @@ export async function fetchLocationFromIP(): Promise<GeoCoords> {
 
 	const controllers: AbortController[] = [];
 
-	const tryFetch = async (url: string, timeoutMs = 4000): Promise<GeoCoords> => {
+	const tryFetch = async (url: string, timeoutMs = 3000): Promise<GeoCoords> => {
 		const controller = new AbortController();
 		controllers.push(controller);
 		const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -225,6 +242,14 @@ export async function fetchLocationFromIP(): Promise<GeoCoords> {
 
 			// ipapi.co response
 			if (typeof data.latitude === 'number' && typeof data.longitude === 'number') {
+				const city = data.city || data.locality || '';
+				const region = data.region || data.region_name || '';
+				const country = data.country_name || '';
+				const cityStr = city && country
+					? region && region !== city ? `${city}, ${region}, ${country}` : `${city}, ${country}`
+					: city || region || country || '';
+				if (cityStr) setCachedIPCity(cityStr);
+
 				const coords: GeoCoords = {
 					latitude: data.latitude,
 					longitude: data.longitude,
@@ -414,7 +439,7 @@ export async function getCityFromCoords(latitude: number, longitude: number): Pr
 	const requests = GEOCODING_APIS.map(async (api) => {
 		try {
 			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), 4000);
+			const timeoutId = setTimeout(() => controller.abort(), 1500);
 
 			const response = await fetch(api.url(latitude, longitude), {
 				signal: controller.signal,

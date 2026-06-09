@@ -3,6 +3,7 @@ import {
 	type GeoPermission,
 	GeoError,
 	formatCoords,
+	getCachedIPCity,
 	isGeolocationSupported,
 	isSecureContextForGeo,
 	queryGeolocationPermission,
@@ -112,20 +113,31 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	}
 
 	async function updateCity(coords: GeoCoords) {
-		if (cityEl) cityEl.textContent = 'Looking up city…';
-		// Fetch city asynchronously without blocking UI
+		// Show coordinates immediately — no "Looking up city…" delay
+		const coordLabel = `${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}°`;
+		if (cityEl) cityEl.textContent = coordLabel;
+
+		// Check IP city cache for instant city name
+		const ipCity = getCachedIPCity();
+		if (ipCity) {
+			if (cityEl) cityEl.textContent = ipCity;
+			setText(messageEl, `Location: ${ipCity} (${coordLabel})`);
+			setText(globalLocationText, `📍 ${ipCity}`);
+			dispatch('oc:location-city-ready', { city: ipCity, coords });
+			return;
+		}
+
+		// Fallback: geocode in background (fast timeout)
 		try {
 			const city = await getCityFromCoords(coords.latitude, coords.longitude);
 			if (city) {
 				if (cityEl) cityEl.textContent = city;
-				setText(messageEl, `Location: ${city} (${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}°)`);
+				setText(messageEl, `Location: ${city} (${coordLabel})`);
 				setText(globalLocationText, `📍 ${city}`);
 				dispatch('oc:location-city-ready', { city, coords });
-			} else {
-				if (cityEl) cityEl.textContent = 'City unknown';
 			}
 		} catch {
-			if (cityEl) cityEl.textContent = 'City unknown';
+			// Silently keep showing coordinates
 		}
 	}
 
@@ -266,12 +278,9 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 			try {
 				const coords = await requestLocationWithFallback(
 					(ipCoords, source) => {
-						// IP resolved first — show approximate location
-						applyUi(
-							'ready',
-							`Approximate location (IP) — refining with GPS…`,
-							`~ ${formatCoords(ipCoords)}`,
-						);
+						// IP resolved first — show location immediately
+						const label = formatCoords(ipCoords);
+						applyUi('ready', `Lat ${ipCoords.latitude.toFixed(4)}°, Lon ${ipCoords.longitude.toFixed(4)}°`, label);
 						onLocation?.(ipCoords);
 						void updateCity(ipCoords);
 					},

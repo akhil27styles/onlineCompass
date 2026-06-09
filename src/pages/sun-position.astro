@@ -34,36 +34,8 @@ const facts = [
 		<SiteShell current="sun" />
 
 		<main id="main" class="flex-grow z-10">
-			<!-- GPS Request Modal (shown initially) -->
-			<div id="gpsRequestModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-				<div class="mx-4 max-w-md rounded-lg border border-hairline bg-canvas p-6 sm:p-8 shadow-2xl">
-					<div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-amber-100 dark:bg-amber-950/30">
-						<svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-							<path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-						</svg>
-					</div>
-					<h2 class="text-lg sm:text-xl font-semibold text-center text-ink mb-2">Enable Location Access</h2>
-					<p class="text-sm text-center text-body mb-6">
-						We need your GPS coordinates to calculate the sun's current position, altitude, sunrise and sunset times for your exact location.
-					</p>
-					<p class="text-xs text-center text-muted mb-6 font-mono">
-						Your location data stays private in your browser and is never stored on our servers.
-					</p>
-					<button
-						id="enableGpsBtn"
-						class="w-full rounded-md bg-ink hover:bg-ink/90 px-4 py-3 text-sm font-semibold text-canvas transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2 dark:focus:ring-offset-canvas-soft"
-					>
-						Allow GPS Access
-					</button>
-					<p class="text-xs text-center text-muted mt-4">
-						If prompted, click "Allow" to share your location.
-					</p>
-				</div>
-			</div>
-
-			<!-- Main Content (hidden until GPS is ready) -->
-			<div id="mainContent" class="hidden">
+			<!-- Main Content -->
+			<div id="mainContent">
 				<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
 					<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
 					<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
@@ -207,12 +179,6 @@ const facts = [
 		renderSun();
 		window.clearInterval(timer);
 		timer = window.setInterval(renderSun, 30_000);
-
-		// Show main content and hide GPS modal when location is ready
-		const modal = document.getElementById('gpsRequestModal');
-		const mainContent = document.getElementById('mainContent');
-		if (modal) modal.classList.add('hidden');
-		if (mainContent) mainContent.classList.remove('hidden');
 	}
 
 	function renderSun() {
@@ -259,25 +225,11 @@ const facts = [
 	const coreSunrise = document.querySelector('#sunriseTimeVal');
 	const coreSunset = document.querySelector('#sunsetTimeVal');
 
-	// Handle GPS modal button
-	const enableGpsBtn = document.getElementById('enableGpsBtn') as HTMLButtonElement;
-	if (enableGpsBtn) {
-		enableGpsBtn.addEventListener('click', () => {
-			mountDeviceUi({
-				onLocation: (c) => onLocation(c.latitude, c.longitude),
-			});
-		});
-	}
-
 	// Mount device UI and start location fetching immediately so the browser
-	// can prompt for geolocation and we can use IP fallback — hide the
-	// decorative modal so users don't need to click the page to proceed.
+	// can prompt for geolocation and we can use IP fallback.
 	mountDeviceUi({
 		onLocation: (c) => onLocation(c.latitude, c.longitude),
 	});
-
-	const gpsModal = document.getElementById('gpsRequestModal');
-	if (gpsModal) gpsModal.classList.add('hidden');
 
 	document.addEventListener('oc:location-ready', (event) => {
 		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
