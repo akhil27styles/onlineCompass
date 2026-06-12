@@ -13,7 +13,9 @@ export function bindSkyDialFromLocation(
 	const beacon = document.querySelector<HTMLElement>(beaconSelector);
 
 	const cached = readCachedCoords();
-	if (cached) onCoords(cached);
+	if (cached) {
+		setTimeout(() => onCoords(cached), 0);
+	}
 
 	document.addEventListener('oc:location-ready', (event) => {
 		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;

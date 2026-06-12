@@ -176,6 +176,25 @@ const facts = [
 	// Prefetch location silently for faster initial data
 	prefetchLocationSilently();
 
+	// Query and cache all DOM elements first to avoid initialization order issues
+	const degrees = document.querySelector('#moonDialDegrees');
+	const altitudeEl = document.querySelector('#moonDialAltitude');
+	const status = document.querySelector('#moonDialStatus');
+	const dialLocationCity = document.querySelector('#dialLocationCity');
+
+	// Restructured core metrics
+	const directionText = document.querySelector('#moonDirectionText');
+	const rawAzimuth = document.querySelector('#moonAzimuthRaw');
+	const coreAltitude = document.querySelector('#moonAltitudeVal');
+	const coreAltitudeHelp = document.querySelector('#moonAltitudeHelp');
+	const coreMoonrise = document.querySelector('#moonriseTimeVal');
+	const coreMoonset = document.querySelector('#moonsetTimeVal');
+
+	// Phase readouts
+	const phaseSvgContainer = document.querySelector('#moonPhaseSvgContainer');
+	const phaseNameVal = document.querySelector('#moonPhaseNameVal');
+	const illuminationVal = document.querySelector('#moonIlluminationVal');
+
 	// Declare state variables first, before any callbacks are registered
 	let coords: { latitude: number; longitude: number } | null = null;
 	let timer: number | undefined;
@@ -239,23 +258,6 @@ const facts = [
 	}
 
 	const beacon = bindSkyDialFromLocation('#moonDialBeacon', (c) => onLocation(c.latitude, c.longitude));
-	const degrees = document.querySelector('#moonDialDegrees');
-	const altitudeEl = document.querySelector('#moonDialAltitude');
-	const status = document.querySelector('#moonDialStatus');
-	const dialLocationCity = document.querySelector('#dialLocationCity');
-
-	// Restructured core metrics
-	const directionText = document.querySelector('#moonDirectionText');
-	const rawAzimuth = document.querySelector('#moonAzimuthRaw');
-	const coreAltitude = document.querySelector('#moonAltitudeVal');
-	const coreAltitudeHelp = document.querySelector('#moonAltitudeHelp');
-	const coreMoonrise = document.querySelector('#moonriseTimeVal');
-	const coreMoonset = document.querySelector('#moonsetTimeVal');
-
-	// Phase readouts
-	const phaseSvgContainer = document.querySelector('#moonPhaseSvgContainer');
-	const phaseNameVal = document.querySelector('#moonPhaseNameVal');
-	const illuminationVal = document.querySelector('#moonIlluminationVal');
 
 	// Mount device UI and start location fetching immediately so the browser
 	// can prompt for geolocation and we can use IP fallback.

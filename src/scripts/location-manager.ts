@@ -13,6 +13,7 @@ import {
 	watchPermissionChanges,
 	getCityFromCoords,
 	cacheCoords,
+	fetchLocationFromIP,
 } from '../lib/geo';
 
 export type LocationManagerOptions = {
@@ -229,6 +230,8 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	}
 
 	async function init() {
+		await Promise.resolve(); // Defer execution so that page event listeners can register first
+
 		if (!isGeolocationSupported()) {
 			onFailure(new GeoError('unsupported', 'Geolocation is not supported in this browser.'));
 			return;
@@ -273,37 +276,16 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 			return;
 		}
 
-		// prompt or unknown: use fallback (IP + browser in parallel)
+		// prompt or unknown: fetch IP location silently without triggering browser geolocation prompt
 		if (!cached) {
 			try {
-				const coords = await requestLocationWithFallback(
-					(ipCoords, source) => {
-						// IP resolved first — show location immediately
-						const label = formatCoords(ipCoords);
-						applyUi('ready', `Lat ${ipCoords.latitude.toFixed(4)}°, Lon ${ipCoords.longitude.toFixed(4)}°`, label);
-						onLocation?.(ipCoords);
-						void updateCity(ipCoords);
-					},
-					(preciseCoords) => {
-						// Browser geo resolved after IP — silently upgrade
-						const label = formatCoords(preciseCoords);
-						applyUi('ready', `Lat ${preciseCoords.latitude.toFixed(4)}°, Lon ${preciseCoords.longitude.toFixed(4)}°`, label);
-						onLocation?.(preciseCoords);
-						void updateCity(preciseCoords);
-					},
-				);
-				// Coords obtained — callbacks above handled UI
-				void coords;
-			} catch {
-				// Both IP and browser geolocation failed
-				if (state === 'checking') {
-					applyUi(
-						'needs-permission',
-						'Tap Allow Location Access. Your browser will ask for permission — needed for sun and moon position.',
-						'Permission needed',
-					);
-					dispatch('oc:location-needs-permission', { message: 'User gesture required' });
-				}
+				const ipCoords = await fetchLocationFromIP();
+				onSuccess(ipCoords, 'auto');
+			} catch (error) {
+				// Fallback to default coords (New York) silently if IP fetch fails
+				const DEFAULT_COORDS = { latitude: 40.7128, longitude: -74.006, accuracy: null };
+				cacheCoords(DEFAULT_COORDS);
+				onSuccess(DEFAULT_COORDS, 'auto');
 			}
 		}
 	}
