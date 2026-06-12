@@ -1,13 +1,14 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' };
 
 const buttonLabel = 
 	current === 'compass' ? 'Open Compass' : 
 	current === 'sun' ? 'Sun Tool' : 
 	current === 'moon' ? 'Moon Tool' : 
 	current === 'qibla' ? 'Qibla Finder' : 
+	current === 'wind' ? 'Wind Compass' : 
 	'Solar System';
 
 const buttonHref = 
@@ -15,6 +16,7 @@ const buttonHref =
 	current === 'sun' ? '/sun-position/' : 
 	current === 'moon' ? '/moon-position/' : 
 	current === 'qibla' ? '/qibla-compass/' : 
+	current === 'wind' ? '/wind-compass/' : 
 	'/solar-system/';
 ---
 
