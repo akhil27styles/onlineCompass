@@ -1,9 +1,21 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' };
 
-const toolHash = current === 'compass' ? '#compass' : current === 'sun' ? '#main' : '#main';
+const buttonLabel = 
+	current === 'compass' ? 'Open Compass' : 
+	current === 'sun' ? 'Sun Tool' : 
+	current === 'moon' ? 'Moon Tool' : 
+	current === 'qibla' ? 'Qibla Finder' : 
+	'Solar System';
+
+const buttonHref = 
+	current === 'compass' ? '#compass' : 
+	current === 'sun' ? '/sun-position/' : 
+	current === 'moon' ? '/moon-position/' : 
+	current === 'qibla' ? '/qibla-compass/' : 
+	'/solar-system/';
 ---
 
 <a
@@ -23,9 +35,9 @@ const toolHash = current === 'compass' ? '#compass' : current === 'sun' ? '#main
 			<ThemeToggle />
 			<a
 				class="focus-ring shrink-0 rounded-full border border-hairline bg-canvas px-3 py-1.5 font-mono text-[11px] text-body hover:border-hairline-strong hover:text-ink sm:text-xs"
-				href={current === 'compass' ? '#compass' : current === 'sun' ? '/sun-position/' : '/moon-position/'}
+				href={buttonHref}
 			>
-				{current === 'compass' ? 'Open Compass' : current === 'sun' ? 'Sun Tool' : 'Moon Tool'}
+				{buttonLabel}
 			</a>
 		</div>
 	</div>

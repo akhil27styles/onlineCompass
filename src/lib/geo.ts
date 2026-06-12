@@ -639,3 +639,48 @@ export async function forwardGeocode(input: string): Promise<GeoCoords> {
 		throw new GeoError('unknown', `Failed to geocode location "${trimmed}": ${error.message}`);
 	}
 }
+
+export type QiblaData = {
+	bearing: number;
+	distanceKm: number;
+	distanceMiles: number;
+};
+
+/**
+ * Calculates Qibla direction (bearing in degrees from North) and distance
+ * from given latitude and longitude to Mecca (Kaaba: 21.42252 N, 39.82621 E).
+ */
+export function calculateQibla(lat: number, lng: number): QiblaData {
+	const MECCA_LAT = 21.42252;
+	const MECCA_LNG = 39.82621;
+	const EARTH_RADIUS_KM = 6371;
+
+	// Convert coordinates to radians
+	const phi1 = (lat * Math.PI) / 180;
+	const phi2 = (MECCA_LAT * Math.PI) / 180;
+	const deltaLambda = ((MECCA_LNG - lng) * Math.PI) / 180;
+
+	// 1. Calculate Great-Circle Bearing
+	const y = Math.sin(deltaLambda) * Math.cos(phi2);
+	const x =
+		Math.cos(phi1) * Math.sin(phi2) -
+		Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
+	const theta = Math.atan2(y, x);
+	const bearing = ((theta * 180) / Math.PI + 360) % 360;
+
+	// 2. Calculate Distance using Haversine Formula
+	const deltaPhi = phi2 - phi1;
+	const a =
+		Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+		Math.cos(phi1) * Math.cos(phi2) *
+		Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	const distanceKm = EARTH_RADIUS_KM * c;
+	const distanceMiles = distanceKm * 0.621371;
+
+	return {
+		bearing,
+		distanceKm,
+		distanceMiles,
+	};
+}
