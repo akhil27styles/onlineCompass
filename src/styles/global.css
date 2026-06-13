@@ -68,6 +68,8 @@
 		min-width: 320px;
 		min-height: 100vh;
 		margin: 0;
+		padding-top: env(safe-area-inset-top, 0px);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
 		background:
 			linear-gradient(90deg, #007cf0 0%, #00dfd8 30%, #7928ca 58%, #ff0080 78%, #f9cb28 100%) top / 100% 6px no-repeat,
 			var(--color-canvas);
@@ -89,7 +91,10 @@
 		font: inherit;
 	}
 
-	button {
+	button,
+	input,
+	select,
+	textarea {
 		touch-action: manipulation;
 	}
 

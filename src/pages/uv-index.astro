@@ -1,0 +1,228 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
+import AdSlot from '../components/AdSlot.astro';
+
+const facts = [
+	['What is UV Index?', 'The UV Index measures the strength of ultraviolet radiation from the sun at the Earth\'s surface. Developed by the WHO, it ranges from 0 (night) to 11+ (extreme) and helps you plan sun protection.'],
+	['UVA vs UVB', 'UVA rays penetrate deep into skin and cause aging. UVB rays burn the surface and cause skin cancer. The UV Index measures both, weighted by their harmfulness.'],
+	['UV & Altitude', 'UV radiation increases 10-12% per 1000m of elevation. At high altitudes, you burn faster even on cool or cloudy days.'],
+	['UV & Reflection', 'Fresh snow reflects up to 80% of UV rays. Water reflects ~25%, sand ~15%. You can get sunburned from below even in the shade.'],
+];
+---
+
+<Layout
+	title="UV Index Today — Live UV Forecast & Sun Safety | freeOnlinecompass.com"
+	description="Check the current UV index at your location. Real-time UV level with color-coded scale, sun protection recommendations, and safety tips. Free mobile-friendly."
+	keywords="UV index, UV index today, UV forecast, sun safety, UV level, ultraviolet index, sun protection"
+	canonical="https://freeonlinecompass.com/uv-index/"
+>
+	<SeoJsonLd
+		slot="head"
+		name="UV Index Tracker — Online Compass"
+		description="Live UV index reading with color-coded scale and sun protection advice for your location."
+		url="https://freeonlinecompass.com/uv-index/"
+	/>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
+
+		<SiteShell current="uv-index" />
+
+		<main id="main" class="flex-grow z-10">
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					UV Index Today
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					Live UV index at your location with color-coded level, sun protection recommendations, and safety tips.
+				</p>
+			</section>
+
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+
+					<!-- Left: Main content -->
+					<div class="flex flex-col">
+						<!-- UV Meter Card -->
+						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated text-center">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Current UV Index</p>
+							<div class="mt-4 flex items-center justify-center gap-4">
+								<div id="uvMeter" class="relative w-32 h-32 rounded-full border-4 flex items-center justify-center transition-colors duration-500" style="border-color: var(--color-muted);">
+									<div>
+										<p id="uvValue" class="text-4xl font-semibold tracking-tight font-mono text-ink">--</p>
+										<p id="uvLevel" class="text-xs font-mono text-body mt-1">Detecting…</p>
+									</div>
+								</div>
+							</div>
+							<div id="uvRecommendation" class="mt-4 hidden">
+								<p id="uvRecommendationText" class="text-xs text-body font-mono leading-relaxed"></p>
+							</div>
+						</div>
+
+						<!-- UV Scale Legend -->
+						<div class="rounded-panel border border-hairline bg-canvas p-4 card-elevated mt-4">
+							<p class="font-mono text-[9px] uppercase text-muted tracking-wider text-center">UV Index Scale</p>
+							<div class="mt-3 grid grid-cols-5 gap-2">
+								{[0, 3, 6, 8, 11].map((start, i) => {
+									const levels = [
+										{ label: 'Low', range: '0-2', class: 'bg-[#50e3c2] text-black' },
+										{ label: 'Moderate', range: '3-5', class: 'bg-[#f5a623] text-black' },
+										{ label: 'High', range: '6-7', class: 'bg-[#f9cb28] text-black' },
+										{ label: 'Very High', range: '8-10', class: 'bg-[#ee0000] text-white' },
+										{ label: 'Extreme', range: '11+', class: 'bg-[#7928ca] text-white' },
+									];
+									return (
+										<div class={`rounded py-2 px-1 text-center font-mono text-[10px] font-semibold ${levels[i].class}`}>
+											<div>{levels[i].label}</div>
+											<div class="opacity-70">{levels[i].range}</div>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+
+						<!-- Quick Safety Tips -->
+						<div class="rounded-panel border border-hairline bg-canvas p-4 card-elevated mt-4">
+							<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Quick Sun Safety</p>
+							<ul class="mt-3 grid gap-2 text-xs text-body leading-relaxed">
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">☀️</span> Wear SPF 30+ sunscreen, reapply every 2 hours.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">🕶️</span> Protect eyes with UV-blocking sunglasses.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">👒</span> Wear a wide-brimmed hat and protective clothing.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">🌳</span> Seek shade during peak hours (10am – 4pm).
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<!-- Right: Sidebar -->
+					<aside class="grid gap-6">
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="uv-location-title">
+							<h2 id="uv-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+							<div class="mt-4">
+								<LocationPrompt messageId="uvLocationNote" compact showAlert={false}/>
+							</div>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="uv-skin-title">
+							<h2 id="uv-skin-title" class="text-xs font-mono uppercase text-muted tracking-wider">Skin Types</h2>
+							<p class="mt-3 text-xs text-body leading-relaxed">
+								Fair skin (Type I) burns in minutes at UV 6+. Darker skin (Type VI) has more natural protection but still needs SPF 30+ at UV 8+. The UV Index scale applies equally to all skin types — higher means faster damage.
+							</p>
+						</section>
+
+						<AdSlot id="ad-uv-sidebar" format="vertical" />
+					</aside>
+				</div>
+			</section>
+
+			<!-- Educational Info -->
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Health Reference</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Understanding the UV Index.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							The UV Index was developed by the World Health Organization to help people protect themselves from solar radiation. Higher values mean stronger UV radiation and faster skin damage.
+						</p>
+					</div>
+					<div class="mt-8 grid gap-4 sm:grid-cols-2">
+						{facts.map(([title, body]) => (
+							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
+								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
+								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
+							</article>
+						))}
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<script>
+	import { prefetchLocationSilently } from '../lib/geo';
+	import { mountDeviceUi } from '../scripts/device-ui';
+	import { fetchUVIndex, getUVLevel } from '../lib/uv';
+
+	prefetchLocationSilently();
+
+	const uvValue = document.querySelector('#uvValue');
+	const uvLevel = document.querySelector('#uvLevel');
+	const uvMeter = document.querySelector('#uvMeter');
+	const uvRecommendation = document.querySelector('#uvRecommendation');
+	const uvRecommendationText = document.querySelector('#uvRecommendationText');
+
+	function setText(el: Element | null, value: string) {
+		if (el) el.textContent = value;
+	}
+
+	function updateDisplay(uv: number) {
+		const level = getUVLevel(uv);
+		setText(uvValue, uv.toFixed(1));
+		setText(uvLevel, level.level);
+		if (uvMeter) {
+			uvMeter.style.borderColor = level.color;
+			(uvMeter.querySelector('#uvValue') as HTMLElement)?.style.setProperty('color', level.color);
+		}
+		setText(uvRecommendationText, level.recommendation);
+		uvRecommendation?.classList.remove('hidden');
+	}
+
+	function onLocation(latitude: number, longitude: number) {
+		setText(uvLevel, 'Loading…');
+		fetchUVIndex(latitude, longitude).then((data) => {
+			if (data) {
+				updateDisplay(data.current);
+			} else {
+				setText(uvLevel, 'Unavailable');
+			}
+		});
+	}
+
+	mountDeviceUi({
+		onLocation: (c) => onLocation(c.latitude, c.longitude),
+	});
+
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+</script>
+
+<style>
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background: 
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+	[data-theme="light"] .mesh-gradient-bg {
+		opacity: 0.06;
+	}
+</style>

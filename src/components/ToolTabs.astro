@@ -1,5 +1,5 @@
 ---
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' };
 
 const tabs = [
 	{ id: 'compass', href: '/', label: 'Compass', short: 'Compass', icon: '◎', aria: 'Online compass tool' },
@@ -7,6 +7,10 @@ const tabs = [
 	{ id: 'moon', href: '/moon-position/', label: 'Moon Position', short: 'Moon', icon: '☽', aria: 'Current moon position' },
 	{ id: 'qibla', href: '/qibla-compass/', label: 'Qibla Finder', short: 'Qibla', icon: '🕋', aria: 'Qibla finder compass' },
 	{ id: 'wind', href: '/wind-compass/', label: 'Wind Compass', short: 'Wind', icon: '💨', aria: 'Live wind compass' },
+	{ id: 'golden-hour', href: '/golden-hour/', label: 'Golden Hour', short: 'Golden', icon: '🌅', aria: 'Golden hour calculator' },
+	{ id: 'uv-index', href: '/uv-index/', label: 'UV Index', short: 'UV', icon: '☀️', aria: 'UV index tracker' },
+	{ id: 'prayer-times', href: '/prayer-times/', label: 'Prayer Times', short: 'Prayer', icon: '🕌', aria: 'Daily prayer times' },
+	{ id: 'day-length', href: '/day-length/', label: 'Day Length', short: 'Days', icon: '📅', aria: 'Day length by season' },
 	{ id: 'solar-system', href: '/solar-system/', label: '3D Solar System', short: 'Solar', icon: '🪐', aria: '3D solar system explorer' },
 ] as const;
 ---
@@ -16,7 +20,7 @@ const tabs = [
 	aria-label="Main tools"
 >
 	<div class="content-grid py-2">
-		<ul class="grid grid-cols-3 gap-1.5 sm:grid-cols-6 sm:gap-2">
+		<ul class="flex gap-1.5 overflow-x-auto sm:grid sm:grid-cols-5 lg:grid-cols-10 sm:gap-2">
 			{
 				tabs.map((tab) => (
 					<li>

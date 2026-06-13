@@ -142,6 +142,90 @@ export function getDirectionText(azimuth: number): string {
 	return `${base.label}, ${Math.round(minDiff)}° towards ${targetLabel}`;
 }
 
+export function getDayLength(date: Date, lat: number, lng: number): number {
+	const times = SunCalc.getTimes(date, lat, lng);
+	if (times.sunset && times.sunrise) {
+		return times.sunset.getTime() - times.sunrise.getTime();
+	}
+	return NaN;
+}
+
+export type YearExtremes = {
+	longest: { date: Date; ms: number; sunrise: Date; sunset: Date };
+	shortest: { date: Date; ms: number; sunrise: Date; sunset: Date };
+};
+
+export function getYearExtremes(year: number, lat: number, lng: number): YearExtremes {
+	let longest = { date: new Date(year, 0, 1), ms: 0, sunrise: new Date(), sunset: new Date() };
+	let shortest = { date: new Date(year, 0, 1), ms: Infinity, sunrise: new Date(), sunset: new Date() };
+
+	const daysInYear = (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 366 : 365;
+
+	for (let day = 0; day < daysInYear; day++) {
+		const date = new Date(year, 0, day + 1);
+		const ms = getDayLength(date, lat, lng);
+		if (!Number.isFinite(ms)) continue;
+
+		if (ms > longest.ms) {
+			const times = SunCalc.getTimes(date, lat, lng);
+			longest = { date, ms, sunrise: times.sunrise, sunset: times.sunset };
+		}
+		if (ms < shortest.ms) {
+			const times = SunCalc.getTimes(date, lat, lng);
+			shortest = { date, ms, sunrise: times.sunrise, sunset: times.sunset };
+		}
+	}
+
+	return { longest, shortest };
+}
+
+export function formatDayLength(ms: number): string {
+	if (!Number.isFinite(ms) || ms < 0) return '—';
+	const totalMinutes = Math.round(ms / 60_000);
+	const hours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+	return `${hours}h ${minutes}m`;
+}
+
+export function getSeasonName(date: Date, isNorthern: boolean): string {
+	const month = date.getMonth() + 1;
+	const day = date.getDate();
+	if (isNorthern) {
+		if (month >= 3 && month <= 5) return 'Spring';
+		if (month >= 6 && month <= 8) return 'Summer';
+		if (month >= 9 && month <= 11) return 'Autumn';
+		return 'Winter';
+	} else {
+		if (month >= 3 && month <= 5) return 'Autumn';
+		if (month >= 6 && month <= 8) return 'Winter';
+		if (month >= 9 && month <= 11) return 'Spring';
+		return 'Summer';
+	}
+}
+
+export function getMonthDayLabel(date: Date): string {
+	return date.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+}
+
+export function getSolsticeLabel(date: Date, isNorthern: boolean): string {
+	const month = date.getMonth() + 1;
+	const day = date.getDate();
+	if (isNorthern) {
+		// June solstice (longest day NH) / December solstice (shortest day NH)
+		if (month === 6) return 'Summer Solstice';
+		if (month === 12) return 'Winter Solstice';
+		// Near March equinox
+		if (month === 3) return 'Spring Equinox';
+		if (month === 9) return 'Autumnal Equinox';
+	} else {
+		if (month === 6) return 'Winter Solstice';
+		if (month === 12) return 'Summer Solstice';
+		if (month === 3) return 'Autumnal Equinox';
+		if (month === 9) return 'Spring Equinox';
+	}
+	return '';
+}
+
 export function getMoonPhaseSvg(phase: number): string {
 	const r = 46;
 	const cx = 50;

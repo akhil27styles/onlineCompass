@@ -9,7 +9,7 @@ import { fetchWeather, type WeatherData } from '../lib/weather';
 >
 	<h2 id="weather-title" class="text-xs font-mono uppercase text-muted tracking-wider">Current Weather</h2>
 	<div id="weatherLoading" class="mt-4 text-xs text-body">Loading weather…</div>
-	<div id="weatherContent" hidden class="mt-4">
+	<div id="weatherContent" hidden class="mt-4" aria-live="polite">
 		<div class="flex items-center gap-3">
 			<span id="weatherIcon" class="text-3xl" aria-hidden="true"></span>
 			<div>

@@ -1,0 +1,259 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
+import AdSlot from '../components/AdSlot.astro';
+
+const facts = [
+	['What is Golden Hour?', 'The period shortly after sunrise and before sunset when the sun is low on the horizon, creating warm, soft, diffused light with long shadows. Highly prized by photographers for portraits, landscapes, and cityscapes.'],
+	['Blue Hour', 'The twilight period before sunrise and after sunset when the sun is 4° to 8° below the horizon. The sky takes on a deep blue hue with cool, even light — perfect for cityscapes and moody photography.'],
+	['Why Light Changes', 'Sunlight travels through more atmosphere when the sun is low, scattering shorter blue wavelengths and allowing warm amber and red wavelengths to dominate. This Rayleigh scattering creates the signature golden glow.'],
+	['Duration by Latitude', 'Golden hour lasts longer at higher latitudes (closer to the poles) because the sun rises and sets at a shallower angle. Near the equator, golden hour can be as short as 20 minutes.'],
+];
+---
+
+<Layout
+	title="Golden Hour Calculator — Today's Sunrise & Sunset Times | freeOnlinecompass.com"
+	description="Find today's golden hour times for your location. Live countdown, morning and evening golden hour windows, and quality forecast based on cloud cover. Free mobile-friendly tool for photographers."
+	keywords="golden hour, golden hour calculator, golden hour today, golden hour photography, sunrise golden hour, sunset golden hour, golden hour time"
+	canonical="https://freeonlinecompass.com/golden-hour/"
+>
+	<SeoJsonLd
+		slot="head"
+		name="Golden Hour Calculator — Online Compass"
+		description="Live golden hour times with countdown and cloud cover quality forecast for your location."
+		url="https://freeonlinecompass.com/golden-hour/"
+	/>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
+
+		<SiteShell current="golden-hour" />
+
+		<main id="main" class="flex-grow z-10">
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					Golden Hour Calculator
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					Find today's golden hour windows at your location — live countdown, quality forecast, and photographer tips.
+				</p>
+			</section>
+
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+
+					<!-- Left: Main content -->
+					<div class="flex flex-col">
+						<!-- Countdown & Quality Card -->
+						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated text-center">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Next Golden Hour</p>
+							<p id="countdown" class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-ink font-mono">--</p>
+							<p id="countdownLabel" class="text-xs text-body mt-1 font-mono">Detecting location…</p>
+							<div id="currentStatus" class="mt-4 hidden">
+								<span id="qualityBadge" class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 dark:bg-amber-950/20 px-3 py-1 text-xs font-mono text-amber-800 dark:text-amber-200">
+									<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+									<span id="qualityText">Loading…</span>
+								</span>
+							</div>
+						</div>
+
+						<!-- Golden Hour Windows Row -->
+						<div class="grid grid-cols-2 gap-3 mt-4">
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Morning Golden Hour</p>
+								<p id="morningStart" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
+								<p class="text-[9px] text-body mt-0.5">start</p>
+								<p id="morningEnd" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
+								<p class="text-[9px] text-body mt-0.5">end (sunrise)</p>
+								<p id="morningDuration" class="text-[10px] text-amber-accent mt-2 font-mono">--</p>
+							</div>
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Evening Golden Hour</p>
+								<p id="eveningStart" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
+								<p class="text-[9px] text-body mt-0.5">start</p>
+								<p id="eveningEnd" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
+								<p class="text-[9px] text-body mt-0.5">end (sunset)</p>
+								<p id="eveningDuration" class="text-[10px] text-amber-accent mt-2 font-mono">--</p>
+							</div>
+						</div>
+
+						<!-- Sun Position Row -->
+						<div class="grid grid-cols-2 gap-3 mt-4">
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Sun Altitude</p>
+								<p id="sunAltitude" class="text-sm font-semibold text-ink mt-1 font-mono">--</p>
+							</div>
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Sun Azimuth</p>
+								<p id="sunAzimuth" class="text-sm font-semibold text-ink mt-1 font-mono">--</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right: Sidebar -->
+					<aside class="grid gap-6">
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="gh-location-title">
+							<h2 id="gh-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+							<div class="mt-4">
+								<LocationPrompt messageId="ghLocationNote" compact showAlert={false}/>
+							</div>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="gh-tips-title">
+							<h2 id="gh-tips-title" class="text-xs font-mono uppercase text-muted tracking-wider">Photography Tips</h2>
+							<ul class="mt-3 grid gap-2 text-xs text-body leading-relaxed">
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink">1.</span> Arrive 15 minutes early to set up before the window opens.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink">2.</span> Use a warm white balance (5500-6500K) to enhance the golden tones.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink">3.</span> Position your subject with the sun behind or to the side for rim lighting.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink">4.</span> Shoot in RAW to preserve highlight and shadow detail.
+								</li>
+							</ul>
+						</section>
+
+						<AdSlot id="ad-gh-sidebar" format="vertical" />
+					</aside>
+				</div>
+			</section>
+
+			<!-- Educational Info -->
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Photography Reference</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Understanding golden hour light.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							Golden hour is the first and last hour of sunlight in the day — the window when the sun is low enough to produce warm, directional light. The exact timing shifts with your latitude and the season.
+						</p>
+					</div>
+					<div class="mt-8 grid gap-4 sm:grid-cols-2">
+						{facts.map(([title, body]) => (
+							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
+								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
+								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
+							</article>
+						))}
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<script>
+	import { prefetchLocationSilently } from '../lib/geo';
+	import { mountDeviceUi } from '../scripts/device-ui';
+	import {
+		getGoldenHourSnapshot,
+		formatTime,
+		formatCountdown,
+		formatGoldenHourDuration,
+		getQualityDescription,
+		fetchCloudCover,
+		getSunPosition,
+	} from '../lib/golden-hour';
+
+	prefetchLocationSilently();
+
+	const countdownEl = document.querySelector('#countdown');
+	const countdownLabelEl = document.querySelector('#countdownLabel');
+	const qualityBadge = document.querySelector('#qualityBadge');
+	const qualityText = document.querySelector('#qualityText');
+	const currentStatus = document.querySelector('#currentStatus');
+	const morningStart = document.querySelector('#morningStart');
+	const morningEnd = document.querySelector('#morningEnd');
+	const morningDuration = document.querySelector('#morningDuration');
+	const eveningStart = document.querySelector('#eveningStart');
+	const eveningEnd = document.querySelector('#eveningEnd');
+	const eveningDuration = document.querySelector('#eveningDuration');
+	const sunAltitude = document.querySelector('#sunAltitude');
+	const sunAzimuth = document.querySelector('#sunAzimuth');
+
+	let coords: { latitude: number; longitude: number } | null = null;
+	let cloudCode: number | null = null;
+	let timer: number | undefined;
+
+	function setText(el: Element | null, value: string) {
+		if (el) el.textContent = value;
+	}
+
+	function render() {
+		if (!coords) return;
+		const snapshot = getGoldenHourSnapshot(new Date(), coords.latitude, coords.longitude);
+
+		setText(countdownEl, formatCountdown(snapshot.nextGoldenHourTime));
+		setText(countdownLabelEl, snapshot.nextGoldenHourLabel);
+
+		setText(morningStart, formatTime(snapshot.morningStart));
+		setText(morningEnd, formatTime(snapshot.morningEnd));
+		setText(morningDuration, `${formatGoldenHourDuration(snapshot.morningDuration)} duration`);
+		setText(eveningStart, formatTime(snapshot.eveningStart));
+		setText(eveningEnd, formatTime(snapshot.eveningEnd));
+		setText(eveningDuration, `${formatGoldenHourDuration(snapshot.eveningDuration)} duration`);
+
+		const sunPos = getSunPosition(new Date(), coords.latitude, coords.longitude);
+		setText(sunAltitude, `${sunPos.altitude.toFixed(1)}°`);
+		setText(sunAzimuth, `${Math.round(sunPos.azimuth)}°`);
+
+		const quality = getQualityDescription(cloudCode);
+		setText(qualityText, `${quality.emoji} ${quality.label}`);
+		qualityBadge?.classList.remove('hidden');
+	}
+
+	function onLocation(latitude: number, longitude: number) {
+		coords = { latitude, longitude };
+		render();
+		window.clearInterval(timer);
+		timer = window.setInterval(render, 30_000);
+
+		fetchCloudCover(latitude, longitude).then((code) => {
+			cloudCode = code;
+			render();
+		});
+	}
+
+	mountDeviceUi({
+		onLocation: (c) => onLocation(c.latitude, c.longitude),
+	});
+
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+</script>
+
+<style>
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background: 
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+	[data-theme="light"] .mesh-gradient-bg {
+		opacity: 0.06;
+	}
+</style>

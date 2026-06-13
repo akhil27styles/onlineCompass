@@ -131,28 +131,30 @@ const facts = [
 									<p class="text-xs font-mono uppercase text-muted">Decimal Degrees → DMS</p>
 									<div class="flex flex-col gap-2 sm:flex-row sm:items-end">
 										<div class="flex-1 flex flex-col gap-1">
-											<label for="decLatInput" class="text-[10px] font-mono text-muted uppercase tracking-wider">Latitude (decimal)</label>
-											<input
-												id="decLatInput"
-												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-3 py-2 text-sm font-mono text-ink placeholder:text-muted"
-												type="number"
-												step="any"
-												min="-90"
-												max="90"
-												placeholder="e.g. 40.7128"
-											/>
+										<label for="decLatInput" class="text-[10px] font-mono text-muted uppercase tracking-wider">Latitude (decimal)</label>
+										<input
+											id="decLatInput"
+											class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-3 py-2 text-sm font-mono text-ink placeholder:text-muted"
+											type="number"
+											step="any"
+											min="-90"
+											max="90"
+											placeholder="e.g. 40.7128"
+											autocomplete="off"
+										/>
 										</div>
 										<div class="flex-1 flex flex-col gap-1">
-											<label for="decLonInput" class="text-[10px] font-mono text-muted uppercase tracking-wider">Longitude (decimal)</label>
-											<input
-												id="decLonInput"
-												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-3 py-2 text-sm font-mono text-ink placeholder:text-muted"
-												type="number"
-												step="any"
-												min="-180"
-												max="180"
-												placeholder="e.g. -74.0060"
-											/>
+										<label for="decLonInput" class="text-[10px] font-mono text-muted uppercase tracking-wider">Longitude (decimal)</label>
+										<input
+											id="decLonInput"
+											class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-3 py-2 text-sm font-mono text-ink placeholder:text-muted"
+											type="number"
+											step="any"
+											min="-180"
+											max="180"
+											placeholder="e.g. -74.0060"
+											autocomplete="off"
+										/>
 										</div>
 										<button
 											id="convertToDms"
@@ -172,37 +174,40 @@ const facts = [
 										<div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
 											<div class="flex flex-col gap-1">
 												<label for="dmsLatDeg" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lat Deg</label>
-												<input
-													id="dmsLatDeg"
-													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
-													type="number"
-													min="0"
-													max="90"
-													placeholder="40"
-												/>
+											<input
+												id="dmsLatDeg"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+												type="number"
+												min="0"
+												max="90"
+												placeholder="40"
+												autocomplete="off"
+											/>
 											</div>
 											<div class="flex flex-col gap-1">
 												<label for="dmsLatMin" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lat Min</label>
-												<input
-													id="dmsLatMin"
-													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
-													type="number"
-													min="0"
-													max="59"
-													placeholder="42"
-												/>
+											<input
+												id="dmsLatMin"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+												type="number"
+												min="0"
+												max="59"
+												placeholder="42"
+												autocomplete="off"
+											/>
 											</div>
 											<div class="flex flex-col gap-1">
 												<label for="dmsLatSec" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lat Sec</label>
-												<input
-													id="dmsLatSec"
-													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
-													type="number"
-													step="any"
-													min="0"
-													max="59.999"
-													placeholder="46.1"
-												/>
+											<input
+												id="dmsLatSec"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+												type="number"
+												step="any"
+												min="0"
+												max="59.999"
+												placeholder="46.1"
+												autocomplete="off"
+											/>
 											</div>
 											<div class="flex flex-col gap-1">
 												<label for="dmsLatDir" class="text-[10px] font-mono text-muted uppercase tracking-wider">N/S</label>
@@ -218,37 +223,40 @@ const facts = [
 										<div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
 											<div class="flex flex-col gap-1">
 												<label for="dmsLonDeg" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lon Deg</label>
-												<input
-													id="dmsLonDeg"
-													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
-													type="number"
-													min="0"
-													max="180"
-													placeholder="74"
-												/>
+											<input
+												id="dmsLonDeg"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+												type="number"
+												min="0"
+												max="180"
+												placeholder="74"
+												autocomplete="off"
+											/>
 											</div>
 											<div class="flex flex-col gap-1">
 												<label for="dmsLonMin" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lon Min</label>
-												<input
-													id="dmsLonMin"
-													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
-													type="number"
-													min="0"
-													max="59"
-													placeholder="0"
-												/>
+											<input
+												id="dmsLonMin"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+												type="number"
+												min="0"
+												max="59"
+												placeholder="0"
+												autocomplete="off"
+											/>
 											</div>
 											<div class="flex flex-col gap-1">
 												<label for="dmsLonSec" class="text-[10px] font-mono text-muted uppercase tracking-wider">Lon Sec</label>
-												<input
-													id="dmsLonSec"
-													class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
-													type="number"
-													step="any"
-													min="0"
-													max="59.999"
-													placeholder="22.0"
-												/>
+											<input
+												id="dmsLonSec"
+												class="focus-ring rounded-md border border-hairline bg-canvas-soft-2 px-2 py-2 text-xs font-mono text-ink placeholder:text-muted"
+												type="number"
+												step="any"
+												min="0"
+												max="59.999"
+												placeholder="22.0"
+												autocomplete="off"
+											/>
 											</div>
 											<div class="flex flex-col gap-1">
 												<label for="dmsLonDir" class="text-[10px] font-mono text-muted uppercase tracking-wider">E/W</label>
@@ -376,20 +384,24 @@ const facts = [
 		}
 	}
 
-	// Copy buttons
-	document.querySelector('#copyLat')?.addEventListener('click', () => {
-		if (currentLat !== null) {
-			navigator.clipboard.writeText(currentLat.toFixed(6)).catch(() => {});
-		}
+	function copyWithFeedback(btn: Element | null, text: string) {
+		if (!btn) return;
+		navigator.clipboard.writeText(text).then(() => {
+			const orig = btn.textContent;
+			btn.textContent = 'Copied!';
+			setTimeout(() => { btn.textContent = orig; }, 1500);
+		}).catch(() => {});
+	}
+
+	document.querySelector('#copyLat')?.addEventListener('click', function() {
+		if (currentLat !== null) copyWithFeedback(this, currentLat.toFixed(6));
 	});
-	document.querySelector('#copyLon')?.addEventListener('click', () => {
-		if (currentLon !== null) {
-			navigator.clipboard.writeText(currentLon.toFixed(6)).catch(() => {});
-		}
+	document.querySelector('#copyLon')?.addEventListener('click', function() {
+		if (currentLon !== null) copyWithFeedback(this, currentLon.toFixed(6));
 	});
-	document.querySelector('#copyFull')?.addEventListener('click', () => {
+	document.querySelector('#copyFull')?.addEventListener('click', function() {
 		if (currentLat !== null && currentLon !== null) {
-			navigator.clipboard.writeText(`${currentLat.toFixed(6)}, ${currentLon.toFixed(6)}`).catch(() => {});
+			copyWithFeedback(this, `${currentLat.toFixed(6)}, ${currentLon.toFixed(6)}`);
 		}
 	});
 

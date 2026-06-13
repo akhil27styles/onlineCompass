@@ -1,0 +1,253 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
+import AdSlot from '../components/AdSlot.astro';
+
+const facts = [
+	['What Causes the Seasons?', 'Earth\'s 23.5° axial tilt causes different hemispheres to receive more direct sunlight at different times of year. During summer, your hemisphere tilts toward the sun, giving longer days and higher sun angles.'],
+	['Summer Solstice', 'The longest day of the year occurs around June 20-21 in the Northern Hemisphere and December 21-22 in the Southern Hemisphere. On this day, the sun reaches its highest declination of +23.5°.'],
+	['Winter Solstice', 'The shortest day of the year occurs around December 21-22 in the Northern Hemisphere and June 20-21 in the Southern Hemisphere. The sun reaches its lowest declination of -23.5°.'],
+	['Equinox', 'Twice a year (March and September), day and night are nearly equal length. The word "equinox" comes from Latin for "equal night." On these dates, the sun crosses the celestial equator.'],
+];
+---
+
+<Layout
+	title="Longest & Shortest Day of the Year — Summer & Winter Solstice | freeOnlinecompass.com"
+	description="Find the longest and shortest day of the year at your location. See today's day length, solstice dates, and how daylight changes through the seasons. Free mobile-friendly tool."
+	keywords="longest day of the year, shortest day of the year, summer solstice, winter solstice, day length, daylight hours, solstice dates"
+	canonical="https://freeonlinecompass.com/day-length/"
+>
+	<SeoJsonLd
+		slot="head"
+		name="Day Length — Online Compass"
+		description="Find the longest and shortest day of the year at your location with solstice dates and day length data."
+		url="https://freeonlinecompass.com/day-length/"
+	/>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
+
+		<SiteShell current="day-length" />
+
+		<main id="main" class="flex-grow z-10">
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					Day Length Tracker
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					See today's daylight hours, the longest and shortest days of the year, and how day length changes through the seasons at your location.
+				</p>
+			</section>
+
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+
+					<!-- Left: Main content -->
+					<div class="flex flex-col">
+						<!-- Today's Day Length -->
+						<div class="rounded-panel border border-hairline bg-canvas p-6 card-elevated mt-4 text-center">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Today's Day Length</p>
+							<p id="todayDayLength" class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-ink font-mono">--</p>
+							<p id="todayDate" class="text-xs text-body mt-1 font-mono"></p>
+							<!-- Day/Night visual bar -->
+							<div class="mt-4 h-3 rounded-full bg-canvas-soft-2 overflow-hidden flex">
+								<div id="daylightBar" class="h-full bg-amber-accent rounded-l-full transition-all duration-500" style="width: 50%;"></div>
+							</div>
+							<div class="flex justify-between text-[9px] font-mono text-muted mt-1">
+								<span id="sunriseToday">--</span>
+								<span>☀️</span>
+								<span id="sunsetToday">--</span>
+							</div>
+						</div>
+
+						<!-- Extremes Side by Side -->
+						<div class="grid grid-cols-2 gap-3 mt-4">
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Longest Day</p>
+								<p id="longestDayLabel" class="mt-1 text-xs font-mono text-body">--</p>
+								<p id="longestDayLength" class="mt-1 text-xl font-semibold text-ink font-mono">--</p>
+								<p id="longestDayDate" class="text-[10px] text-body mt-0.5 font-mono"></p>
+								<p id="longestDaySunrise" class="text-[9px] text-muted mt-1 font-mono"></p>
+								<p id="longestDaySunset" class="text-[9px] text-muted font-mono"></p>
+							</div>
+							<div class="rounded-panel border border-hairline bg-canvas p-4 text-center card-elevated">
+								<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Shortest Day</p>
+								<p id="shortestDayLabel" class="mt-1 text-xs font-mono text-body">--</p>
+								<p id="shortestDayLength" class="mt-1 text-xl font-semibold text-ink font-mono">--</p>
+								<p id="shortestDayDate" class="text-[10px] text-body mt-0.5 font-mono"></p>
+								<p id="shortestDaySunrise" class="text-[9px] text-muted mt-1 font-mono"></p>
+								<p id="shortestDaySunset" class="text-[9px] text-muted font-mono"></p>
+							</div>
+						</div>
+
+						<!-- Difference -->
+						<div class="rounded-panel border border-hairline bg-canvas p-4 card-elevated mt-4 text-center">
+							<p class="font-mono text-[9px] uppercase text-muted tracking-wider">Yearly Daylight Difference</p>
+							<p id="daylightDiff" class="mt-1 text-lg font-semibold text-ink font-mono">--</p>
+						</div>
+					</div>
+
+					<!-- Right: Sidebar -->
+					<aside class="grid gap-6">
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="dl-location-title">
+							<h2 id="dl-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+							<div class="mt-4">
+								<LocationPrompt messageId="dlLocationNote" compact showAlert={false}/>
+							</div>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="dl-fun-title">
+							<h2 id="dl-fun-title" class="text-xs font-mono uppercase text-muted tracking-wider">Did You Know?</h2>
+							<ul class="mt-3 grid gap-2 text-xs text-body leading-relaxed">
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">🌍</span> At the equator, day length is ~12 hours year-round. The biggest variation is at the poles.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">🧊</span> Above the Arctic Circle (66.5°N), the sun doesn't set on the summer solstice — midnight sun.
+								</li>
+								<li class="flex items-start gap-1.5 pt-2 border-t border-hairline">
+									<span class="text-ink shrink-0">📏</span> The word "solstice" means "sun stands still" because the sun's declination appears to pause at its extremes.
+								</li>
+							</ul>
+						</section>
+
+						<AdSlot id="ad-dl-sidebar" format="vertical" />
+					</aside>
+				</div>
+			</section>
+
+			<!-- Educational Info -->
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Astronomy Reference</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Why day length changes through the year.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							Earth's 23.5° axial tilt is the reason we have seasons and changing day lengths. As Earth orbits the sun, different hemispheres tilt toward or away from the sun, directly controlling how long the sun is above the horizon.
+						</p>
+					</div>
+					<div class="mt-8 grid gap-4 sm:grid-cols-2">
+						{facts.map(([title, body]) => (
+							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
+								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
+								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
+							</article>
+						))}
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<script>
+	import { prefetchLocationSilently } from '../lib/geo';
+	import { mountDeviceUi } from '../scripts/device-ui';
+	// @ts-expect-error suncalc ships without bundled types
+	import SunCalc from 'suncalc';
+	import {
+		getDayLength,
+		getYearExtremes,
+		formatDayLength,
+		formatTime,
+		getMonthDayLabel,
+		getSolsticeLabel,
+	} from '../lib/astronomy';
+
+	prefetchLocationSilently();
+
+	let coords: { latitude: number; longitude: number } | null = null;
+
+	function setText(el: Element | null, value: string) {
+		if (el) el.textContent = value;
+	}
+
+	function render() {
+		if (!coords) return;
+
+		const year = new Date().getFullYear();
+		const lat = coords.latitude;
+		const lng = coords.longitude;
+		const isNorthern = lat >= 0;
+
+		const today = new Date();
+		const todayMs = getDayLength(today, lat, lng);
+		const extremes = getYearExtremes(year, lat, lng);
+
+		const times_today = SunCalc.getTimes(today, lat, lng);
+		setText(document.querySelector('#todayDayLength'), formatDayLength(todayMs));
+		setText(document.querySelector('#todayDate'), getMonthDayLabel(today));
+
+		const sunriseStr = formatTime(times_today.sunrise);
+		const sunsetStr = formatTime(times_today.sunset);
+		setText(document.querySelector('#sunriseToday'), `↑ ${sunriseStr}`);
+		setText(document.querySelector('#sunsetToday'), `↓ ${sunsetStr}`);
+
+		// Day length bar
+		const dayPct = Math.min((todayMs / 86400000) * 100, 100);
+		const bar = document.querySelector('#daylightBar') as HTMLElement;
+		if (bar) bar.style.width = `${dayPct}%`;
+
+		// Longest day
+		setText(document.querySelector('#longestDayLabel'), getSolsticeLabel(extremes.longest.date, isNorthern) || 'Longest');
+		setText(document.querySelector('#longestDayLength'), formatDayLength(extremes.longest.ms));
+		setText(document.querySelector('#longestDayDate'), getMonthDayLabel(extremes.longest.date));
+		setText(document.querySelector('#longestDaySunrise'), `↑ ${formatTime(extremes.longest.sunrise)}`);
+		setText(document.querySelector('#longestDaySunset'), `↓ ${formatTime(extremes.longest.sunset)}`);
+
+		// Shortest day
+		setText(document.querySelector('#shortestDayLabel'), getSolsticeLabel(extremes.shortest.date, isNorthern) || 'Shortest');
+		setText(document.querySelector('#shortestDayLength'), formatDayLength(extremes.shortest.ms));
+		setText(document.querySelector('#shortestDayDate'), getMonthDayLabel(extremes.shortest.date));
+		setText(document.querySelector('#shortestDaySunrise'), `↑ ${formatTime(extremes.shortest.sunrise)}`);
+		setText(document.querySelector('#shortestDaySunset'), `↓ ${formatTime(extremes.shortest.sunset)}`);
+
+		// Difference
+		const diff = extremes.longest.ms - extremes.shortest.ms;
+		setText(document.querySelector('#daylightDiff'), formatDayLength(diff));
+	}
+
+	function onLocation(latitude: number, longitude: number) {
+		coords = { latitude, longitude };
+		render();
+	}
+
+	mountDeviceUi({
+		onLocation: (c) => onLocation(c.latitude, c.longitude),
+	});
+
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+</script>
+
+<style>
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background: 
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+	[data-theme="light"] .mesh-gradient-bg {
+		opacity: 0.06;
+	}
+</style>
