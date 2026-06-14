@@ -1,23 +1,39 @@
 ---
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' };
+import { DEFAULT_LOCALE } from '../i18n/locales';
+
+const { current = 'compass', lang = DEFAULT_LOCALE, t = {} as Record<string, string> } = Astro.props as {
+	current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length';
+	lang?: string;
+	t?: Record<string, string>;
+};
+
+function localeHref(path: string): string {
+	if (lang === DEFAULT_LOCALE) return path;
+	if (path === '/') return `/${lang}/`;
+	return `/${lang}${path}`;
+}
 
 const tabs = [
-	{ id: 'compass', href: '/', label: 'Compass', short: 'Compass', icon: '◎', aria: 'Online compass tool' },
-	{ id: 'sun', href: '/sun-position/', label: 'Sun Position', short: 'Sun', icon: '☀', aria: 'Current sun position' },
-	{ id: 'moon', href: '/moon-position/', label: 'Moon Position', short: 'Moon', icon: '☽', aria: 'Current moon position' },
-	{ id: 'qibla', href: '/qibla-compass/', label: 'Qibla Finder', short: 'Qibla', icon: '🕋', aria: 'Qibla finder compass' },
-	{ id: 'wind', href: '/wind-compass/', label: 'Wind Compass', short: 'Wind', icon: '💨', aria: 'Live wind compass' },
-	{ id: 'golden-hour', href: '/golden-hour/', label: 'Golden Hour', short: 'Golden', icon: '🌅', aria: 'Golden hour calculator' },
-	{ id: 'uv-index', href: '/uv-index/', label: 'UV Index', short: 'UV', icon: '☀️', aria: 'UV index tracker' },
-	{ id: 'prayer-times', href: '/prayer-times/', label: 'Prayer Times', short: 'Prayer', icon: '🕌', aria: 'Daily prayer times' },
-	{ id: 'day-length', href: '/day-length/', label: 'Day Length', short: 'Days', icon: '📅', aria: 'Day length by season' },
-	{ id: 'solar-system', href: '/solar-system/', label: '3D Solar System', short: 'Solar', icon: '🪐', aria: '3D solar system explorer' },
+	{ id: 'compass', href: localeHref('/'), labelKey: 'nav.compass', shortKey: 'nav.compass.short', icon: '◎', ariaKey: 'nav.compass.aria' },
+	{ id: 'sun', href: localeHref('/sun-position/'), labelKey: 'nav.sun', shortKey: 'nav.sun.short', icon: '☀', ariaKey: 'nav.sun.aria' },
+	{ id: 'moon', href: localeHref('/moon-position/'), labelKey: 'nav.moon', shortKey: 'nav.moon.short', icon: '☽', ariaKey: 'nav.moon.aria' },
+	{ id: 'qibla', href: localeHref('/qibla-compass/'), labelKey: 'nav.qibla', shortKey: 'nav.qibla.short', icon: '🕋', ariaKey: 'nav.qibla.aria' },
+	{ id: 'wind', href: localeHref('/wind-compass/'), labelKey: 'nav.wind', shortKey: 'nav.wind.short', icon: '💨', ariaKey: 'nav.wind.aria' },
+	{ id: 'golden-hour', href: localeHref('/golden-hour/'), labelKey: 'nav.goldenHour', shortKey: 'nav.goldenHour.short', icon: '🌅', ariaKey: 'nav.goldenHour.aria' },
+	{ id: 'uv-index', href: localeHref('/uv-index/'), labelKey: 'nav.uvIndex', shortKey: 'nav.uvIndex.short', icon: '☀️', ariaKey: 'nav.uvIndex.aria' },
+	{ id: 'prayer-times', href: localeHref('/prayer-times/'), labelKey: 'nav.prayerTimes', shortKey: 'nav.prayerTimes.short', icon: '🕌', ariaKey: 'nav.prayerTimes.aria' },
+	{ id: 'day-length', href: localeHref('/day-length/'), labelKey: 'nav.dayLength', shortKey: 'nav.dayLength.short', icon: '📅', ariaKey: 'nav.dayLength.aria' },
+	{ id: 'solar-system', href: localeHref('/solar-system/'), labelKey: 'nav.solarSystem', shortKey: 'nav.solarSystem.short', icon: '🪐', ariaKey: 'nav.solarSystem.aria' },
 ] as const;
+
+function tr(key: string): string {
+	return t[key] || key.split('.').pop()?.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()) || key;
+}
 ---
 
 <nav
 	class="sticky top-16 z-30 border-b border-hairline bg-canvas/95 backdrop-blur-md"
-	aria-label="Main tools"
+	aria-label={t['nav.main.label'] || 'Main tools'}
 >
 	<div class="content-grid py-2">
 		<ul class="flex gap-1.5 overflow-x-auto sm:grid sm:grid-cols-5 lg:grid-cols-10 sm:gap-2">
@@ -33,14 +49,14 @@ const tabs = [
 							]}
 							href={tab.href}
 							aria-current={current === tab.id ? 'page' : undefined}
-							aria-label={tab.aria}
+							aria-label={tr(tab.ariaKey)}
 						>
 							<span class="text-base leading-none sm:text-lg" aria-hidden="true">
 								{tab.icon}
 							</span>
 							<span class="mt-0.5 text-[10px] font-mono uppercase tracking-wide sm:mt-0 sm:text-xs sm:normal-case sm:tracking-normal">
-								<span class="sm:hidden">{tab.short}</span>
-								<span class="hidden sm:inline">{tab.label}</span>
+								<span class="sm:hidden">{tr(tab.shortKey)}</span>
+								<span class="hidden sm:inline">{tr(tab.labelKey)}</span>
 							</span>
 						</a>
 					</li>

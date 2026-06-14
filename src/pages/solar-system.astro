@@ -1257,6 +1257,32 @@ import SeoJsonLd from '../components/SeoJsonLd.astro';
 		document.getElementById('planetMoons')!.textContent = data.moons;
 		document.getElementById('planetDescription')!.textContent = data.description;
 
+
+		// Ensure the panel appears below the header / tabs and doesn't overlap them
+		function positionPanelBelowHeader() {
+			const header = document.querySelector('header');
+			const tabs = document.querySelector('nav[aria-label]');
+			let topOffset = 8; // minimal gap
+			if (header) {
+				const hr = (header as HTMLElement).getBoundingClientRect();
+				topOffset = Math.max(topOffset, hr.bottom + 8);
+			}
+			if (tabs) {
+				const tr = (tabs as HTMLElement).getBoundingClientRect();
+				topOffset = Math.max(topOffset, tr.bottom + 8);
+			}
+			// Cap to avoid placing off-screen
+			const maxTop = window.innerHeight * 0.25; // don't push too far down
+			if (topOffset > maxTop) topOffset = maxTop;
+			panel.style.top = `${Math.round(topOffset)}px`;
+		}
+
+		positionPanelBelowHeader();
+		if (!panel.dataset.positioned) {
+			window.addEventListener('resize', positionPanelBelowHeader, { passive: true });
+			panel.dataset.positioned = '1';
+		}
+
 		panel.classList.remove('hidden');
 	}
 

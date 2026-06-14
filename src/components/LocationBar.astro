@@ -1,3 +1,12 @@
+---
+import { DEFAULT_LOCALE } from '../i18n/locales';
+
+const { lang = DEFAULT_LOCALE, t = {} as Record<string, string> } = Astro.props as {
+	lang?: string;
+	t?: Record<string, string>;
+};
+---
+
 <div
 	class="border-b border-hairline bg-canvas-soft px-4 py-2"
 	role="status"
@@ -5,14 +14,14 @@
 >
 	<div class="content-grid flex flex-wrap items-center justify-between gap-2 text-xs">
 		<p id="globalLocationText" class="font-mono text-body">
-			Auto-detecting your location…
+			{t['location.detecting'] || 'Auto-detecting your location…'}
 		</p>
 		<button
 			id="allowLocationGlobal"
 			class="focus-ring hidden shrink-0 rounded-full bg-white px-3 py-1.5 font-mono text-[11px] font-semibold text-black"
 			type="button"
 		>
-			Allow Location
+			{t['location.allow'] || 'Allow Location'}
 		</button>
 	</div>
 </div>

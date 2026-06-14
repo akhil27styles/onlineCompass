@@ -4,6 +4,8 @@
 @source "../layouts";
 @source "../pages";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
 	--font-sans: Geist, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--font-mono: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;

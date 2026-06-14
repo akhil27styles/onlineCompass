@@ -1,47 +1,50 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import LocaleSwitcher from './LocaleSwitcher.astro';
+import { DEFAULT_LOCALE } from '../i18n/locales';
 
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' };
+const { current = 'compass', lang = DEFAULT_LOCALE, t = {} as Record<string, string> } = Astro.props as {
+	current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length';
+	lang?: string;
+	t?: Record<string, string>;
+};
 
-const buttonLabel = 
-	current === 'compass' ? 'Open Compass' : 
-	current === 'sun' ? 'Sun Tool' : 
-	current === 'moon' ? 'Moon Tool' : 
-	current === 'qibla' ? 'Qibla Finder' : 
-	current === 'wind' ? 'Wind Compass' : 
-	current === 'golden-hour' ? 'Golden Hour' :
-	current === 'uv-index' ? 'UV Index' :
-	current === 'prayer-times' ? 'Prayer Times' :
-	current === 'day-length' ? 'Day Length' :
-	'Solar System';
+function localeHref(path: string): string {
+	if (lang === DEFAULT_LOCALE) return path;
+	if (path === '/') return `/${lang}/`;
+	return `/${lang}${path}`;
+}
 
-const buttonHref = 
-	current === 'compass' ? '#compass' : 
-	current === 'sun' ? '/sun-position/' : 
-	current === 'moon' ? '/moon-position/' : 
-	current === 'qibla' ? '/qibla-compass/' : 
-	current === 'wind' ? '/wind-compass/' : 
-	current === 'golden-hour' ? '/golden-hour/' :
-	current === 'uv-index' ? '/uv-index/' :
-	current === 'prayer-times' ? '/prayer-times/' :
-	current === 'day-length' ? '/day-length/' :
-	'/solar-system/';
+const buttonLabel = t[`buttonLabel.${current}`] || 'Open Compass';
+
+const buttonHref =
+	current === 'compass' ? '#compass' :
+	current === 'sun' ? localeHref('/sun-position/') :
+	current === 'moon' ? localeHref('/moon-position/') :
+	current === 'qibla' ? localeHref('/qibla-compass/') :
+	current === 'wind' ? localeHref('/wind-compass/') :
+	current === 'golden-hour' ? localeHref('/golden-hour/') :
+	current === 'uv-index' ? localeHref('/uv-index/') :
+	current === 'prayer-times' ? localeHref('/prayer-times/') :
+	current === 'day-length' ? localeHref('/day-length/') :
+	localeHref('/solar-system/');
 ---
 
 <a
 	class="focus-ring fixed left-4 top-4 z-50 -translate-y-20 rounded-md bg-white px-3 py-2 text-sm font-medium text-black transition-transform duration-150 focus-visible:translate-y-0"
-	href="#main"
+	href={current === 'compass' ? '#main' : localeHref('/') + '#main'}
 >
-	Skip to Content
+	{t.skipToContent || 'Skip to Content'}
 </a>
 
 <header class="sticky top-0 z-40 border-b border-hairline bg-canvas-soft/90 backdrop-blur-md">
 	<div class="content-grid flex h-14 items-center justify-between gap-3 sm:h-16">
-		<a class="focus-ring flex min-w-0 items-center gap-2 rounded-md" href="/" aria-label="Online Compass Home">
-			<span class="grid size-7 place-items-center rounded bg-white text-[11px] font-bold text-black" translate="no">OC</span>
-			<span class="hidden sm:block truncate text-sm font-semibold tracking-tight text-ink" translate="no">Online Compass</span>
+		<a class="focus-ring flex min-w-0 items-center gap-2 rounded-md" href={localeHref('/')} aria-label={t['site.name'] || 'Online Compass Home'}>
+			<span class="grid size-7 place-items-center rounded bg-white text-[11px] font-bold text-black" translate="no">{t['site.oc'] || 'OC'}</span>
+			<span class="hidden sm:block truncate text-sm font-semibold tracking-tight text-ink" translate="no">{t['site.name'] || 'Online Compass'}</span>
 		</a>
 		<div class="flex items-center gap-2">
+			<LocaleSwitcher currentLang={lang} />
 			<ThemeToggle />
 			<a
 				class="focus-ring shrink-0 rounded-full border border-hairline bg-canvas px-3 py-1.5 font-mono text-[11px] text-body hover:border-hairline-strong hover:text-ink sm:text-xs"
