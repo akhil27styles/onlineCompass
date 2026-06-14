@@ -7,24 +7,24 @@ import LocationPrompt from '../components/LocationPrompt.astro';
 import AdSlot from '../components/AdSlot.astro';
 
 const facts = [
-	['What Causes the Seasons?', 'Earth\'s 23.5° axial tilt causes different hemispheres to receive more direct sunlight at different times of year. During summer, your hemisphere tilts toward the sun, giving longer days and higher sun angles.'],
-	['Summer Solstice', 'The longest day of the year occurs around June 20-21 in the Northern Hemisphere and December 21-22 in the Southern Hemisphere. On this day, the sun reaches its highest declination of +23.5°.'],
-	['Winter Solstice', 'The shortest day of the year occurs around December 21-22 in the Northern Hemisphere and June 20-21 in the Southern Hemisphere. The sun reaches its lowest declination of -23.5°.'],
-	['Equinox', 'Twice a year (March and September), day and night are nearly equal length. The word "equinox" comes from Latin for "equal night." On these dates, the sun crosses the celestial equator.'],
+	['What does day length mean?', 'Day length is the total duration of daylight at your location—from sunrise to sunset. It changes daily throughout the year due to Earth\'s axial tilt and orbital position. Day length is shortest at winter solstice and longest at summer solstice.'],
+	['What is the day length in India?', 'Day length varies across India (8-14 hours annually). Northern India experiences more extreme variation (8 hours in December, 14+ hours in June). Southern India has less variation (10-12 hours year-round) due to proximity to equator.'],
+	['What is 20 minutes before sunrise called?', 'This is called "civil twilight" or the "civil dawn." It\'s the period when the sun is below the horizon but its light brightens the sky. Artificial lighting is no longer required to move about safely.'],
+	['What is the actual length of a day?', 'A day is exactly 24 hours of Earth\'s rotation. However, "day length" commonly refers to daylight hours (sunrise to sunset), which vary from 0-24 hours depending on latitude and season.'],
 ];
 ---
 
 <Layout
-	title="Longest & Shortest Day of the Year — Summer & Winter Solstice | freeOnlinecompass.com"
-	description="Find the longest and shortest day of the year at your location. See today's day length, solstice dates, and how daylight changes through the seasons. Free mobile-friendly tool."
+	title="Longest & Shortest Day of the Year — Summer & Winter Solstice | trulycompass.com"
+	description="Find the longest and shortest day of the year at your location. See today's day length, solstice dates, and seasonal changes. Free mobile-friendly tool."
 	keywords="longest day of the year, shortest day of the year, summer solstice, winter solstice, day length, daylight hours, solstice dates"
-	canonical="https://freeonlinecompass.com/day-length/"
+	canonical="https://trulycompass.com/day-length/"
 >
 	<SeoJsonLd
 		slot="head"
 		name="Day Length — Online Compass"
 		description="Find the longest and shortest day of the year at your location with solstice dates and day length data."
-		url="https://freeonlinecompass.com/day-length/"
+		url="https://trulycompass.com/day-length/"
 	/>
 	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
 		<div class="mesh-gradient-bg" aria-hidden="true"></div>
@@ -33,7 +33,7 @@ const facts = [
 
 		<main id="main" class="flex-grow z-10">
 			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
-				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">trulycompass.com</p>
 				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
 					Day Length Tracker
 				</h1>
@@ -142,6 +142,18 @@ const facts = [
 		</main>
 
 		<SiteFooter />
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "FAQPage",
+				"mainEntity": [
+					{"@type": "Question", "name": "What does day length mean?", "acceptedAnswer": {"@type": "Answer", "text": "Day length is the total duration of daylight at your location—from sunrise to sunset. It changes daily throughout the year due to Earth's axial tilt and orbital position. Day length is shortest at winter solstice and longest at summer solstice."}},
+					{"@type": "Question", "name": "What is the day length in India?", "acceptedAnswer": {"@type": "Answer", "text": "Day length varies across India (8-14 hours annually). Northern India experiences more extreme variation (8 hours in December, 14+ hours in June). Southern India has less variation (10-12 hours year-round) due to proximity to equator."}},
+					{"@type": "Question", "name": "What is 20 minutes before sunrise called?", "acceptedAnswer": {"@type": "Answer", "text": "This is called 'civil twilight' or the 'civil dawn.' It's the period when the sun is below the horizon but its light brightens the sky. Artificial lighting is no longer required to move about safely."}},
+					{"@type": "Question", "name": "What is the actual length of a day?", "acceptedAnswer": {"@type": "Answer", "text": "A day is exactly 24 hours of Earth's rotation. However, 'day length' commonly refers to daylight hours (sunrise to sunset), which vary from 0-24 hours depending on latitude and season."}}
+				]
+			}
+		</script>
 	</div>
 </Layout>
 

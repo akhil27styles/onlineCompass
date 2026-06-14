@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<Layout
+	title="Terms and Conditions — trulycompass.com"
+	description="Terms and Conditions for using trulycompass.com. Understand your rights and responsibilities when using our free online compass and navigation tools."
+	keywords="terms and conditions, terms of service, online compass terms, website terms"
+	canonical="https://trulycompass.com/terms/"
+>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<SiteHeader current="compass" />
+		<main id="main" class="flex-grow z-10 py-12 sm:py-16">
+			<div class="content-grid max-w-3xl mx-auto prose prose-sm">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest">Last updated: June 2026</p>
+				<h1 class="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Terms and Conditions</h1>
+
+				<h2 class="mt-10 text-lg font-semibold text-ink">1. Acceptance of Terms</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					By accessing or using trulycompass.com ("the Website"), you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use the Website.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">2. Description of Service</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					trulycompass.com provides free web-based tools including a digital compass, sun and moon position trackers, prayer time calculator, qibla direction finder, wind compass, golden hour calculator, UV index tracker, day length calculator, and GPS coordinate finder. These tools are provided "as is" for informational and educational purposes.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">3. No Warranty</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					All tools and information on the Website are provided without any warranty, express or implied. We do not guarantee the accuracy, completeness, or reliability of any compass readings, astronomical calculations, prayer times, or other data. You use these tools at your own risk. Compass accuracy depends on your device's hardware sensors and environmental conditions.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">4. Limitation of Liability</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					trulycompass.com, its owners, operators, and affiliates shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your use of the Website or any tools provided. This includes, but is not limited to, navigation errors, missed prayer times, or reliance on astronomical data.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">5. User Responsibilities</h2>
+				<ul class="mt-3 grid gap-2 text-sm text-body leading-relaxed">
+					<li>You must not use the Website for any unlawful purpose or in violation of any applicable laws.</li>
+					<li>You must not attempt to disrupt, hack, or compromise the Website's functionality or security.</li>
+					<li>You must not scrape, reproduce, or redistribute Website content without prior written consent.</li>
+					<li>You acknowledge that the compass and navigation tools are supplementary aids and should not be your sole means of navigation in hazardous environments.</li>
+				</ul>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">6. Intellectual Property</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					All content, design, code, and functionality on trulycompass.com are our intellectual property or that of our licensors. You may not reproduce, modify, distribute, or create derivative works without our express permission. The "Online Compass" name and logo are our trademarks.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">7. Third-Party Links</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					The Website may contain links to third-party websites or services. We are not responsible for the content, privacy practices, or terms of these external sites. Accessing third-party links is at your own risk.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">8. Changes to Terms</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					We reserve the right to modify these terms at any time. Changes are effective immediately upon posting. Your continued use of the Website after changes constitutes acceptance of the new terms. We encourage you to review this page periodically.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">9. Governing Law</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					These terms are governed by and construed in accordance with the laws of the United States. Any disputes arising from these terms shall be resolved in the appropriate courts.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">10. Contact</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					For questions about these Terms and Conditions, please <a href="/contact/" class="text-ink underline hover:no-underline">contact us</a>.
+				</p>
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</Layout>

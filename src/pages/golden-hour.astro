@@ -6,25 +6,25 @@ import SeoJsonLd from '../components/SeoJsonLd.astro';
 import LocationPrompt from '../components/LocationPrompt.astro';
 import AdSlot from '../components/AdSlot.astro';
 
-const facts = [
-	['What is Golden Hour?', 'The period shortly after sunrise and before sunset when the sun is low on the horizon, creating warm, soft, diffused light with long shadows. Highly prized by photographers for portraits, landscapes, and cityscapes.'],
-	['Blue Hour', 'The twilight period before sunrise and after sunset when the sun is 4° to 8° below the horizon. The sky takes on a deep blue hue with cool, even light — perfect for cityscapes and moody photography.'],
-	['Why Light Changes', 'Sunlight travels through more atmosphere when the sun is low, scattering shorter blue wavelengths and allowing warm amber and red wavelengths to dominate. This Rayleigh scattering creates the signature golden glow.'],
-	['Duration by Latitude', 'Golden hour lasts longer at higher latitudes (closer to the poles) because the sun rises and sets at a shallower angle. Near the equator, golden hour can be as short as 20 minutes.'],
+const faqs = [
+	['What is golden hour time?', 'Golden hour is the period shortly after sunrise or before sunset (typically 1 hour each) when sunlight is warm, soft, and diffused. The exact duration depends on latitude and season. High latitudes experience longer golden hours than equatorial regions.'],
+	['What is a person\'s golden hour?', 'In the context of life goals, a "golden hour" refers to a critical period when action is most impactful. In photography, it refers to the optimal lighting conditions right after sunrise or before sunset.'],
+	['What does the golden hour mean?', 'Golden hour describes the quality of natural light. Low sun angle creates warm color temperatures (2500-3500K), long shadows, and minimal glare—ideal for photography. It occurs daily and is considered the best time for outdoor photography and videography.'],
+	['Is 6 PM the golden hour?', 'Not necessarily. Golden hour depends on your latitude, the date, and your local sunset time. In summer at higher latitudes, 6 PM might be too late. Check your location\'s exact golden hour times above. Closer to the equator, golden hour is shorter and happens around sunset.'],
 ];
 ---
 
 <Layout
-	title="Golden Hour Calculator — Today's Sunrise & Sunset Times | freeOnlinecompass.com"
-	description="Find today's golden hour times for your location. Live countdown, morning and evening golden hour windows, and quality forecast based on cloud cover. Free mobile-friendly tool for photographers."
+	title="Golden Hour Calculator — Today's Sunrise & Sunset Times | trulycompass.com"
+	description="Find today's golden hour times for your location. Live countdown, morning and evening windows, quality forecast. Free mobile-friendly tool for photographers."
 	keywords="golden hour, golden hour calculator, golden hour today, golden hour photography, sunrise golden hour, sunset golden hour, golden hour time"
-	canonical="https://freeonlinecompass.com/golden-hour/"
+	canonical="https://trulycompass.com/golden-hour/"
 >
 	<SeoJsonLd
 		slot="head"
 		name="Golden Hour Calculator — Online Compass"
 		description="Live golden hour times with countdown and cloud cover quality forecast for your location."
-		url="https://freeonlinecompass.com/golden-hour/"
+		url="https://trulycompass.com/golden-hour/"
 	/>
 	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
 		<div class="mesh-gradient-bg" aria-hidden="true"></div>
@@ -33,7 +33,7 @@ const facts = [
 
 		<main id="main" class="flex-grow z-10">
 			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
-				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">trulycompass.com</p>
 				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
 					Golden Hour Calculator
 				</h1>
@@ -136,7 +136,7 @@ const facts = [
 						</p>
 					</div>
 					<div class="mt-8 grid gap-4 sm:grid-cols-2">
-						{facts.map(([title, body]) => (
+						{faqs.map(([title, body]) => (
 							<article class="rounded border border-hairline bg-canvas-soft-2 p-5">
 								<h3 class="text-sm font-semibold text-ink font-mono">{title}</h3>
 								<p class="mt-3 text-xs leading-relaxed text-body">{body}</p>
@@ -147,7 +147,40 @@ const facts = [
 			</section>
 		</main>
 
+		<!-- FAQ Section -->
+		<section id="faq" class="border-t border-hairline bg-canvas py-12 sm:py-16">
+			<div class="content-grid">
+				<div class="max-w-2xl">
+					<p class="font-mono text-xs uppercase text-muted tracking-widest">FAQ</p>
+					<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Common questions about golden hour.</h2>
+				</div>
+				<div class="mt-8 grid gap-3">
+					{faqs.map(([question, answer]) => (
+						<details class="group rounded border border-hairline bg-canvas-soft-2 p-4 transition-colors [&_summary]:open:text-ink">
+							<summary class="focus-ring cursor-pointer list-none text-xs font-semibold text-body hover:text-ink font-mono flex items-center justify-between">
+								<span>{question}</span>
+								<span class="text-[14px] text-muted transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+							</summary>
+							<p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">{answer}</p>
+						</details>
+					))}
+				</div>
+			</div>
+		</section>
+
 		<SiteFooter />
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "FAQPage",
+				"mainEntity": [
+					{"@type": "Question", "name": "What is golden hour time?", "acceptedAnswer": {"@type": "Answer", "text": "Golden hour is the period shortly after sunrise or before sunset (typically 1 hour each) when sunlight is warm, soft, and diffused. The exact duration depends on latitude and season. High latitudes experience longer golden hours than equatorial regions."}},
+					{"@type": "Question", "name": "What is a person's golden hour?", "acceptedAnswer": {"@type": "Answer", "text": "In the context of life goals, a 'golden hour' refers to a critical period when action is most impactful. In photography, it refers to the optimal lighting conditions right after sunrise or before sunset."}},
+					{"@type": "Question", "name": "What does the golden hour mean?", "acceptedAnswer": {"@type": "Answer", "text": "Golden hour describes the quality of natural light. Low sun angle creates warm color temperatures (2500-3500K), long shadows, and minimal glare—ideal for photography. It occurs daily and is considered the best time for outdoor photography and videography."}},
+					{"@type": "Question", "name": "Is 6 PM the golden hour?", "acceptedAnswer": {"@type": "Answer", "text": "Not necessarily. Golden hour depends on your latitude, the date, and your local sunset time. In summer at higher latitudes, 6 PM might be too late. Check your location's exact golden hour times above. Closer to the equator, golden hour is shorter and happens around sunset."}}
+				]
+			}
+		</script>
 	</div>
 </Layout>
 

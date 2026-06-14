@@ -443,7 +443,7 @@ export async function getCityFromCoords(latitude: number, longitude: number): Pr
 
 			const response = await fetch(api.url(latitude, longitude), {
 				signal: controller.signal,
-				headers: api.name === 'nominatim' ? { 'User-Agent': 'freeOnlinecompass.com' } : {}
+				headers: api.name === 'nominatim' ? { 'User-Agent': 'trulycompass.com' } : {}
 			});
 			clearTimeout(timeoutId);
 
@@ -605,7 +605,7 @@ export async function forwardGeocode(input: string): Promise<GeoCoords> {
 
 				const response = await fetch(api.url(trimmed), {
 					signal: controller.signal,
-					headers: api.name === 'nominatim' ? { 'User-Agent': 'freeOnlinecompass.com' } : {}
+					headers: api.name === 'nominatim' ? { 'User-Agent': 'trulycompass.com' } : {}
 				});
 				clearTimeout(timeoutId);
 

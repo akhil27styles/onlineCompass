@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<Layout
+	title="About Us — trulycompass.com | Free Online Compass & Navigation Tools"
+	description="About trulycompass.com. We provide free, browser-based compass, sun position, moon phase, prayer times, and navigation tools — no app installation required."
+	keywords="about online compass, free compass online, browser compass tool, navigation tools, about us"
+	canonical="https://trulycompass.com/about/"
+>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<SiteHeader current="compass" />
+		<main id="main" class="flex-grow z-10 py-12 sm:py-16">
+			<div class="content-grid max-w-3xl mx-auto">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest">About</p>
+				<h1 class="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">About trulycompass.com</h1>
+
+				<div class="mt-8 grid gap-6 text-sm text-body leading-relaxed">
+					<p>
+						<strong class="text-ink">trulycompass.com</strong> is a comprehensive suite of free, browser-based navigation and astronomical tools. We believe that essential utilities like a compass, sun tracker, and prayer time calculator should be accessible to anyone with a web browser — no app downloads, no installations, no sign-ups required.
+					</p>
+
+					<h2 class="text-lg font-semibold text-ink mt-8">Our Mission</h2>
+					<p>
+						Our mission is to provide accurate, privacy-first digital tools that work on any device. Every tool on this website runs entirely in your browser. Your location data never touches our servers — all calculations happen locally on your device. This commitment to privacy sets us apart from traditional apps that require accounts and data sharing.
+					</p>
+
+					<h2 class="text-lg font-semibold text-ink mt-8">What We Offer</h2>
+					<div class="grid gap-4 sm:grid-cols-2">
+						<article class="rounded border border-hairline bg-canvas-soft-2 p-4">
+							<h3 class="text-sm font-semibold text-ink font-mono">🧭 Digital Compass</h3>
+							<p class="mt-2 text-xs leading-relaxed text-body">Real-time magnetic heading using your device's built-in magnetometer. Features bearing pinning, turn guidance, and calibration support.</p>
+						</article>
+						<article class="rounded border border-hairline bg-canvas-soft-2 p-4">
+							<h3 class="text-sm font-semibold text-ink font-mono">☀ Sun & Moon Tracking</h3>
+							<p class="mt-2 text-xs leading-relaxed text-body">Live sun and moon position with altitude, azimuth, phase, rise/set times, and golden hour calculator.</p>
+						</article>
+						<article class="rounded border border-hairline bg-canvas-soft-2 p-4">
+							<h3 class="text-sm font-semibold text-ink font-mono">🕌 Prayer Times & Qibla</h3>
+							<p class="mt-2 text-xs leading-relaxed text-body">Accurate daily prayer times with multiple calculation methods and a live qibla direction compass pointing to Mecca.</p>
+						</article>
+						<article class="rounded border border-hairline bg-canvas-soft-2 p-4">
+							<h3 class="text-sm font-semibold text-ink font-mono">📍 GPS & Navigation</h3>
+							<p class="mt-2 text-xs leading-relaxed text-body">GPS coordinate finder, wind compass, compass bearings reference, UV index tracker, and day length calculator.</p>
+						</article>
+					</div>
+
+					<h2 class="text-lg font-semibold text-ink mt-8">Why Browser-Based?</h2>
+					<p>
+						Modern web browsers are incredibly powerful. With APIs like the Generic Sensor API, Geolocation API, and WebGL, we can build sophisticated tools that once required native apps. By staying browser-based, we eliminate installation friction, ensure cross-platform compatibility (iOS, Android, Windows, Mac), and keep your data private. There is no app store to visit, no permissions to grant beyond what your browser already offers.
+					</p>
+
+					<h2 class="text-lg font-semibold text-ink mt-8">Our Values</h2>
+					<ul class="grid gap-3 text-sm text-body leading-relaxed">
+						<li class="flex gap-3"><span class="text-ink font-bold shrink-0">🔒</span> <strong>Privacy First</strong> — All computations happen client-side. Zero data collection, zero server storage.</li>
+						<li class="flex gap-3"><span class="text-ink font-bold shrink-0">🌐</span> <strong>Universal Access</strong> — Works on any device with a modern browser. No app store, no installation.</li>
+						<li class="flex gap-3"><span class="text-ink font-bold shrink-0">💯</span> <strong>Completely Free</strong> — No premium tiers, no hidden costs, no paywalls. All tools are free forever.</li>
+						<li class="flex gap-3"><span class="text-ink font-bold shrink-0">📐</span> <strong>Accuracy</strong> — Powered by well-established astronomical algorithms (SunCalc) and your device's native sensors.</li>
+					</ul>
+
+					<h2 class="text-lg font-semibold text-ink mt-8">Contact Us</h2>
+					<p>
+						Have feedback, suggestions, or questions? We would love to hear from you. Visit our <a href="/contact/" class="text-ink underline hover:no-underline">contact page</a> to get in touch.
+					</p>
+				</div>
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</Layout>

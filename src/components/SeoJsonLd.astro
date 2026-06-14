@@ -24,6 +24,18 @@ const schema = {
 		price: '0',
 		priceCurrency: 'USD',
 	},
+	author: {
+		'@type': 'Organization',
+		name: 'Online Compass',
+		url: 'https://trulycompass.com',
+	},
+	potentialAction: {
+		'@type': 'UseAction',
+		target: {
+			'@type': 'EntryPoint',
+			urlTemplate: 'https://trulycompass.com',
+		},
+	},
 };
 ---
 

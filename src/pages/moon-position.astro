@@ -14,19 +14,26 @@ const facts = [
 	['Orbital Distance', 'The distance between the center of the Earth and the Moon. It ranges from ~356,400 km at perigee (closest point) to ~406,700 km at apogee (furthest point) due to its elliptical orbit.'],
 	['Moon Elevation (Altitude)', 'The vertical angle between the Moon and the horizon. When the elevation is negative, the Moon is below the horizon and invisible to the observer.'],
 ];
+
+const faqs = [
+	['Which position is the Moon right now?', 'The Moon\'s current position is shown on the dial above with azimuth (direction from North) and altitude (height above horizon). The Moon moves approximately 13° per day relative to background stars.'],
+	['Where is the Moon\'s location in the sky right now?', 'Use the interactive moon dial to see the exact azimuth (0-360°) and altitude (-90 to +90°) of the Moon from your location. This updates in real-time throughout the day.'],
+	['What place is the Moon in right now?', 'The Moon\'s position changes hourly as it orbits Earth. The azimuth shows which compass direction (N, E, S, W), while altitude indicates how high it appears above the horizon. Negative altitude means it\'s below the horizon (not visible).'],
+	['Does the Moon affect melatonin?', 'Yes. Moonlight, especially during full moon phases, can suppress melatonin production in some people, potentially affecting sleep. Use our moon phase tracker to understand lunar cycles and plan accordingly.'],
+];
 ---
 
 <Layout
-	title="Current Moon Position — Moon Phase, Moonrise, Moonset & Azimuth"
-	description="See where the moon is right now from your location. Live moon phase, azimuth, altitude, moonrise and moonset times. Free mobile-friendly moon position tool."
-	keywords="moon position, current moon position, moon phase today, moonrise moonset, moon azimuth, moon position now"
-	canonical="https://freeonlinecompass.com/moon-position/"
+		title="Moon Position Today — Live Moon Phase Tracker & Azimuth Finder"
+		description="Track the moon's position in real-time. See current moon altitude, azimuth, phase, moonrise and moonset times. Moon phase tracker and lunar calculator."
+		keywords="moon position today, moon position, moon phase tracker, current moon position, moon azimuth altitude, moonrise moonset times, lunar calendar, moon phase"
+	canonical="https://trulycompass.com/moon-position/"
 >
 	<SeoJsonLd
 		slot="head"
 		name="Moon Position — Online Compass"
 		description="Live moon phase, azimuth, altitude, moonrise, and moonset for your location."
-		url="https://freeonlinecompass.com/moon-position/"
+		url="https://trulycompass.com/moon-position/"
 	/>
 	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
 		<div class="mesh-gradient-bg" aria-hidden="true"></div>
@@ -37,7 +44,7 @@ const facts = [
 			<!-- Main Content -->
 			<div id="mainContent">
 				<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
-					<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">freeOnlinecompass.com</p>
+					<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">trulycompass.com</p>
 					<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
 						Current Moon Position
 					</h1>
@@ -160,11 +167,42 @@ const facts = [
 						</div>
 					</div>
 				</section>
-			</div>
-		</main>
+			<!-- FAQ Section -->
+			<section id="faq" class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">FAQ</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Common questions about moon position.</h2>
+					</div>
+					<div class="mt-8 grid gap-3">
+						{faqs.map(([question, answer]) => (
+							<details class="group rounded border border-hairline bg-canvas-soft-2 p-4 transition-colors [&_summary]:open:text-ink">
+								<summary class="focus-ring cursor-pointer list-none text-xs font-semibold text-body hover:text-ink font-mono flex items-center justify-between">
+									<span>{question}</span>
+									<span class="text-[14px] text-muted transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+								</summary>
+								<p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">{answer}</p>
+							</details>
+						))}
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
 
-		<SiteFooter />
-	</div>
+	<SiteFooter />
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "FAQPage",
+			"mainEntity": [
+				{"@type": "Question", "name": "Which position is the Moon right now?", "acceptedAnswer": {"@type": "Answer", "text": "The Moon's current position is shown on the dial above with azimuth (direction from North) and altitude (height above horizon). The Moon moves approximately 13° per day relative to background stars."}},
+				{"@type": "Question", "name": "Where is the Moon's location in the sky right now?", "acceptedAnswer": {"@type": "Answer", "text": "Use the interactive moon dial to see the exact azimuth (0-360°) and altitude (-90 to +90°) of the Moon from your location. This updates in real-time throughout the day."}},
+				{"@type": "Question", "name": "What place is the Moon in right now?", "acceptedAnswer": {"@type": "Answer", "text": "The Moon's position changes hourly as it orbits Earth. The azimuth shows which compass direction (N, E, S, W), while altitude indicates how high it appears above the horizon. Negative altitude means it's below the horizon (not visible)."}},
+				{"@type": "Question", "name": "Does the Moon affect melatonin?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Moonlight, especially during full moon phases, can suppress melatonin production in some people, potentially affecting sleep. Use our moon phase tracker to understand lunar cycles and plan accordingly."}}
+			]
+		}
+	</script>
 </Layout>
 
 <script>

@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://freeonlinecompass.com',
+	site: 'https://trulycompass.com',
 	output: 'static',
 	integrations: [sitemap()],
 	vite: {

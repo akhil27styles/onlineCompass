@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<Layout
+	title="Contact Us — trulycompass.com"
+	description="Contact trulycompass.com. Have questions, feedback, or suggestions about our online compass and navigation tools? Reach out to us."
+	keywords="contact, online compass support, feedback, contact us, compass help"
+	canonical="https://trulycompass.com/contact/"
+>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<SiteHeader current="compass" />
+		<main id="main" class="flex-grow z-10 py-12 sm:py-16">
+			<div class="content-grid max-w-3xl mx-auto">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest">Get in Touch</p>
+				<h1 class="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Contact Us</h1>
+				<p class="mt-4 text-sm text-body leading-relaxed max-w-xl">
+					Have a question, suggestion, or feedback about trulycompass.com? We're here to help. Reach out using the form below or through any of the methods listed.
+				</p>
+
+				<div class="mt-10 grid gap-8 lg:grid-cols-[1fr_320px]">
+					<!-- Contact Form -->
+					<form id="contactForm" class="grid gap-6" action="https://formspree.io/f/xgobrked" method="POST">
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div class="flex flex-col gap-1.5">
+								<label for="name" class="text-xs font-mono text-body uppercase tracking-wider">Name</label>
+								<input
+									id="name"
+									name="name"
+									type="text"
+									required
+									placeholder="Your name"
+									class="focus-ring rounded-md border border-hairline bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted font-mono"
+									autocomplete="name"
+								/>
+							</div>
+							<div class="flex flex-col gap-1.5">
+								<label for="email" class="text-xs font-mono text-body uppercase tracking-wider">Email</label>
+								<input
+									id="email"
+									name="email"
+									type="email"
+									required
+									placeholder="you@example.com"
+									class="focus-ring rounded-md border border-hairline bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted font-mono"
+									autocomplete="email"
+								/>
+							</div>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label for="subject" class="text-xs font-mono text-body uppercase tracking-wider">Subject</label>
+							<select
+								id="subject"
+								name="subject"
+								class="focus-ring rounded-md border border-hairline bg-canvas px-4 py-2.5 text-sm text-ink font-mono"
+							>
+								<option value="general">General Inquiry</option>
+								<option value="feedback">Feedback / Suggestion</option>
+								<option value="bug">Bug Report</option>
+								<option value="business">Business Inquiry</option>
+							</select>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label for="message" class="text-xs font-mono text-body uppercase tracking-wider">Message</label>
+							<textarea
+								id="message"
+								name="message"
+								required
+								rows="6"
+								placeholder="How can we help you?"
+								class="focus-ring rounded-md border border-hairline bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted font-mono resize-y"
+							></textarea>
+						</div>
+
+						<button
+							type="submit"
+							class="focus-ring w-full sm:w-auto rounded-full bg-ink px-8 py-3 text-sm font-semibold text-canvas transition-opacity hover:opacity-90 cursor-pointer"
+						>
+							Send Message
+						</button>
+					</form>
+
+					<!-- Sidebar Info -->
+					<aside class="grid gap-6 self-start">
+						<section class="rounded-panel border border-hairline bg-canvas p-5">
+							<h2 class="text-xs font-mono uppercase text-muted tracking-wider">Email</h2>
+							<p class="mt-2 text-sm text-ink font-mono">
+								<a href="mailto:hello@trulycompass.com" class="hover:underline">hello@trulycompass.com</a>
+							</p>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-5">
+							<h2 class="text-xs font-mono uppercase text-muted tracking-wider">Response Time</h2>
+							<p class="mt-2 text-sm text-body leading-relaxed">
+								We aim to respond to all inquiries within 24–48 hours during business days.
+							</p>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-5">
+							<h2 class="text-xs font-mono uppercase text-muted tracking-wider">Quick Links</h2>
+							<nav class="mt-3 flex flex-col gap-2 text-sm">
+								<a href="/about/" class="text-ink hover:underline">About Us</a>
+								<a href="/privacy-policy/" class="text-ink hover:underline">Privacy Policy</a>
+								<a href="/terms/" class="text-ink hover:underline">Terms & Conditions</a>
+							</nav>
+						</section>
+					</aside>
+				</div>
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</Layout>
