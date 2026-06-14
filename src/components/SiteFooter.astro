@@ -1,30 +1,15 @@
----
-import { DEFAULT_LOCALE } from '../i18n/locales';
-
-const { lang = DEFAULT_LOCALE, t = {} as Record<string, string> } = Astro.props as {
-	lang?: string;
-	t?: Record<string, string>;
-};
-
-function localeHref(path: string): string {
-	if (lang === DEFAULT_LOCALE) return path;
-	if (path === '/') return `/${lang}/`;
-	return `/${lang}${path}`;
-}
----
-
 <footer class="border-t border-hairline bg-canvas-soft py-10">
 	<div class="content-grid flex flex-col gap-6 text-xs font-mono text-body sm:flex-row sm:items-center sm:justify-between">
-		<p translate="no">{t['footer.copyright'] || '© 2026 Online Compass'}</p>
-		<nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label={t['nav.footer.label'] || 'Footer'}>
-			<a class="focus-ring rounded hover:text-white" href={localeHref('/')}>{t['nav.compass'] || 'Compass'}</a>
-			<a class="focus-ring rounded hover:text-white" href={localeHref('/sun-position/')}>{t['nav.footer.sun'] || 'Sun Position'}</a>
-			<a class="focus-ring rounded hover:text-white" href={localeHref('/moon-position/')}>{t['nav.footer.moon'] || 'Moon Position'}</a>
-			<a class="focus-ring rounded hover:text-white" href={localeHref('/gps-coordinates/')}>{t['nav.footer.gps'] || 'GPS Coordinates'}</a>
-			<a class="focus-ring rounded hover:text-white" href={localeHref('/compass-bearings/')}>{t['nav.footer.bearings'] || 'Bearings'}</a>
+		<p translate="no">© 2026 Online Compass</p>
+		<nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
+			<a class="focus-ring rounded hover:text-white" href="/">Compass</a>
+			<a class="focus-ring rounded hover:text-white" href="/sun-position/">Sun Position</a>
+			<a class="focus-ring rounded hover:text-white" href="/moon-position/">Moon Position</a>
+			<a class="focus-ring rounded hover:text-white" href="/gps-coordinates/">GPS Coordinates</a>
+			<a class="focus-ring rounded hover:text-white" href="/compass-bearings/">Bearings</a>
 		</nav>
 		<p>
-			{t['nav.footer.tagline'] || 'Free tools for'} <span class="text-white" translate="no">freeOnlinecompass.com</span>
+			Free tools for <span class="text-white" translate="no">freeOnlinecompass.com</span>
 		</p>
 	</div>
 </footer>

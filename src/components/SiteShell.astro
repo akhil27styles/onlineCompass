@@ -2,17 +2,10 @@
 import SiteHeader from './SiteHeader.astro';
 import ToolTabs from './ToolTabs.astro';
 import LocationBar from './LocationBar.astro';
-import { DEFAULT_LOCALE } from '../i18n/locales';
-import { getTranslations } from '../i18n/translations';
 
-const { current = 'compass', lang = DEFAULT_LOCALE } = Astro.props as {
-	current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length';
-	lang?: string;
-};
-
-const t = getTranslations(lang);
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' };
 ---
 
-<SiteHeader current={current} lang={lang} t={t} />
-<ToolTabs current={current} lang={lang} t={t} />
-<LocationBar lang={lang} t={t} />
+<SiteHeader current={current} />
+<ToolTabs current={current} />
+<LocationBar />

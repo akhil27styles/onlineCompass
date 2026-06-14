@@ -1,33 +1,16 @@
 ---
 import '../styles/global.css';
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES, getLocale } from '../i18n/locales';
-import { getTranslations } from '../i18n/translations';
 
 const {
-	lang = DEFAULT_LOCALE,
 	title = 'Online Compass — Free Digital Compass in Your Browser',
 	description = 'Free online compass with live heading, auto location, sun position, and moon position. Mobile-friendly — works in your browser at freeOnlinecompass.com.',
 	canonical = 'https://freeonlinecompass.com/',
 	keywords = 'online compass, free compass, digital compass, compass online, browser compass',
 } = Astro.props;
-
-const locale = getLocale(lang);
-const t = getTranslations(lang);
-
-function getAlternateHref(code: string, baseCanonical: string): string {
-	const path = baseCanonical.replace(/^https:\/\/freeonlinecompass\.com/, '');
-	const langPattern = new RegExp(`^/(${SUPPORTED_LOCALES.map(l => l.code).join('|')})(/|$)`);
-	const pathWithoutLang = path.replace(langPattern, '/');
-	if (code === DEFAULT_LOCALE) {
-		return `https://freeonlinecompass.com${pathWithoutLang}`;
-	}
-	const localePath = pathWithoutLang === '/' ? `/${code}/` : `/${code}${pathWithoutLang}`;
-	return `https://freeonlinecompass.com${localePath}`;
-}
 ---
 
 <!doctype html>
-<html lang={lang} dir={locale.dir}>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -39,10 +22,6 @@ function getAlternateHref(code: string, baseCanonical: string): string {
 		<meta name="robots" content="index, follow" />
 		<meta name="theme-color" id="themeColorMeta" content="#0a0a0a" />
 		<link rel="canonical" href={canonical} />
-		{SUPPORTED_LOCALES.map(l => (
-			<link rel="alternate" hrefLang={l.code} href={getAlternateHref(l.code, canonical)} />
-		))}
-		<link rel="alternate" hrefLang="x-default" href={getAlternateHref(DEFAULT_LOCALE, canonical)} />
 		<meta property="og:site_name" content="Online Compass" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
@@ -57,24 +36,28 @@ function getAlternateHref(code: string, baseCanonical: string): string {
 			rel="stylesheet"
 		/>
 		<script>
+			// Apply theme before page renders to prevent flash
 			(function() {
 				try {
 					const theme = localStorage.getItem('oc:theme') || 'dark';
 					document.documentElement.setAttribute('data-theme', theme);
 					const meta = document.getElementById('themeColorMeta');
 					if (meta) meta.content = theme === 'dark' ? '#0a0a0a' : '#fafafa';
-				} catch (e) {}
-				try {
-					const observer = new MutationObserver(() => {
-						const meta = document.getElementById('themeColorMeta');
-						if (meta) {
-							const theme = document.documentElement.getAttribute('data-theme');
-							meta.content = theme === 'light' ? '#fafafa' : '#0a0a0a';
-						}
-					});
-					observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-				} catch (e) {}
+				} catch (e) {
+					// Ignore errors
+				}
 			})();
+			// Watch theme changes to update meta tag
+			try {
+				const observer = new MutationObserver(() => {
+					const meta = document.getElementById('themeColorMeta');
+					if (meta) {
+						const theme = document.documentElement.getAttribute('data-theme');
+						meta.content = theme === 'light' ? '#fafafa' : '#0a0a0a';
+					}
+				});
+				observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+			} catch (e) {}
 		</script>
 		<slot name="head" />
 		<title>{title}</title>
