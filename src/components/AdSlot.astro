@@ -3,7 +3,6 @@ const { format = 'responsive', id } = Astro.props as { format?: 'responsive' | '
 ---
 
 <div class="ad-slot rounded-panel border border-dashed border-hairline bg-canvas-soft p-4 text-center" data-ad-format={format} id={id}>
-  <p class="text-xs text-muted font-mono">Advertisement</p>
   <slot />
 </div>
 

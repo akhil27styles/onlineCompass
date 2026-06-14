@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<Layout
+	title="Page Not Found — 404 | Truly Compass"
+	description="The page you're looking for doesn't exist. Return to Truly Compass homepage to access our free compass, sun position, prayer times and navigation tools."
+	keywords="404, page not found, truly compass"
+	canonical="https://trulycompass.com/404/"
+>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<SiteHeader current="compass" />
+		<main id="main" class="flex-grow z-10 flex items-center justify-center py-20">
+			<div class="content-grid text-center max-w-lg">
+				<p class="font-mono text-7xl sm:text-8xl font-bold text-ink/20 tracking-tighter">404</p>
+				<h1 class="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Page Not Found</h1>
+				<p class="mt-3 text-sm text-body leading-relaxed font-mono">
+					The page you're looking for doesn't exist or has been moved.
+				</p>
+				<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+					<a
+						href="/"
+						class="focus-ring rounded-full bg-ink px-8 py-3 text-sm font-semibold text-canvas transition-opacity hover:opacity-90"
+					>
+						← Back to Home
+					</a>
+					<a
+						href="/contact/"
+						class="focus-ring rounded-full border border-hairline bg-canvas px-8 py-3 text-sm font-semibold text-ink transition-colors hover:border-hairline-strong"
+					>
+						Report Issue
+					</a>
+				</div>
+				<nav class="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-mono text-body">
+					<a class="hover:text-white transition-colors" href="/">Compass</a>
+					<a class="hover:text-white transition-colors" href="/sun-position/">Sun Position</a>
+					<a class="hover:text-white transition-colors" href="/moon-position/">Moon Position</a>
+					<a class="hover:text-white transition-colors" href="/prayer-times/">Prayer Times</a>
+				</nav>
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</Layout>

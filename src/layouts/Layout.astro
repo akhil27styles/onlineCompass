@@ -2,7 +2,7 @@
 import '../styles/global.css';
 
 const {
-	title = 'Online Compass — Free Digital Compass in Your Browser',
+	title = 'Truly Compass — Free Digital Compass in Your Browser',
 	description = 'Free online compass with live heading, auto location, sun position, and moon position. Mobile-friendly — works in your browser at trulycompass.com.',
 	canonical = 'https://trulycompass.com/',
 	keywords = 'online compass, free compass, digital compass, compass online, browser compass',
@@ -27,7 +27,7 @@ const {
 		<meta name="theme-color" id="themeColorMeta" content="#0a0a0a" />
 		<link rel="canonical" href={canonical} />
 		<meta property="og:locale" content="en_US" />
-		<meta property="og:site_name" content="Online Compass" />
+		<meta property="og:site_name" content="Truly Compass" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
@@ -35,11 +35,18 @@ const {
 		<meta property="og:image" content="https://trulycompass.com/og-image.png" />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
-		<meta property="og:image:alt" content="Online Compass - Free Digital Compass and Navigation Tools" />
+		<meta property="og:image:alt" content="Truly Compass - Free Digital Compass and Navigation Tools" />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content="https://trulycompass.com/og-image.png" />
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-L1KC85ZFZF"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', 'G-L1KC85ZFZF');
+		</script>
 		<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
 		<link
 			href="https://fonts.bunny.net/css?family=geist:400,500,600|geist-mono:400"

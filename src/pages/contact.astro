@@ -37,12 +37,11 @@ import SiteFooter from '../components/SiteFooter.astro';
 								/>
 							</div>
 							<div class="flex flex-col gap-1.5">
-								<label for="email" class="text-xs font-mono text-body uppercase tracking-wider">Email</label>
+								<label for="email" class="text-xs font-mono text-body uppercase tracking-wider">Email <span class="text-muted">(optional)</span></label>
 								<input
 									id="email"
 									name="email"
 									type="email"
-									required
 									placeholder="you@example.com"
 									class="focus-ring rounded-md border border-hairline bg-canvas px-4 py-2.5 text-sm text-ink placeholder:text-muted font-mono"
 									autocomplete="email"
@@ -86,13 +85,6 @@ import SiteFooter from '../components/SiteFooter.astro';
 
 					<!-- Sidebar Info -->
 					<aside class="grid gap-6 self-start">
-						<section class="rounded-panel border border-hairline bg-canvas p-5">
-							<h2 class="text-xs font-mono uppercase text-muted tracking-wider">Email</h2>
-							<p class="mt-2 text-sm text-ink font-mono">
-								<a href="mailto:hello@trulycompass.com" class="hover:underline">hello@trulycompass.com</a>
-							</p>
-						</section>
-
 						<section class="rounded-panel border border-hairline bg-canvas p-5">
 							<h2 class="text-xs font-mono uppercase text-muted tracking-wider">Response Time</h2>
 							<p class="mt-2 text-sm text-body leading-relaxed">
