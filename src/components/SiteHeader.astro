@@ -1,7 +1,7 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' | 'heat-index' | 'air-quality' | 'stargazing' };
 
 const buttonLabel = 
 	current === 'compass' ? 'Open Compass' : 
@@ -11,6 +11,9 @@ const buttonLabel =
 	current === 'wind' ? 'Wind Compass' : 
 	current === 'golden-hour' ? 'Golden Hour' :
 	current === 'uv-index' ? 'UV Index' :
+	current === 'heat-index' ? 'Heat Index' :
+	current === 'air-quality' ? 'Air Quality' :
+	current === 'stargazing' ? 'Stargazing' :
 	current === 'prayer-times' ? 'Prayer Times' :
 	current === 'day-length' ? 'Day Length' :
 	'Solar System';
@@ -23,6 +26,9 @@ const buttonHref =
 	current === 'wind' ? '/wind-compass/' : 
 	current === 'golden-hour' ? '/golden-hour/' :
 	current === 'uv-index' ? '/uv-index/' :
+	current === 'heat-index' ? '/heat-index/' :
+	current === 'air-quality' ? '/air-quality/' :
+	current === 'stargazing' ? '/stargazing/' :
 	current === 'prayer-times' ? '/prayer-times/' :
 	current === 'day-length' ? '/day-length/' :
 	'/solar-system/';

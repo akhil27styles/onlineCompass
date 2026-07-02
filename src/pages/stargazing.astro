@@ -1,0 +1,203 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
+import AdSlot from '../components/AdSlot.astro';
+
+const faqs = [
+	['Is tonight good for stargazing?', 'This page scores stargazing conditions using sun altitude, moonlight, moon phase, cloud cover, humidity, wind, and precipitation for your location.'],
+	['What moon phase is best for stargazing?', 'A new moon or thin crescent is best because the sky is darker. A bright full moon can hide faint stars and the Milky Way.'],
+	['When does the sky get dark enough for stars?', 'The darkest sky usually begins after astronomical twilight, when the Sun is about 18 degrees below the horizon. Bright stars appear earlier.'],
+	['What makes stargazing conditions poor?', 'Daylight, twilight, high clouds, precipitation, high humidity, bright moonlight, and city light pollution can all reduce visibility.'],
+];
+---
+
+<Layout
+	title="Stargazing Tonight — Moon Phase, Cloud Cover & Sky Conditions"
+	description="Check if tonight is good for stargazing. Live sky score with moon phase, moonlight, cloud cover, sun altitude, wind and humidity for your location."
+	keywords="stargazing tonight, is tonight good for stargazing, moon phase tonight, cloud cover tonight, dark sky, best time to see stars, astronomy weather"
+	canonical="https://trulycompass.com/stargazing/"
+>
+	<SeoJsonLd
+		slot="head"
+		name="Stargazing Tonight — Truly Compass"
+		description="Live stargazing score with moon phase, cloud cover, sun altitude, and sky condition guidance."
+		url="https://trulycompass.com/stargazing/"
+	/>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
+		<SiteShell current="stargazing" />
+
+		<main id="main" class="flex-grow z-10">
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">trulycompass.com</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					Stargazing Tonight
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					Check moon phase, cloud cover, sky darkness, and current conditions before looking for stars.
+				</p>
+			</section>
+
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+					<div class="flex flex-col gap-4">
+						<section class="rounded-panel border border-hairline bg-canvas p-6 card-elevated text-center" aria-labelledby="star-title">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Current Sky Score</p>
+							<div id="starScoreMeter" class="mx-auto mt-5 grid size-36 place-items-center rounded-full border-4 border-hairline">
+								<div>
+									<p id="starScoreVal" class="font-mono text-4xl font-semibold text-ink">--</p>
+									<p id="starScoreLevel" class="mt-1 font-mono text-xs text-body">Detecting</p>
+								</div>
+							</div>
+							<h2 id="star-title" class="sr-only">Stargazing condition score</h2>
+							<p id="starAdvice" class="mt-5 border-t border-hairline pt-4 text-sm leading-relaxed text-body">
+								Allow location or use detected city data to calculate stargazing conditions.
+							</p>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-5 card-elevated">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Sky Factors</p>
+							<div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">Moon Phase</p>
+									<p id="moonPhaseVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+								</div>
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">Moonlight</p>
+									<p id="moonLightVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+								</div>
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">Cloud Cover</p>
+									<p id="cloudCoverVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+								</div>
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">Sun Altitude</p>
+									<p id="sunAltitudeVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+								</div>
+							</div>
+						</section>
+					</div>
+
+					<aside class="grid gap-6">
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="star-location-title">
+							<h2 id="star-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+							<div class="mt-4">
+								<LocationPrompt compact />
+							</div>
+						</section>
+						<AdSlot id="ad-stargazing-sidebar" format="vertical" />
+					</aside>
+				</div>
+			</section>
+
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Night Sky Guide</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Plan around darkness, clouds, and moonlight.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							The best stargazing happens under clear, dark skies with low moonlight. Use this score as a fast check before you travel, set up a telescope, or plan night photography.
+						</p>
+					</div>
+					<div class="mt-8 grid gap-3">
+						{faqs.map(([question, answer]) => (
+							<details class="group rounded border border-hairline bg-canvas-soft-2 p-4">
+								<summary class="focus-ring cursor-pointer list-none text-xs font-semibold text-body hover:text-ink font-mono flex items-center justify-between">
+									<span>{question}</span>
+									<span class="text-[14px] text-muted transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+								</summary>
+								<p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">{answer}</p>
+							</details>
+						))}
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+		<script type="application/ld+json" set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'FAQPage',
+			mainEntity: faqs.map(([question, answer]) => ({
+				'@type': 'Question',
+				name: question,
+				acceptedAnswer: { '@type': 'Answer', text: answer },
+			})),
+		})} />
+	</div>
+</Layout>
+
+<script>
+	import { prefetchLocationSilently } from '../lib/geo';
+	import { mountDeviceUi } from '../scripts/device-ui';
+	import { getMoonSnapshot, getSunSnapshot, formatDegrees } from '../lib/astronomy';
+	import { fetchSkyConditions, getStargazingScore } from '../lib/sky-conditions';
+
+	prefetchLocationSilently();
+
+	function setText(el: Element | null, value: string) {
+		if (el) el.textContent = value;
+	}
+
+	async function onLocation(latitude: number, longitude: number) {
+		setText(document.querySelector('#starScoreLevel'), 'Loading');
+		const coords = { lat: latitude, lng: longitude };
+		const now = new Date();
+		const [conditions] = await Promise.all([fetchSkyConditions(latitude, longitude)]);
+		const score = getStargazingScore(now, coords, conditions);
+		const moon = getMoonSnapshot(now, coords);
+		const sun = getSunSnapshot(now, coords);
+
+		const meter = document.querySelector('#starScoreMeter') as HTMLElement | null;
+		const scoreVal = document.querySelector('#starScoreVal') as HTMLElement | null;
+		if (meter) meter.style.borderColor = score.color;
+		if (scoreVal) scoreVal.style.color = score.color;
+
+		setText(scoreVal, score.score.toString());
+		setText(document.querySelector('#starScoreLevel'), score.level);
+		setText(document.querySelector('#starAdvice'), score.advice);
+		setText(document.querySelector('#moonPhaseVal'), moon.illumination.phaseName);
+		setText(document.querySelector('#moonLightVal'), `${moon.illumination.percent}%${moon.isUp ? ' up' : ' down'}`);
+		setText(document.querySelector('#cloudCoverVal'), conditions ? `${conditions.cloudCover}%` : '—');
+		setText(document.querySelector('#sunAltitudeVal'), formatDegrees(sun.altitude));
+	}
+
+	mountDeviceUi({
+		onLocation: (coords) => onLocation(coords.latitude, coords.longitude),
+	});
+
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+
+	document.addEventListener('oc:location-updated', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+</script>
+
+<style>
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background:
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+</style>

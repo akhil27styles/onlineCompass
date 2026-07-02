@@ -13,10 +13,12 @@ const facts = [
 	['Solar Altitude', 'The vertical height of the sun above the horizon. Ranges from 0° on the horizon to 90° directly overhead (Zenith). Negative values represent the sun below the horizon (night).'],
 	['Solar Noon', 'The moment when the sun reaches its highest point in the sky for the day at your exact coordinates. This differs slightly from 12:00 PM clock time due to timezone boundaries and orbital offsets.'],
 	['Golden Hour', 'The periods shortly after sunrise and before sunset where light is warmer, softer, and shadows are elongated — highly valued by photographers.'],
+	['Heat Risk', 'Heat stress rises when high temperature, humidity, strong sun angle, high UV, and low wind combine. Midday solar altitude is often the hidden multiplier.'],
 ];
 
 const faqs = [
 	['What is the position of the Sun right now?', 'The Sun\'s position is determined by two angles: azimuth (direction from North, 0-360°) and altitude (height above horizon, -90 to +90°). This tool calculates these in real-time based on your GPS coordinates and the current time.'],
+	['How does sun position affect heat risk?', 'When the Sun is high in the sky, more solar energy reaches the ground directly. Temperature, humidity, wind, UV index, and solar altitude together give a better outdoor heat risk signal than temperature alone.'],
 	['How old is the Sun?', 'The Sun is approximately 4.6 billion years old and is currently in the middle of its life cycle. It has enough fuel to burn for another 5 billion years before becoming a red giant.'],
 	['How do I find my sun path?', 'Your sun path is the trajectory the Sun follows across the sky at your location. It changes daily with the seasons. Use the solar tracking dial above and watch how the Sun\'s azimuth and altitude change throughout the day.'],
 	['Is the sunrise east or west?', 'The Sun rises in the east and sets in the west. Specifically, sunrise occurs at azimuth ~90° (due east only during spring and fall equinoxes; otherwise slightly north or south of east depending on season and latitude).'],
@@ -24,9 +26,9 @@ const faqs = [
 ---
 
 <Layout
-		title="Sun Position Today — Live Solar Azimuth, Altitude & Sunset Times"
-		description="Track the sun's current position. Live solar azimuth, altitude, sunrise and sunset times, solar noon, and golden hour calculator for your location."
-		keywords="sun position, sun position today, sun altitude azimuth, sunrise sunset times, sunset sunrise calculator, solar noon, golden hour calculator, day length calculator"
+		title="Sun Position Today — Live Solar Azimuth, Altitude, Heat Risk & Sunset"
+		description="Track the sun's current position with live solar azimuth, altitude, sunrise, sunset, solar noon, golden hour, UV context and heat risk for your location."
+		keywords="sun position, sun position today, sun altitude azimuth, heat index today, heat risk, heat wave, UV index, sunrise sunset times, sunset sunrise calculator, solar noon, golden hour calculator, day length calculator"
 	canonical="https://trulycompass.com/sun-position/"
 >
 	<SeoJsonLd
@@ -49,7 +51,7 @@ const faqs = [
 						Current Sun Position
 					</h1>
 					<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
-						Live sun direction, altitude, and today's sunrise and sunset for your location.
+						Live sun direction, altitude, sunrise, sunset, and outdoor heat risk for your location.
 					</p>
 				</section>
 
@@ -85,6 +87,42 @@ const faqs = [
 									<p id="sunsetTimeVal" class="text-sm sm:text-base font-semibold text-ink mt-1 font-mono">--</p>
 									<p class="text-[9px] text-body mt-0.5">local time</p>
 								</div>
+							</div>
+
+							<!-- Heat risk card -->
+							<div class="rounded-panel border border-hairline bg-canvas p-5 card-elevated mt-4" aria-labelledby="heat-risk-title">
+								<div class="flex flex-wrap items-start justify-between gap-3">
+									<div>
+										<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Heat + Sun Exposure</p>
+										<h2 id="heat-risk-title" class="mt-1 text-xl font-semibold tracking-tight text-ink">
+											<span id="heatRiskLevel">Detecting…</span> heat risk
+										</h2>
+									</div>
+									<div id="heatRiskBadge" class="rounded-full border border-hairline px-3 py-1 font-mono text-[11px] text-body">
+										--
+									</div>
+								</div>
+								<div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+									<div class="rounded border border-hairline bg-canvas-soft-2 p-3">
+										<p class="font-mono text-[9px] uppercase text-muted">Feels Like</p>
+										<p id="heatIndexVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+									</div>
+									<div class="rounded border border-hairline bg-canvas-soft-2 p-3">
+										<p class="font-mono text-[9px] uppercase text-muted">UV Index</p>
+										<p id="heatUvVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+									</div>
+									<div class="rounded border border-hairline bg-canvas-soft-2 p-3">
+										<p class="font-mono text-[9px] uppercase text-muted">Solar Load</p>
+										<p id="solarLoadVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+									</div>
+									<div class="rounded border border-hairline bg-canvas-soft-2 p-3">
+										<p class="font-mono text-[9px] uppercase text-muted">Humidity</p>
+										<p id="heatHumidityVal" class="mt-1 font-mono text-sm font-semibold text-ink">--</p>
+									</div>
+								</div>
+								<p id="heatRiskAdvice" class="mt-4 border-t border-hairline pt-3 text-xs leading-relaxed text-body">
+									Location and weather data will appear here.
+								</p>
 							</div>
 						</div>
 
@@ -187,6 +225,7 @@ const faqs = [
 			"@type": "FAQPage",
 			"mainEntity": [
 				{"@type": "Question", "name": "What is the position of the Sun right now?", "acceptedAnswer": {"@type": "Answer", "text": "The Sun's position is determined by two angles: azimuth (direction from North, 0-360°) and altitude (height above horizon, -90 to +90°). This tool calculates these in real-time based on your GPS coordinates and the current time."}},
+				{"@type": "Question", "name": "How does sun position affect heat risk?", "acceptedAnswer": {"@type": "Answer", "text": "When the Sun is high in the sky, more solar energy reaches the ground directly. Temperature, humidity, wind, UV index, and solar altitude together give a better outdoor heat risk signal than temperature alone."}},
 				{"@type": "Question", "name": "How old is the Sun?", "acceptedAnswer": {"@type": "Answer", "text": "The Sun is approximately 4.6 billion years old and is currently in the middle of its life cycle. It has enough fuel to burn for another 5 billion years before becoming a red giant."}},
 				{"@type": "Question", "name": "How do I find my sun path?", "acceptedAnswer": {"@type": "Answer", "text": "Your sun path is the trajectory the Sun follows across the sky at your location. It changes daily with the seasons. Use the solar tracking dial above and watch how the Sun's azimuth and altitude change throughout the day."}},
 				{"@type": "Question", "name": "Is the sunrise east or west?", "acceptedAnswer": {"@type": "Answer", "text": "The Sun rises in the east and sets in the west. Specifically, sunrise occurs at azimuth ~90° (due east only during spring and fall equinoxes; otherwise slightly north or south of east depending on season and latitude)."}}  
@@ -200,6 +239,9 @@ const faqs = [
 	import { mountDeviceUi } from '../scripts/device-ui';
 	import { bindSkyDialFromLocation, setSkyAzimuth } from '../scripts/sky-dial';
 	import { formatDegrees, formatDuration, formatTime, getSunSnapshot, getDirectionText } from '../lib/astronomy';
+	import { fetchUVIndex } from '../lib/uv';
+	import { fetchWeather } from '../lib/weather';
+	import { getHeatRisk } from '../lib/heat-risk';
 
 	// Prefetch location silently for faster initial data
 	prefetchLocationSilently();
@@ -221,6 +263,9 @@ const faqs = [
 	// Declare state variables first, before any callbacks are registered
 	let coords: { latitude: number; longitude: number } | null = null;
 	let timer: number | undefined;
+	let latestWeather: { temperature: number; humidity: number; windSpeed: number; condition: string; icon: string } | null = null;
+	let latestUv: number | null = null;
+	let latestSnapshot: ReturnType<typeof getSunSnapshot> | null = null;
 
 	function setText(el: Element | null, value: string) {
 		if (el) el.textContent = value;
@@ -229,6 +274,7 @@ const faqs = [
 	function onLocation(latitude: number, longitude: number) {
 		coords = { latitude, longitude };
 		renderSun();
+		loadHeatInputs(latitude, longitude);
 		window.clearInterval(timer);
 		timer = window.setInterval(renderSun, 30_000);
 	}
@@ -236,6 +282,7 @@ const faqs = [
 	function renderSun() {
 		if (!coords) return;
 		const snapshot = getSunSnapshot(new Date(), { lat: coords.latitude, lng: coords.longitude });
+		latestSnapshot = snapshot;
 
 		setSkyAzimuth(beacon, snapshot.azimuth, snapshot.isUp);
 
@@ -261,6 +308,46 @@ const faqs = [
 		setText(document.querySelector('#goldenHourStart'), formatTime(snapshot.times.goldenHour));
 		setText(document.querySelector('#goldenHourEnd'), formatTime(snapshot.times.goldenHourEnd));
 		setText(document.querySelector('#dayLength'), formatDuration(snapshot.dayLength));
+		renderHeatRisk();
+	}
+
+	async function loadHeatInputs(latitude: number, longitude: number) {
+		setText(document.querySelector('#heatRiskLevel'), 'Loading');
+		setText(document.querySelector('#heatRiskAdvice'), 'Checking local weather, UV, and current sun angle.');
+
+		const [weather, uv] = await Promise.all([
+			fetchWeather(latitude, longitude),
+			fetchUVIndex(latitude, longitude),
+		]);
+
+		latestWeather = weather;
+		latestUv = uv?.current ?? null;
+		renderHeatRisk();
+	}
+
+	function renderHeatRisk() {
+		if (!latestSnapshot || !latestWeather) return;
+
+		const risk = getHeatRisk({
+			temperatureC: latestWeather.temperature,
+			humidity: latestWeather.humidity,
+			windSpeedKmh: latestWeather.windSpeed,
+			solarAltitude: latestSnapshot.altitude,
+			uvIndex: latestUv ?? undefined,
+		});
+
+		const badge = document.querySelector('#heatRiskBadge') as HTMLElement | null;
+		setText(document.querySelector('#heatRiskLevel'), risk.level);
+		setText(document.querySelector('#heatIndexVal'), `${risk.heatIndexC.toFixed(1)}°C`);
+		setText(document.querySelector('#heatUvVal'), latestUv === null ? '—' : latestUv.toFixed(1));
+		setText(document.querySelector('#solarLoadVal'), risk.solarLoad);
+		setText(document.querySelector('#heatHumidityVal'), `${latestWeather.humidity}%`);
+		setText(document.querySelector('#heatRiskAdvice'), risk.recommendation);
+		if (badge) {
+			badge.textContent = `Score ${risk.score}`;
+			badge.style.borderColor = risk.color;
+			badge.style.color = risk.color;
+		}
 	}
 
 	const beacon = bindSkyDialFromLocation('#sunDialBeacon', (c) => onLocation(c.latitude, c.longitude));

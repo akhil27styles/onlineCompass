@@ -1,5 +1,5 @@
 ---
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' | 'heat-index' | 'air-quality' | 'stargazing' };
 
 const tabs = [
 	{ id: 'compass', href: '/', label: 'Compass', short: 'Compass', icon: '◎', aria: 'Online compass tool' },
@@ -9,6 +9,9 @@ const tabs = [
 	{ id: 'wind', href: '/wind-compass/', label: 'Wind Compass', short: 'Wind', icon: '💨', aria: 'Live wind compass' },
 	{ id: 'golden-hour', href: '/golden-hour/', label: 'Golden Hour', short: 'Golden', icon: '🌅', aria: 'Golden hour calculator' },
 	{ id: 'uv-index', href: '/uv-index/', label: 'UV Index', short: 'UV', icon: '☀️', aria: 'UV index tracker' },
+	{ id: 'heat-index', href: '/heat-index/', label: 'Heat Index', short: 'Heat', icon: '🌡️', aria: 'Heat index and heat risk' },
+	{ id: 'air-quality', href: '/air-quality/', label: 'Air Quality', short: 'AQI', icon: 'AQI', aria: 'Air quality index tracker' },
+	{ id: 'stargazing', href: '/stargazing/', label: 'Stars', short: 'Stars', icon: '✦', aria: 'Stargazing conditions' },
 	{ id: 'prayer-times', href: '/prayer-times/', label: 'Prayer Times', short: 'Prayer', icon: '🕌', aria: 'Daily prayer times' },
 	{ id: 'day-length', href: '/day-length/', label: 'Day Length', short: 'Days', icon: '📅', aria: 'Day length by season' },
 	{ id: 'solar-system', href: '/solar-system/', label: '3D Solar System', short: 'Solar', icon: '🪐', aria: '3D solar system explorer' },
@@ -20,13 +23,13 @@ const tabs = [
 	aria-label="Main tools"
 >
 	<div class="content-grid py-2">
-		<ul class="flex gap-1.5 overflow-x-auto sm:grid sm:grid-cols-5 lg:grid-cols-10 sm:gap-2">
+		<ul class="flex gap-1.5 overflow-x-auto sm:grid sm:grid-cols-5 lg:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2">
 			{
 				tabs.map((tab) => (
 					<li>
 						<a
 							class:list={[
-								'focus-ring flex min-h-11 flex-col items-center justify-center rounded-md border px-2 py-2 text-center transition-colors duration-150 sm:min-h-12 sm:flex-row sm:gap-2 sm:px-4',
+								'focus-ring flex min-h-11 flex-col items-center justify-center gap-1 rounded-md border px-2 py-2 text-center transition-colors duration-150 sm:min-h-14 sm:px-3',
 								current === tab.id
 									? 'border-hairline-strong bg-ink font-semibold text-canvas'
 									: 'border-hairline bg-canvas-soft-2 text-body hover:border-hairline-strong hover:text-ink',
@@ -38,7 +41,7 @@ const tabs = [
 							<span class="text-base leading-none sm:text-lg" aria-hidden="true">
 								{tab.icon}
 							</span>
-							<span class="mt-0.5 text-[10px] font-mono uppercase tracking-wide sm:mt-0 sm:text-xs sm:normal-case sm:tracking-normal">
+							<span class="max-w-full text-[10px] font-mono uppercase leading-tight tracking-wide sm:text-xs sm:normal-case sm:tracking-normal">
 								<span class="sm:hidden">{tab.short}</span>
 								<span class="hidden sm:inline">{tab.label}</span>
 							</span>

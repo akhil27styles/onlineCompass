@@ -22,13 +22,58 @@ const directionLabels = [
 	{ label: 'NW', angle: 315 },
 ];
 
+const popularTools = [
+	{
+		href: '/sun-position/',
+		label: 'Sun Position',
+		title: 'Sun position + heat risk',
+		body: 'Live solar azimuth, altitude, sunrise, sunset, UV context, and heat stress from your location.',
+	},
+	{
+		href: '/heat-index/',
+		label: 'Heat Index',
+		title: 'Feels-like temperature',
+		body: 'Check local heat index, humidity, UV, wind, and outdoor heat safety before going outside.',
+	},
+	{
+		href: '/air-quality/',
+		label: 'Air Quality',
+		title: 'AQI near me',
+		body: 'Live air quality index, PM2.5, PM10, ozone, and pollution guidance for your location.',
+	},
+	{
+		href: '/stargazing/',
+		label: 'Stargazing',
+		title: 'Sky conditions tonight',
+		body: 'Moon phase, cloud cover, darkness, and a stargazing score for your location.',
+	},
+	{
+		href: '/prayer-times/',
+		label: 'Prayer Times',
+		title: 'Prayer times today',
+		body: 'Local fajr, sunrise, dhuhr, asr, maghrib, and isha times with browser-based location.',
+	},
+	{
+		href: '/golden-hour/',
+		label: 'Golden Hour',
+		title: 'Golden hour calculator',
+		body: 'Plan sunrise and sunset light windows for photography, travel, and outdoor shoots.',
+	},
+	{
+		href: '/day-length/',
+		label: 'Day Length',
+		title: 'Day length by location',
+		body: 'See today’s daylight duration plus seasonal sunrise and sunset changes.',
+	},
+];
+
 const improvements = [
 	['Precise Bearing Target', 'Pin a destination heading and see real-time turn guidance (turn left/right) relative to your sensor data.'],
 	['Auto Location & Geocoding', 'Fetches coordinates on load and resolves your physical city name locally to assist with sun/moon positioning.'],
 	['Live Sun & Moon tracking', 'Dedicated astronomical dials that project current altitude and azimuth on a stereographic sky map.'],
+	['Heat Risk From Sun Position', 'Combines current weather, UV index, humidity, wind, and solar altitude so outdoor planning is more useful than temperature alone.'],
 	['Privacy First', 'Compass orientation and geolocation logic runs entirely in the browser and is never stored on a server.'],
 	['Calibrated Instrument', 'Built-in calibration checklists and desktop fallback modes so developers can simulate heading changes.'],
-	['Vercel Aesthetics', 'Clean, dark-first user interface with mesh gradient lighting, sharp geometry, and negative font tracking.'],
 ];
 
 const faqs = [
@@ -40,9 +85,9 @@ const faqs = [
 ---
 
 <Layout
-	title="Truly Compass — Free Digital Compass Online, Sun Position, Moon Position & Prayer Times"
-	description="Free online compass with digital magnetometer, sun position tracker, moon phase calculator, prayer times, qibla compass, wind compass, UV index and more."
-	keywords="online compass, free compass, digital compass, compass online, browser compass, magnetic compass, compass for phone, north finder, sun position, moon position, prayer times today, islamic prayer times, qibla compass, qibla direction, wind compass, GPS coordinates, my current coordinates, latitude longitude finder, golden hour calculator, day length, UV index"
+	title="Truly Compass — Online Compass, Sun Position, Heat Risk & Prayer Times"
+	description="Free online compass with live digital heading, sun position, heat risk, UV index, moon phase, prayer times, qibla compass, wind compass and GPS tools."
+	keywords="online compass, free compass, digital compass, compass online, browser compass, magnetic compass, compass for phone, north finder, sun position, heat index today, heat risk, UV index, moon position, prayer times today, islamic prayer times, qibla compass, qibla direction, wind compass, GPS coordinates, my current coordinates, latitude longitude finder, golden hour calculator, day length"
 	canonical="https://trulycompass.com/"
 >
 	<SeoJsonLd
@@ -63,21 +108,40 @@ const faqs = [
 					Truly Compass
 				</h1>
 				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body sm:text-base">
-					Free digital compass in your browser — live heading, auto location, plus sun and moon position tools.
+					Free digital compass in your browser — live heading, auto location, sun position, heat risk, UV, prayer times, and moon tools.
 				</p>
 				<div class="mt-6 grid grid-cols-2 gap-2 sm:mx-auto sm:max-w-lg">
 					<a
 						class="focus-ring rounded-md border border-hairline bg-canvas px-3 py-3 text-center text-xs font-semibold text-ink transition-colors hover:border-hairline-strong hover:bg-canvas-soft-2 sm:text-sm"
 						href="/sun-position/"
 					>
-						☀ Sun Position
+						☀ Sun + Heat Risk
 					</a>
 					<a
 						class="focus-ring rounded-md border border-hairline bg-canvas px-3 py-3 text-center text-xs font-semibold text-ink transition-colors hover:border-hairline-strong hover:bg-canvas-soft-2 sm:text-sm"
-						href="/moon-position/"
+						href="/prayer-times/"
 					>
-						☽ Moon Position
+						☾ Prayer Times
 					</a>
+				</div>
+			</section>
+
+			<section class="content-grid py-4 sm:py-6" aria-labelledby="popular-tools-title">
+				<div class="flex flex-wrap items-end justify-between gap-3">
+					<div>
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Popular Tools</p>
+						<h2 id="popular-tools-title" class="mt-2 text-xl font-semibold tracking-tight text-ink sm:text-2xl">Most searched from this site.</h2>
+					</div>
+					<a class="focus-ring rounded text-xs font-mono text-body hover:text-ink" href="/sun-position/">Open sun position →</a>
+				</div>
+				<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+					{popularTools.map((tool) => (
+						<a class="focus-ring group rounded border border-hairline bg-canvas p-4 transition-colors hover:border-hairline-strong hover:bg-canvas-soft-2" href={tool.href}>
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">{tool.label}</p>
+							<h3 class="mt-2 text-sm font-semibold text-ink">{tool.title}</h3>
+							<p class="mt-2 text-xs leading-relaxed text-body">{tool.body}</p>
+						</a>
+					))}
 				</div>
 			</section>
 
@@ -264,7 +328,7 @@ const faqs = [
 
 					<h3 class="text-lg font-semibold text-ink mt-8 mb-4">Sun Position Tracking &amp; Astronomy</h3>
 					<p class="text-sm text-body leading-relaxed mb-4">
-						Track the sun's position in real-time with our advanced <strong>sun position</strong> tracker. Get precise information about <strong>sun altitude</strong> and <strong>azimuth</strong>, calculate <strong>sunset sunrise times</strong> for any location, and plan your day accordingly. Our <strong>golden hour calculator</strong> helps photographers and videographers find the perfect lighting conditions. Monitor <strong>UV index today</strong> to protect your skin, and use our <strong>day length calculator</strong> to understand seasonal daylight variations in your area.
+						Track the sun's position in real-time with our advanced <strong>sun position</strong> tracker. Get precise information about <strong>sun altitude</strong> and <strong>azimuth</strong>, calculate <strong>sunset sunrise times</strong> for any location, and plan your day accordingly. The sun page now combines weather, humidity, wind, UV index, and solar altitude into a practical <strong>heat risk</strong> reading for outdoor planning. Our <strong>golden hour calculator</strong> helps photographers and videographers find the perfect lighting conditions. Monitor <strong>UV index today</strong> to protect your skin, and use our <strong>day length calculator</strong> to understand seasonal daylight variations in your area.
 					</p>
 
 					<h3 class="text-lg font-semibold text-ink mt-8 mb-4">Moon Tracking &amp; Lunar Information</h3>

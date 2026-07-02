@@ -1,0 +1,206 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SeoJsonLd from '../components/SeoJsonLd.astro';
+import LocationPrompt from '../components/LocationPrompt.astro';
+import AdSlot from '../components/AdSlot.astro';
+
+const faqs = [
+	['What is the air quality index near me?', 'This page detects your location and shows the current European Air Quality Index with PM2.5, PM10, ozone, and nitrogen dioxide when available.'],
+	['What is PM2.5?', 'PM2.5 means fine particles smaller than 2.5 micrometers. These particles can enter the lungs and are one of the most important daily air quality signals.'],
+	['Should I exercise outside when AQI is high?', 'If air quality is poor or very poor, reduce intense outdoor activity. Sensitive groups should be extra careful and consider indoor exercise.'],
+	['Should I open windows when air quality is poor?', 'If outdoor air quality is poor and indoor air is cleaner, keep windows closed. Ventilate when AQI improves.'],
+];
+---
+
+<Layout
+	title="Air Quality Index Near Me — Live AQI, PM2.5 & Pollution"
+	description="Check air quality near you. Live AQI, PM2.5, PM10, ozone, nitrogen dioxide and outdoor activity advice for your location."
+	keywords="air quality index near me, AQI today, air quality today, PM2.5, PM10, pollution near me, ozone, safe to go outside, open windows air quality"
+	canonical="https://trulycompass.com/air-quality/"
+>
+	<SeoJsonLd
+		slot="head"
+		name="Air Quality Index Near Me — Truly Compass"
+		description="Live air quality index, pollution particles, and outdoor activity guidance for your detected location."
+		url="https://trulycompass.com/air-quality/"
+	/>
+	<div class="relative min-h-screen flex flex-col overflow-x-hidden bg-canvas-soft">
+		<div class="mesh-gradient-bg" aria-hidden="true"></div>
+		<SiteShell current="air-quality" />
+
+		<main id="main" class="flex-grow z-10">
+			<section class="content-grid pt-8 pb-6 sm:pt-10 sm:pb-8 text-center relative z-20">
+				<p class="font-mono text-xs uppercase text-muted tracking-widest" translate="no">trulycompass.com</p>
+				<h1 class="mt-4 max-w-3xl mx-auto text-balance text-4xl font-semibold leading-none tracking-tighter text-ink sm:text-5xl">
+					Air Quality Index Near Me
+				</h1>
+				<p class="mt-4 max-w-2xl mx-auto text-pretty text-sm leading-6 text-body">
+					Live AQI, PM2.5, PM10, ozone, and air pollution guidance for your current location.
+				</p>
+			</section>
+
+			<section class="py-6 sm:py-8">
+				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+					<div class="flex flex-col gap-4">
+						<section class="rounded-panel border border-hairline bg-canvas p-6 card-elevated text-center" aria-labelledby="aqi-title">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Current Air Quality</p>
+							<div id="aqiMeter" class="mx-auto mt-5 grid size-36 place-items-center rounded-full border-4 border-hairline">
+								<div>
+									<p id="aqiValue" class="font-mono text-4xl font-semibold text-ink">--</p>
+									<p id="aqiLevel" class="mt-1 font-mono text-xs text-body">Detecting</p>
+								</div>
+							</div>
+							<h2 id="aqi-title" class="sr-only">Live air quality index</h2>
+							<p id="aqiAdvice" class="mt-5 border-t border-hairline pt-4 text-sm leading-relaxed text-body">
+								Allow location or use detected city data to calculate local air quality.
+							</p>
+						</section>
+
+						<section class="rounded-panel border border-hairline bg-canvas p-5 card-elevated">
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">Pollution Details</p>
+							<div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">PM2.5</p>
+									<p id="pm25Val" class="mt-1 font-mono text-lg font-semibold text-ink">--</p>
+								</div>
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">PM10</p>
+									<p id="pm10Val" class="mt-1 font-mono text-lg font-semibold text-ink">--</p>
+								</div>
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">Ozone</p>
+									<p id="ozoneVal" class="mt-1 font-mono text-lg font-semibold text-ink">--</p>
+								</div>
+								<div class="rounded border border-hairline bg-canvas-soft-2 p-4">
+									<p class="font-mono text-[9px] uppercase text-muted">NO2</p>
+									<p id="no2Val" class="mt-1 font-mono text-lg font-semibold text-ink">--</p>
+								</div>
+							</div>
+						</section>
+					</div>
+
+					<aside class="grid gap-6">
+						<section class="rounded-panel border border-hairline bg-canvas p-4 shadow-sm" aria-labelledby="aq-location-title">
+							<h2 id="aq-location-title" class="text-xs font-mono uppercase text-muted tracking-wider">Observer Coordinates</h2>
+							<div class="mt-4">
+								<LocationPrompt compact />
+							</div>
+						</section>
+						<AdSlot id="ad-air-quality-sidebar" format="vertical" />
+					</aside>
+				</div>
+			</section>
+
+			<section class="border-t border-hairline bg-canvas py-12 sm:py-16">
+				<div class="content-grid">
+					<div class="max-w-2xl">
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Pollution Reference</p>
+						<h2 class="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Use AQI before outdoor activity.</h2>
+						<p class="mt-3 text-xs sm:text-sm text-body leading-relaxed">
+							Air quality can change with traffic, wind, fires, dust, and weather. Check AQI before running, cycling, opening windows, or spending long periods outside.
+						</p>
+					</div>
+					<div class="mt-8 grid gap-3">
+						{faqs.map(([question, answer]) => (
+							<details class="group rounded border border-hairline bg-canvas-soft-2 p-4">
+								<summary class="focus-ring cursor-pointer list-none text-xs font-semibold text-body hover:text-ink font-mono flex items-center justify-between">
+									<span>{question}</span>
+									<span class="text-[14px] text-muted transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+								</summary>
+								<p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">{answer}</p>
+							</details>
+						))}
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+		<script type="application/ld+json" set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'FAQPage',
+			mainEntity: faqs.map(([question, answer]) => ({
+				'@type': 'Question',
+				name: question,
+				acceptedAnswer: { '@type': 'Answer', text: answer },
+			})),
+		})} />
+	</div>
+</Layout>
+
+<script>
+	import { prefetchLocationSilently } from '../lib/geo';
+	import { mountDeviceUi } from '../scripts/device-ui';
+	import { fetchAirQuality } from '../lib/air-quality';
+
+	prefetchLocationSilently();
+
+	function setText(el: Element | null, value: string) {
+		if (el) el.textContent = value;
+	}
+
+	function formatPollutant(value: number | null) {
+		return value === null ? '—' : `${value.toFixed(1)} µg/m³`;
+	}
+
+	async function onLocation(latitude: number, longitude: number) {
+		setText(document.querySelector('#aqiLevel'), 'Loading');
+		const data = await fetchAirQuality(latitude, longitude);
+		if (!data) {
+			setText(document.querySelector('#aqiLevel'), 'Unavailable');
+			setText(document.querySelector('#aqiAdvice'), 'Air quality data is unavailable for this location right now.');
+			return;
+		}
+
+		const meter = document.querySelector('#aqiMeter') as HTMLElement | null;
+		const value = document.querySelector('#aqiValue') as HTMLElement | null;
+		if (meter) meter.style.borderColor = data.level.color;
+		if (value) value.style.color = data.level.color;
+
+		setText(value, data.aqi.toString());
+		setText(document.querySelector('#aqiLevel'), data.level.label);
+		setText(document.querySelector('#aqiAdvice'), data.level.advice);
+		setText(document.querySelector('#pm25Val'), formatPollutant(data.pm25));
+		setText(document.querySelector('#pm10Val'), formatPollutant(data.pm10));
+		setText(document.querySelector('#ozoneVal'), formatPollutant(data.ozone));
+		setText(document.querySelector('#no2Val'), formatPollutant(data.nitrogenDioxide));
+	}
+
+	mountDeviceUi({
+		onLocation: (coords) => onLocation(coords.latitude, coords.longitude),
+	});
+
+	document.addEventListener('oc:location-ready', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+
+	document.addEventListener('oc:location-updated', (event) => {
+		const detail = (event as CustomEvent<{ coords: { latitude: number; longitude: number } }>).detail;
+		onLocation(detail.coords.latitude, detail.coords.longitude);
+	});
+</script>
+
+<style>
+	.mesh-gradient-bg {
+		position: absolute;
+		top: -20%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 100%;
+		max-width: 1400px;
+		height: 600px;
+		opacity: 0.1;
+		filter: blur(120px);
+		background:
+			radial-gradient(circle at 10% 20%, #007cf0 0%, transparent 40%),
+			radial-gradient(circle at 90% 30%, #00dfd8 0%, transparent 45%),
+			radial-gradient(circle at 35% 70%, #7928ca 0%, transparent 40%),
+			radial-gradient(circle at 65% 15%, #ff0080 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, #f9cb28 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 0;
+	}
+</style>
