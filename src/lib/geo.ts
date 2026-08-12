@@ -640,6 +640,47 @@ export async function forwardGeocode(input: string): Promise<GeoCoords> {
 	}
 }
 
+export type SearchResult = {
+	displayName: string;
+	latitude: number;
+	longitude: number;
+	category: string;
+	type: string;
+};
+
+export async function searchCities(query: string): Promise<SearchResult[]> {
+	if (!query || query.trim().length < 2) return [];
+
+	const trimmed = query.trim();
+	const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(trimmed)}&limit=5&addressdetails=1&accept-language=en`;
+
+	try {
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+		const response = await fetch(url, {
+			signal: controller.signal,
+			headers: { 'User-Agent': 'trulycompass.com' },
+		});
+		clearTimeout(timeoutId);
+
+		if (!response.ok) return [];
+
+		const data = await response.json();
+		if (!Array.isArray(data)) return [];
+
+		return data.map((item: any) => ({
+			displayName: item.display_name ?? '',
+			latitude: parseFloat(item.lat),
+			longitude: parseFloat(item.lon),
+			category: item.category ?? '',
+			type: item.type ?? '',
+		})).filter((r: SearchResult) => !isNaN(r.latitude) && !isNaN(r.longitude));
+	} catch {
+		return [];
+	}
+}
+
 export type QiblaData = {
 	bearing: number;
 	distanceKm: number;

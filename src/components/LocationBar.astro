@@ -1,18 +1,28 @@
+---
+import LocationSearch from './LocationSearch.astro';
+---
+
 <div
 	class="border-b border-hairline bg-canvas-soft px-4 py-2"
 	role="status"
 	aria-live="polite"
 >
-	<div class="content-grid flex flex-wrap items-center justify-between gap-2 text-xs">
-		<p id="globalLocationText" class="font-mono text-body">
-			Auto-detecting your location…
-		</p>
-		<button
-			id="allowLocationGlobal"
-			class="focus-ring hidden shrink-0 rounded-full bg-white px-3 py-1.5 font-mono text-[11px] font-semibold text-black"
-			type="button"
-		>
-			Allow Location
-		</button>
+	<div class="content-grid flex flex-wrap items-center gap-2 sm:gap-3">
+		<div class="flex min-w-0 flex-1 items-center gap-2 text-xs">
+			<p id="globalLocationText" class="font-mono text-body truncate">
+				Auto-detecting your location…
+			</p>
+			<button
+				id="allowLocationGlobal"
+				class="focus-ring hidden shrink-0 rounded-full bg-white px-3 py-1.5 font-mono text-[11px] font-semibold text-black"
+				type="button"
+			>
+				Allow Location
+			</button>
+		</div>
+
+		<div class="w-full sm:w-64 lg:w-72 shrink-0">
+			<LocationSearch />
+		</div>
 	</div>
 </div>

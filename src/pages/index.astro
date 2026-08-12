@@ -126,25 +126,6 @@ const faqs = [
 				</div>
 			</section>
 
-			<section class="content-grid py-4 sm:py-6" aria-labelledby="popular-tools-title">
-				<div class="flex flex-wrap items-end justify-between gap-3">
-					<div>
-						<p class="font-mono text-xs uppercase text-muted tracking-widest">Popular Tools</p>
-						<h2 id="popular-tools-title" class="mt-2 text-xl font-semibold tracking-tight text-ink sm:text-2xl">Most searched from this site.</h2>
-					</div>
-					<a class="focus-ring rounded text-xs font-mono text-body hover:text-ink" href="/sun-position/">Open sun position →</a>
-				</div>
-				<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-					{popularTools.map((tool) => (
-						<a class="focus-ring group rounded border border-hairline bg-canvas p-4 transition-colors hover:border-hairline-strong hover:bg-canvas-soft-2" href={tool.href}>
-							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">{tool.label}</p>
-							<h3 class="mt-2 text-sm font-semibold text-ink">{tool.title}</h3>
-							<p class="mt-2 text-xs leading-relaxed text-body">{tool.body}</p>
-						</a>
-					))}
-				</div>
-			</section>
-
 			<!-- Interactive Instrument Section -->
 			<section id="compass" class="py-6 sm:py-8">
 				<div class="content-grid grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -240,6 +221,25 @@ const faqs = [
 							</ul>
 						</section>
 					</aside>
+				</div>
+			</section>
+
+			<section class="content-grid py-4 sm:py-6" aria-labelledby="popular-tools-title">
+				<div class="flex flex-wrap items-end justify-between gap-3">
+					<div>
+						<p class="font-mono text-xs uppercase text-muted tracking-widest">Popular Tools</p>
+						<h2 id="popular-tools-title" class="mt-2 text-xl font-semibold tracking-tight text-ink sm:text-2xl">Most searched from this site.</h2>
+					</div>
+					<a class="focus-ring rounded text-xs font-mono text-body hover:text-ink" href="/sun-position/">Open sun position →</a>
+				</div>
+				<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+					{popularTools.map((tool) => (
+						<a class="focus-ring group rounded border border-hairline bg-canvas p-4 transition-colors hover:border-hairline-strong hover:bg-canvas-soft-2" href={tool.href}>
+							<p class="font-mono text-[10px] uppercase text-muted tracking-wider">{tool.label}</p>
+							<h3 class="mt-2 text-sm font-semibold text-ink">{tool.title}</h3>
+							<p class="mt-2 text-xs leading-relaxed text-body">{tool.body}</p>
+						</a>
+					))}
 				</div>
 			</section>
 
@@ -397,7 +397,7 @@ const faqs = [
 	mountCompass();
 </script>
 
-<style>
+<style is:global>
 	/* Mesh gradient backdrop */
 	.mesh-gradient-bg {
 		position: absolute;

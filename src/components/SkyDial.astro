@@ -93,7 +93,7 @@ const { title, subtitle, id = 'skyDial', variant = 'sun' } = Astro.props as {
 	</div>
 </section>
 
-<style>
+<style is:global>
 	.sky-dial-wrap {
 		--sky-size: min(72vw, 300px);
 		--rim-radius: calc(var(--sky-size) * 0.5);

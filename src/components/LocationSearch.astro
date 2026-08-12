@@ -1,0 +1,49 @@
+<div id="locationSearchWrapper" class="relative" data-location-set="false">
+	<div class="relative flex items-center">
+		<svg
+			class="absolute left-3 size-3.5 text-muted pointer-events-none shrink-0"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			aria-hidden="true"
+		>
+			<circle cx="11" cy="11" r="8" />
+			<path d="m21 21-4.35-4.35" />
+		</svg>
+		<input
+			id="locationSearchInput"
+			type="text"
+			role="combobox"
+			autocomplete="off"
+			aria-expanded="false"
+			aria-label="Search for a city"
+			placeholder="Search city…"
+			class="w-full rounded-md border border-hairline bg-canvas pl-8 pr-3 py-2 text-xs font-mono text-ink placeholder:text-muted"
+		/>
+	</div>
+
+	<div
+		id="locationSearchDropdown"
+		class="hidden absolute left-0 right-0 top-full mt-1 z-50 rounded-lg border border-hairline bg-canvas shadow-lg overflow-hidden"
+		role="listbox"
+	></div>
+
+	<div class="flex items-center gap-2 text-[11px] font-mono text-body mt-1.5">
+		<span class="truncate">or</span>
+		<button
+			id="useGeolocationBtn"
+			type="button"
+			class="focus-ring shrink-0 font-semibold text-ink hover:underline"
+		>
+			Use my current location
+		</button>
+	</div>
+</div>
+
+<script>
+	import { mountLocationSearch } from '../scripts/location-search';
+	mountLocationSearch();
+</script>

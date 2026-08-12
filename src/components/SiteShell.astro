@@ -3,7 +3,7 @@ import SiteHeader from './SiteHeader.astro';
 import ToolTabs from './ToolTabs.astro';
 import LocationBar from './LocationBar.astro';
 
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' | 'heat-index' | 'air-quality' | 'stargazing' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'compass-bearings' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' | 'heat-index' | 'air-quality' | 'stargazing' | 'gps' };
 ---
 
 <SiteHeader current={current} />

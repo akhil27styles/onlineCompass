@@ -14,7 +14,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 		<SiteHeader current="compass" />
 		<main id="main" class="flex-grow z-10 py-12 sm:py-16">
 			<div class="content-grid max-w-3xl mx-auto prose prose-sm">
-				<p class="font-mono text-xs uppercase text-muted tracking-widest">Last updated: June 2026</p>
+				<p class="font-mono text-xs uppercase text-muted tracking-widest">Last updated: August 2026</p>
 				<h1 class="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Privacy Policy</h1>
 
 				<h2 class="mt-10 text-lg font-semibold text-ink">1. Introduction</h2>
@@ -47,27 +47,57 @@ import SiteFooter from '../components/SiteFooter.astro';
 					We implement industry-standard security measures. However, the most important safeguard is our architecture: all sensitive computations involving your location, orientation, and personal data are performed client-side in your browser. We do not operate databases that store user profiles, location histories, or personal identifiers.
 				</p>
 
-				<h2 class="mt-8 text-lg font-semibold text-ink">5. Third-Party Services</h2>
+				<h2 class="mt-8 text-lg font-semibold text-ink">5. Third-Party Services — Advertising</h2>
 				<p class="mt-2 text-sm text-body leading-relaxed">
-					Our website may display advertisements from third-party ad networks. These networks may use cookies and similar technologies to serve relevant ads. We do not control these third-party tracking technologies. We recommend reviewing the privacy policies of any third-party services we link to.
+					We display advertisements through <strong>Google AdSense</strong>, a third-party advertising service operated by Google LLC. When you visit our website, Google AdSense and its partners may use cookies (including the <strong>DoubleClick DART cookie</strong>) and other similar technologies to serve you ads based on your prior visits to this and other websites. This allows Google and its partners to show personalized ads based on your browsing history.
+				</p>
+				<p class="mt-3 text-sm text-body leading-relaxed">
+					Google's use of advertising cookies enables it and its partners to serve ads to users based on their visits to this site and/or other sites on the Internet. You may opt out of personalized advertising by visiting
+					<a href="https://adssettings.google.com" target="_blank" rel="noopener" class="text-ink underline hover:no-underline">Google Ad Settings</a>.
+					For more information about how Google uses data when you use our website, please visit
+					<a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener" class="text-ink underline hover:no-underline">Google's advertising page</a>
+					and
+					<a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-ink underline hover:no-underline">Google's Privacy Policy</a>.
+				</p>
+				<p class="mt-3 text-sm text-body leading-relaxed">
+					These third-party ad networks have their own privacy policies. We do not control their tracking technologies. We recommend reviewing the privacy policies of any third-party services we link to.
 				</p>
 
-				<h2 class="mt-8 text-lg font-semibold text-ink">6. Cookies</h2>
+				<h2 class="mt-8 text-lg font-semibold text-ink">6. Google Analytics</h2>
 				<p class="mt-2 text-sm text-body leading-relaxed">
-					We use minimal cookies for essential functionality: a theme preference cookie (dark/light mode) stored locally in your browser. We do not use tracking cookies for advertising purposes without your consent. You can disable cookies in your browser settings, though some features may be affected.
+					With your consent, we use <strong>Google Analytics</strong>, a web analytics service provided by Google LLC, to understand how visitors use our website. Google Analytics uses cookies and similar technologies to collect information about your interactions with our site, including pages visited, time spent, browser type, device type, and approximate geographic location (at city level). This information is aggregated and used to improve our content and user experience.
+				</p>
+				<p class="mt-3 text-sm text-body leading-relaxed">
+					Google Analytics collects this data anonymously and does not link it to any personal identifiers. You can learn how Google handles data collected through Google Analytics at
+					<a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-ink underline hover:no-underline">Google's Privacy Policy</a>.
+					You can also opt out of Google Analytics by installing the
+					<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener" class="text-ink underline hover:no-underline">Google Analytics opt-out browser add-on</a>.
 				</p>
 
-				<h2 class="mt-8 text-lg font-semibold text-ink">7. Children's Privacy</h2>
+				<h2 class="mt-8 text-lg font-semibold text-ink">7. Cookies</h2>
+				<p class="mt-2 text-sm text-body leading-relaxed">
+					We use the following types of cookies:
+				</p>
+				<ul class="mt-3 grid gap-2 text-sm text-body leading-relaxed">
+					<li><strong>Essential cookies</strong> — A theme preference cookie (dark/light mode) and a cookie consent preference cookie, both stored locally in your browser.</li>
+					<li><strong>Advertising cookies</strong> — Set by Google AdSense when you accept cookie consent. These are used to deliver and personalize ads, measure ad performance, and prevent fraud.</li>
+					<li><strong>Analytics cookies</strong> — Set by Google Analytics when you accept cookie consent. These help us understand aggregate usage patterns.</li>
+				</ul>
+				<p class="mt-3 text-sm text-body leading-relaxed">
+					Advertising and analytics cookies are only loaded after you explicitly accept cookie consent via the banner on your first visit. You can reject non-essential cookies, in which case Google AdSense and Google Analytics will not load. You can also disable cookies in your browser settings at any time, though some features may be affected.
+				</p>
+
+				<h2 class="mt-8 text-lg font-semibold text-ink">8. Children's Privacy</h2>
 				<p class="mt-2 text-sm text-body leading-relaxed">
 					Our services are not directed to children under 13. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, contact us and we will promptly remove it.
 				</p>
 
-				<h2 class="mt-8 text-lg font-semibold text-ink">8. Changes to This Policy</h2>
+				<h2 class="mt-8 text-lg font-semibold text-ink">9. Changes to This Policy</h2>
 				<p class="mt-2 text-sm text-body leading-relaxed">
 					We may update this Privacy Policy periodically. Changes will be posted on this page with an updated revision date. We encourage you to review this policy regularly.
 				</p>
 
-				<h2 class="mt-8 text-lg font-semibold text-ink">9. Contact</h2>
+				<h2 class="mt-8 text-lg font-semibold text-ink">10. Contact</h2>
 				<p class="mt-2 text-sm text-body leading-relaxed">
 					If you have questions about this Privacy Policy, please <a href="/contact/" class="text-ink underline hover:no-underline">contact us</a>.
 				</p>

@@ -15,6 +15,7 @@ import {
 	cacheCoords,
 	fetchLocationFromIP,
 } from '../lib/geo';
+import { locationStore } from '../lib/location-store';
 
 export type LocationManagerOptions = {
 	onLocation?: (coords: GeoCoords) => void;
@@ -144,31 +145,40 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 
 	function onSuccess(coords: GeoCoords, source: 'auto' | 'user') {
 		const label = formatCoords(coords);
+
+		// Don't override manual location from store
+		if (locationStore.get().source === 'manual') return;
+
 		applyUi(
 			'ready',
 			`Lat ${coords.latitude.toFixed(4)}°, Lon ${coords.longitude.toFixed(4)}°`,
 			label,
 		);
 		onLocation?.(coords);
-		dispatch('oc:location-ready', { coords, source });
+		locationStore.setLocation(coords, coords.source ?? 'browser');
 		void updateCity(coords);
 	}
 
 	function onFailure(error: unknown, preferPrompt = false) {
+		if (locationStore.get().source === 'manual') return;
+
 		if (error instanceof GeoError) {
 			if (error.code === 'denied') {
 				applyUi('denied', error.message, 'Blocked');
 				dispatch('oc:location-denied', { message: error.message, code: error.code });
+				locationStore.set({ coords: null, status: 'denied' });
 				return;
 			}
 			if (error.code === 'insecure') {
 				applyUi('insecure', error.message, 'HTTPS required');
 				dispatch('oc:location-denied', { message: error.message, code: error.code });
+				locationStore.set({ coords: null, status: 'insecure' });
 				return;
 			}
 			if (error.code === 'unsupported') {
 				applyUi('unsupported', error.message, 'Unavailable');
 				dispatch('oc:location-denied', { message: error.message, code: error.code });
+				locationStore.set({ coords: null, status: 'unsupported' });
 				return;
 			}
 
@@ -184,6 +194,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 
 			applyUi('error', error.message, 'Not available');
 			dispatch('oc:location-denied', { message: error.message, code: error.code });
+			locationStore.set({ coords: null, status: 'error' });
 			return;
 		}
 
@@ -195,6 +206,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 		}
 		applyUi('error', message, 'Not available');
 		dispatch('oc:location-denied', { message });
+		locationStore.set({ coords: null, status: 'error' });
 	}
 
 	async function fetchLocation(userInitiated: boolean): Promise<GeoCoords | null> {
@@ -232,6 +244,25 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	async function init() {
 		await Promise.resolve(); // Defer execution so that page event listeners can register first
 
+		// If user manually set a location (from search bar, persisted across pages), skip geo entirely
+		if (locationStore.get().source === 'manual') {
+			const s = locationStore.get();
+			if (s.coords) {
+				applyUi('ready', formatCoords(s.coords as GeoCoords), formatCoords(s.coords as GeoCoords));
+				if (s.city) {
+					setText(globalLocationText, `📍 ${s.city}`);
+					setText(messageEl, `Location: ${s.city}`);
+					if (cityEl) cityEl.textContent = s.city;
+				}
+				onLocation?.(s.coords as GeoCoords);
+				dispatch('oc:location-ready', { coords: s.coords, source: 'manual' });
+				if (s.city) {
+					dispatch('oc:location-city-ready', { city: s.city, coords: s.coords });
+				}
+			}
+			return;
+		}
+
 		if (!isGeolocationSupported()) {
 			onFailure(new GeoError('unsupported', 'Geolocation is not supported in this browser.'));
 			return;
@@ -264,7 +295,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 			if (!cached) {
 				applyUi(
 					'denied',
-					'Location is blocked for this site. In browser settings, set Location to Allow, then tap Try Allow Location Again.',
+					'Location is blocked for this site. Search for a city above or in browser settings, set Location to Allow, then tap Try Allow Location Again.',
 					'Blocked',
 				);
 				dispatch('oc:location-denied', {
@@ -272,6 +303,7 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 					code: 'denied',
 				});
 			}
+			locationStore.set({ status: 'denied' });
 			setButtonVisible(allowButtonEl, true);
 			return;
 		}
@@ -302,6 +334,11 @@ export function mountLocationManager(options: LocationManagerOptions = {}) {
 	bindButton(allowLocationGlobal, requestFromUser);
 	bindButton(retryButtonEl, requestFromUser);
 	bindButton(allowLocationAlert, requestFromUser);
+
+	// Listen for "Use My Location" request from the search bar
+	document.addEventListener('oc:request-geolocation', () => {
+		void fetchLocation(true);
+	});
 
 	// Dismiss alert banner
 	dismissLocationAlert?.addEventListener('click', () => {

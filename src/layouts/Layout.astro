@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import CookieConsent from '../components/CookieConsent.astro';
 
 const {
 	title = 'Truly Compass — Free Digital Compass in Your Browser',
@@ -40,13 +41,7 @@ const {
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content="https://trulycompass.com/og-image.png" />
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-L1KC85ZFZF"></script>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', 'G-L1KC85ZFZF');
-		</script>
+		<!-- Google Analytics & AdSense are loaded conditionally by CookieConsent after user consent -->
 		<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
 		<link
 			href="https://fonts.bunny.net/css?family=geist:400,500,600|geist-mono:400"
@@ -81,5 +76,6 @@ const {
 	</head>
 	<body>
 		<slot />
+		<CookieConsent />
 	</body>
 </html>

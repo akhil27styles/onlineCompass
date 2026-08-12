@@ -1,8 +1,9 @@
 ---
-const { current = 'compass' } = Astro.props as { current?: 'compass' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' | 'heat-index' | 'air-quality' | 'stargazing' };
+const { current = 'compass' } = Astro.props as { current?: 'compass' | 'compass-bearings' | 'sun' | 'moon' | 'solar-system' | 'qibla' | 'wind' | 'golden-hour' | 'uv-index' | 'prayer-times' | 'day-length' | 'heat-index' | 'air-quality' | 'stargazing' | 'gps' };
 
 const tabs = [
 	{ id: 'compass', href: '/', label: 'Compass', short: 'Compass', icon: '◎', aria: 'Online compass tool' },
+	{ id: 'compass-bearings', href: '/compass-bearings/', label: 'Compass Bearings', short: 'Bearing', icon: '⟷', aria: 'Compass bearings calculator' },
 	{ id: 'sun', href: '/sun-position/', label: 'Sun Position', short: 'Sun', icon: '☀', aria: 'Current sun position' },
 	{ id: 'moon', href: '/moon-position/', label: 'Moon Position', short: 'Moon', icon: '☽', aria: 'Current moon position' },
 	{ id: 'qibla', href: '/qibla-compass/', label: 'Qibla Finder', short: 'Qibla', icon: '🕋', aria: 'Qibla finder compass' },
@@ -15,21 +16,42 @@ const tabs = [
 	{ id: 'prayer-times', href: '/prayer-times/', label: 'Prayer Times', short: 'Prayer', icon: '🕌', aria: 'Daily prayer times' },
 	{ id: 'day-length', href: '/day-length/', label: 'Day Length', short: 'Days', icon: '📅', aria: 'Day length by season' },
 	{ id: 'solar-system', href: '/solar-system/', label: '3D Solar System', short: 'Solar', icon: '🪐', aria: '3D solar system explorer' },
+	{ id: 'gps', href: '/gps-coordinates/', label: 'GPS Coordinates', short: 'GPS', icon: '📍', aria: 'GPS coordinates lookup' },
 ] as const;
+
+const currentTab = tabs.find((t) => t.id === current) || tabs[0];
 ---
+
+<style>
+	details > summary { list-style: none; }
+	details > summary::-webkit-details-marker { display: none; }
+	details[open] > summary .chevron { rotate: 180deg; }
+</style>
 
 <nav
 	class="sticky top-16 z-30 border-b border-hairline bg-canvas/95 backdrop-blur-md"
 	aria-label="Main tools"
 >
 	<div class="content-grid py-2">
-		<ul class="flex gap-1.5 overflow-x-auto sm:grid sm:grid-cols-5 lg:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2">
-			{
-				tabs.map((tab) => (
+		<!-- Mobile: collapsible menu -->
+		<details class="sm:hidden">
+			<summary
+				class="flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-canvas-soft-2 px-3 py-2.5 transition-colors hover:border-hairline-strong"
+			>
+				<span class="flex items-center gap-2.5">
+					<span class="text-lg leading-none" aria-hidden="true">{currentTab.icon}</span>
+					<span class="text-sm font-medium text-ink">{currentTab.label}</span>
+				</span>
+				<svg class="chevron h-4 w-4 text-muted transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="m6 9 6 6 6-6"/>
+				</svg>
+			</summary>
+			<ul class="mt-2 grid grid-cols-3 gap-1.5">
+				{tabs.map((tab) => (
 					<li>
 						<a
 							class:list={[
-								'focus-ring flex min-h-11 flex-col items-center justify-center gap-1 rounded-md border px-2 py-2 text-center transition-colors duration-150 sm:min-h-14 sm:px-3',
+								'focus-ring flex min-h-14 flex-col items-center justify-center gap-1 rounded-md border px-1 py-2 text-center transition-colors duration-150',
 								current === tab.id
 									? 'border-hairline-strong bg-ink font-semibold text-canvas'
 									: 'border-hairline bg-canvas-soft-2 text-body hover:border-hairline-strong hover:text-ink',
@@ -38,17 +60,38 @@ const tabs = [
 							aria-current={current === tab.id ? 'page' : undefined}
 							aria-label={tab.aria}
 						>
-							<span class="text-base leading-none sm:text-lg" aria-hidden="true">
-								{tab.icon}
-							</span>
-							<span class="max-w-full text-[10px] font-mono uppercase leading-tight tracking-wide sm:text-xs sm:normal-case sm:tracking-normal">
-								<span class="sm:hidden">{tab.short}</span>
-								<span class="hidden sm:inline">{tab.label}</span>
-							</span>
+							<span class="text-base leading-none" aria-hidden="true">{tab.icon}</span>
+							<span class="text-[10px] font-mono uppercase leading-tight tracking-wide">{tab.short}</span>
 						</a>
 					</li>
-				))
-			}
+				))}
+			</ul>
+		</details>
+
+		<!-- Desktop / tablet: grid -->
+		<ul class="hidden gap-1.5 sm:grid sm:grid-cols-5 lg:grid-cols-[repeat(15,minmax(0,1fr))] sm:gap-2">
+			{tabs.map((tab) => (
+				<li>
+					<a
+						class:list={[
+							'focus-ring flex min-h-11 flex-col items-center justify-center gap-1 rounded-md border px-2 py-2 text-center transition-colors duration-150 sm:min-h-14 sm:px-3',
+							current === tab.id
+								? 'border-hairline-strong bg-ink font-semibold text-canvas'
+								: 'border-hairline bg-canvas-soft-2 text-body hover:border-hairline-strong hover:text-ink',
+						]}
+						href={tab.href}
+						aria-current={current === tab.id ? 'page' : undefined}
+						aria-label={tab.aria}
+					>
+						<span class="text-base leading-none sm:text-lg" aria-hidden="true">
+							{tab.icon}
+						</span>
+						<span class="max-w-full text-[10px] font-mono uppercase leading-tight tracking-wide sm:normal-case sm:tracking-normal">
+							{tab.short}
+						</span>
+					</a>
+				</li>
+			))}
 		</ul>
 	</div>
 </nav>
