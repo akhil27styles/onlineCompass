@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = 'جهت قبله — یافتن قبله از موقعیت من';
+const description = 'ابزار یافتن قبله — جهت قبله را بر اساس موقعیت فعلی خود پیدا کنید.';
+const canonical = 'https://trulycompass.com/fa/qibla-compass/';
+const alternates = [
+  { hreflang: 'en', href: 'https://trulycompass.com/qibla-compass/' },
+  { hreflang: 'ar', href: 'https://trulycompass.com/ar/qibla-compass/' },
+  { hreflang: 'id', href: 'https://trulycompass.com/id/qibla-compass/' },
+  { hreflang: 'ur', href: 'https://trulycompass.com/ur/qibla-compass/' },
+  { hreflang: 'tr', href: 'https://trulycompass.com/tr/qibla-compass/' },
+  { hreflang: 'ms', href: 'https://trulycompass.com/ms/qibla-compass/' },
+  { hreflang: 'bn', href: 'https://trulycompass.com/bn/qibla-compass/' },
+  { hreflang: 'fa', href: 'https://trulycompass.com/fa/qibla-compass/' },
+];
+
+---
+
+<Layout lang="fa" dir="rtl" title={title} description={description} canonical={canonical} alternates={alternates}>
+	<main class="content-grid prose prose-invert" id="main">
+		<h1>{title}</h1>
+		<p>{description}</p>
+	</main>
+</Layout>

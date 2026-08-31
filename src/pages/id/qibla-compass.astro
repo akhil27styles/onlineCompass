@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = 'Arah Kiblat — Temukan Kiblat dari Lokasiku';
+const description = 'Alat arah kiblat langsung — ketahui arah kiblat dari lokasi Anda menggunakan kompas dan perhitungan geografi.';
+const canonical = 'https://trulycompass.com/id/qibla-compass/';
+const alternates = [
+	{ hreflang: 'en', href: 'https://trulycompass.com/qibla-compass/' },
+	{ hreflang: 'ar', href: 'https://trulycompass.com/ar/qibla-compass/' },
+	{ hreflang: 'id', href: 'https://trulycompass.com/id/qibla-compass/' },
+	{ hreflang: 'ur', href: 'https://trulycompass.com/ur/qibla-compass/' },
+	{ hreflang: 'tr', href: 'https://trulycompass.com/tr/qibla-compass/' },
+	{ hreflang: 'ms', href: 'https://trulycompass.com/ms/qibla-compass/' },
+	{ hreflang: 'bn', href: 'https://trulycompass.com/bn/qibla-compass/' },
+	{ hreflang: 'fa', href: 'https://trulycompass.com/fa/qibla-compass/' },
+];
+
+---
+
+<Layout lang="id" dir="ltr" title={title} description={description} canonical={canonical} alternates={alternates}>
+	<head slot="head">
+		<script type="application/ld+json">
+		{JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "WebPage",
+			"name": title,
+			"inLanguage": "id",
+		})}
+		</script>
+	</head>
+
+	<main class="content-grid prose" id="main">
+		<h1>{title}</h1>
+		<p>{description}</p>
+
+		<section>
+			<h2>Apa itu Kiblat?</h2>
+			<p>Penjelasan singkat tentang makna kiblat dan kepentingannya.</p>
+		</section>
+
+		<section>
+			<h2>Cara menghitung arah kiblat</h2>
+			<p>Ringkasan perhitungan great-circle menggunakan koordinat Ka'bah.</p>
+		</section>
+
+		<section>
+			<h2>Cara mengetahui kiblat tanpa kompas</h2>
+			<p>Metode alternatif: posisi matahari, mihrab masjid.</p>
+		</section>
+
+		<section>
+			<h2>FAQ</h2>
+			<details>
+				<summary>Bagaimana cara mengetahui arah kiblat dari lokasi saya saat ini?</summary>
+				<p>Penjelasan singkat tentang penggunaan lokasi langsung di halaman ini.</p>
+			</details>
+		</section>
+	</main>
+
+</Layout>

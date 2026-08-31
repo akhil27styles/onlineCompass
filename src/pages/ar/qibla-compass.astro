@@ -1,0 +1,62 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const title = 'اتجاه القبلة — تحديد القبلة من موقعي';
+const description = 'أداة اتجاه القبلة المباشرة — اعرف اتجاه القبلة من موقعك الحالي باستخدام البوصلة والمتجهات الجغرافية.';
+const canonical = 'https://trulycompass.com/ar/qibla-compass/';
+const alternates = [
+	{ hreflang: 'en', href: 'https://trulycompass.com/qibla-compass/' },
+	{ hreflang: 'ar', href: 'https://trulycompass.com/ar/qibla-compass/' },
+	{ hreflang: 'id', href: 'https://trulycompass.com/id/qibla-compass/' },
+	{ hreflang: 'ur', href: 'https://trulycompass.com/ur/qibla-compass/' },
+	{ hreflang: 'tr', href: 'https://trulycompass.com/tr/qibla-compass/' },
+	{ hreflang: 'ms', href: 'https://trulycompass.com/ms/qibla-compass/' },
+	{ hreflang: 'bn', href: 'https://trulycompass.com/bn/qibla-compass/' },
+	{ hreflang: 'fa', href: 'https://trulycompass.com/fa/qibla-compass/' },
+];
+
+---
+
+<Layout lang="ar" dir="rtl" title={title} description={description} canonical={canonical} alternates={alternates}>
+	<head slot="head">
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+		<script type="application/ld+json">
+		{JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "WebPage",
+			"name": title,
+			"inLanguage": "ar",
+		})}
+		</script>
+	</head>
+
+	<main class="content-grid prose prose-invert" id="main">
+		<h1>{title}</h1>
+		<p>{description}</p>
+
+		<section>
+			<h2>ما هي القبلة؟</h2>
+			<p>شرح مختصر عن معنى القبلة وأهميتها، مع مرجع لآية 2:144.</p>
+		</section>
+
+		<section>
+			<h2>كيف يتم حساب اتجاه القبلة</h2>
+			<p>نظرة مبسطة على حساب الزاوية العظمى (great-circle) باستخدام إحداثيات الكعبة.</p>
+		</section>
+
+		<section>
+			<h2>كيفية معرفة اتجاه القبلة بدون بوصلة</h2>
+			<p>طرق بديلة: الشمس فوق الكعبة، محراب المسجد، والأدلة العملية.</p>
+		</section>
+
+		<section>
+			<h2>الأسئلة الشائعة</h2>
+			<details>
+				<summary>كيف أعرف اتجاه القبلة من موقعي الحالي الآن؟</summary>
+				<p>يشرح كيفية استخدام هذه الأداة مع تحديد الموقع الحي.</p>
+			</details>
+		</section>
+	</main>
+
+</Layout>

@@ -24,17 +24,23 @@ const directionLabels = [
 ];
 
 const faqs = [
-	['How do I find Qibla from my current location?', 'Enable location access and let the compass calculate your coordinates. The Qibla direction is computed using the great-circle bearing from your location to Mecca (21.42252° N, 39.82621° E). Rotate your phone to align the red needle with the compass bearing.'],
-	['Which direction is Qibla in?', 'Qibla direction varies by location. From North America, it is generally toward the southeast. From Europe, it is southeast. From Asia, it is usually west or southwest. Use this tool to find the exact bearing for your specific coordinates.'],
-	['How to check qibla direction on phone?', 'Simply open this page on your smartphone and enable location access. The Qibla compass will display the direction to Mecca. Rotate your phone slowly; the compass needle will point toward Qibla when your phone faces in that direction.'],
-	['How do I check my direction?', 'The compass needle at the top of the dial shows your current device heading. The red needle indicates Qibla direction. When the red needle overlays the center dot, you are facing exactly toward Mecca.'],
+	['How do I find Qibla from my current location?', 'Enable location access and let the compass calculate your coordinates. The Qibla direction is computed using the great-circle bearing from your location to the Kaaba in Mecca (21.42252° N, 39.82621° E). Rotate your phone until the green Qibla pointer aligns with north on the compass dial.'],
+	['Which direction is Qibla in?', 'Qibla direction varies by location. From North America, it is generally northeast. From Europe, it is southeast. From South and Southeast Asia, it is west or northwest. From Africa, it is northeast or east. Use this tool to find the exact bearing in degrees for your specific coordinates.'],
+	['How to check Qibla direction on phone?', 'Open this page on your smartphone and enable location access. The Qibla compass will display the direction to Mecca with a green pointer. Rotate your phone slowly and hold it flat — the compass needle will point toward Qibla when your phone faces the correct direction.'],
+	['How do I check my direction?', 'The fixed red triangle at the top of the compass dial shows your current device heading. The green arrow on the compass rose indicates the Qibla direction. When the green arrow aligns with the top of the dial, you are facing directly toward the Kaaba.'],
+	['What degree is Qibla from my location?', 'The exact Qibla bearing in degrees depends on your geographic coordinates. This tool calculates and displays the precise bearing from north (0°–360°) using the great-circle formula. For example, from London the Qibla is approximately 119°, from New York approximately 58°, and from Jakarta approximately 295°.'],
+	['How to find Qibla direction without a compass?', 'You can find Qibla using the sun. Twice a year — around May 27–28 and July 15–16 — the sun passes directly over the Kaaba at solar noon. At that exact moment, any vertical object\'s shadow points directly away from Mecca. You can also use the North Star (Polaris) at night, or look for the Mihrab (prayer niche) inside any nearby mosque.'],
+	['How accurate is a phone compass for Qibla?', 'Smartphone magnetometers are typically accurate to within ±3–5 degrees when properly calibrated. Accuracy decreases near metal objects, electronics, or magnetic fields. For best results, calibrate by moving your phone in a figure-8 pattern, hold it flat, and stand away from cars, speakers, and metal structures.'],
+	['How is the Qibla direction calculated?', 'The Qibla bearing is calculated using the forward azimuth of the great-circle path — the shortest route on Earth\'s surface between your location and the Kaaba (21.4225° N, 39.8262° E). The formula uses spherical trigonometry: θ = atan2(sin(Δλ)·cos(φ₂), cos(φ₁)·sin(φ₂) − sin(φ₁)·cos(φ₂)·cos(Δλ)), where φ and λ are latitude and longitude in radians.'],
+	['What if I prayed in the wrong Qibla direction?', 'Islamic scholars generally agree that if you made a sincere effort (Ijtihad) to determine the Qibla direction and later discover it was slightly off, your prayer remains valid. The obligation is to face the general direction of the Kaaba, not a precise degree. However, you should correct your direction for future prayers once you know the accurate bearing.'],
+	['Does Qibla direction change when traveling or at altitude?', 'Yes, the Qibla direction changes as your geographic position changes. Even moving a few hundred kilometers can shift the bearing by several degrees. Altitude has negligible effect on the bearing calculation. When flying, many airlines display the Qibla direction on seat-back screens, or you can use this tool with GPS enabled on your phone.'],
 ];
 ---
 
 <Layout
-		title="Qibla Compass Online — Find Qibla Direction to Mecca | Live Finder"
-		description="Find qibla direction instantly. Live qibla compass showing exact direction to Mecca, distance to Kaaba, and prayer time integration. Accurate for any location worldwide."
-		keywords="qibla compass online, find qibla, qibla direction, qibla finder, prayer times today, islamic prayer times, direction to mecca, kaaba compass direction, prayer times calculator"
+		title="Qibla Finder — Find Qibla Direction From Your Location | Truly Compass"
+		description="Find Qibla direction from your location instantly. Free online Qibla compass showing exact bearing to Mecca, distance to Kaaba, and step-by-step calibration guide."
+		keywords="qibla finder, qibla direction, qibla compass online, find qibla, qibla direction from my location, direction to mecca, kaaba compass direction, qibla degree, qibla finder online compass"
 	canonical="https://trulycompass.com/qibla-compass/"
 >
 	<SeoJsonLd

@@ -1,6 +1,10 @@
 {
-  "name": "trulycompass",
-  "short_name": "trulycom",
+  "name": "Truly Compass — Online Compass & Navigation Tools",
+  "short_name": "Truly Compass",
+  "start_url": "/",
+  "id": "/",
+  "description": "Free browser-based compass, sun & moon position, prayer times, qibla direction, and navigation tools.",
+  "categories": ["utilities", "navigation"],
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +19,21 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "shortcuts": [
+    {
+      "name": "Qibla Finder",
+      "short_name": "Qibla",
+      "url": "/qibla-compass/",
+      "description": "Find Qibla direction from your location"
+    },
+    {
+      "name": "Prayer Times",
+      "short_name": "Prayer",
+      "url": "/prayer-times/",
+      "description": "Accurate Islamic prayer times for your location"
+    }
+  ],
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
   "display": "standalone"
 }
